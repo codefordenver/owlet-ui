@@ -2,21 +2,19 @@
   (:require [reagent.core :as reagent :refer [atom]]))
 
 (enable-console-print!)
+; (add-watch img-src :logger #(-> %4 clj->js js/console.log))
 
 (defn custom-header []
-  (let [img-src (reagent/atom "")]
-    ; (add-watch img-src :logger #(-> %4 clj->js js/console.log))
+  (let [img-src (reagent/atom "http://eskipaper.com/images/space-1.jpg")]
     (fn []
     [:div.custom-header
-      {:style
-        {:background (str "url('" (str @img-src) "')")
-         :backgroundSize "cover"}}
+      [:img {:src @img-src}]
       [:button.btn-primary
        {:onClick
         (fn []
           (let [url (js/prompt "i need a url")]
-              (reset! img-src url)
-              (print @img-src)
+              (when url
+                    (reset! img-src url))
               ))} "change me!"]])))
 
 (defn main []
@@ -26,8 +24,7 @@
       [:p "sidebar"]]
     [:div.right.col-lg-9
       [custom-header]
-      [:div.content]
-      [:p "test"]]])
+      [:div.content]]])
 
 
 (defn init []
