@@ -8,7 +8,8 @@
                  [org.clojure/clojurescript "1.7.122"]
                  [crisptrutski/boot-cljs-test "0.2.0-SNAPSHOT" :scope "test"]
                  [reagent "0.5.0"]
-                 [deraen/boot-less "0.2.1" :scope "test"]])
+                 [deraen/boot-less "0.2.1" :scope "test"]
+                 [cljsjs/auth0-lock "8.1.5-1"]])
 
 (require
  '[adzerk.boot-cljs      :refer [cljs]]
