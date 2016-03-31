@@ -9,7 +9,8 @@
                  [crisptrutski/boot-cljs-test "0.2.0-SNAPSHOT" :scope "test"]
                  [reagent "0.5.0"]
                  [deraen/boot-less "0.2.1" :scope "test"]
-                 [cljsjs/auth0-lock "8.1.5-1"]])
+                 [cljsjs/auth0-lock "8.1.5-1"]
+                 [cljs-ajax "0.5.4"]])
 
 (require
  '[adzerk.boot-cljs      :refer [cljs]]
@@ -28,7 +29,7 @@
         (sift   :move {#"less.css" "css/less.css" #"less.main.css.map" "css/less.main.css.map"})))
 
 (deftask run []
-  (comp (serve)
+  (comp (serve :port 4000)
         (watch)
         (cljs-repl)
         (reload)

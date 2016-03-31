@@ -1,8 +1,11 @@
 (ns owlet.app
   (:require [reagent.core :as reagent :refer [atom]]
-            [cljsjs.auth0-lock :as Auth0Lock]))
+            [cljsjs.auth0-lock :as Auth0Lock]
+            [ajax.core :refer [PUT]]))
 
 (enable-console-print!)
+
+(def user-id (atom nil))
 
 (def lock (new js/Auth0Lock
                "aCHybcxZ3qE6nWta60psS0An1jHUlgMm"
@@ -23,9 +26,10 @@
                                                   (if (not (nil? err))
                                                     (print err)
                                                     (do
-                                                      (print profile)
+                                                      (reset! user-id (.-user_id profile))
                                                       (swap! is-logged-in? not)
-                                                      ;; save the JWT token.
+                                                      (.log js/console @user-id)
+                                                      ;; save the JWT token
                                                       (.setItem js/localStorage "userToken" token)))))
                                        (do
                                          (swap! is-logged-in? not)
@@ -48,6 +52,24 @@
                            ))} "change me!"]
                 [:img {:src @img-src}]])))
 
+(defn settings []
+      (let [district-id (atom nil)]
+           (fn []
+               [:label "id"
+                [:input.test {:type      "text"
+                              :value     @district-id
+                              :on-change #(reset! district-id (-> % .-target .-value))}]
+                [:input {:type     "submit"
+                         :value    "Search"
+                         :on-click (fn []
+                                       ;; "http://owlet-cms.apps.aterial.org/api/users"
+                                       (PUT "http://localhost:3000/api/users-district-id"
+                                            {:params  {:district-id @district-id
+                                                       :user-id     @user_id}
+                                             :handler (fn [res]
+                                                          (print res))})
+                                       (js/alert @district-id))}]])))
+
 (defn main []
       [:div.no-gutter
        [:div.left.col-lg-2.text-center
@@ -64,10 +86,10 @@
          [:input {
                   :type "search"
                   :name "sitesearch"}]
-         [:input {
-                  :type  "submit"
-                  :value "Search"}]]]
-       [:div.content]])
+         [:input {:type  "submit"
+                  :value "Search"}]]
+        [:div.content
+         [settings]]]])
 
 (defn init []
       (reagent/render-component
