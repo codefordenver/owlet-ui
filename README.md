@@ -1,16 +1,16 @@
-## OWLet UI | Code For Denver
+# owlet-ui
 
-### development 
+## Development:
 
-`boot dev`
+- install boot from http://boot-clj.com/
+- cd into owlet-ui/ directory
+- run $ boot dev
+- visit localhost:4000
 
-then visit: 
-[http://localhost:3000](http://localhost:3000)
+## ClojureScript repl:
 
-
-### clojurescript repl
-
-`boot repl --cleint`
+`boot repl --client`
 
 Then evaluate this at the repl:
+
 `(start-repl)`

@@ -65,10 +65,9 @@
                                        ;; "http://owlet-cms.apps.aterial.org/api/users"
                                        (PUT "http://localhost:3000/api/users-district-id"
                                             {:params  {:district-id @district-id
-                                                       :user-id     @user_id}
+                                                       :user-id     @user-id}
                                              :handler (fn [res]
-                                                          (print res))})
-                                       (js/alert @district-id))}]])))
+                                                          (js/alert res))}))}]])))
 
 (defn main []
       [:div.no-gutter
