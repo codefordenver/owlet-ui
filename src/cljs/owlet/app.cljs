@@ -1,11 +1,10 @@
 (ns owlet.app
   (:require [reagent.core :as reagent :refer [atom]]
             [cljsjs.auth0-lock :as Auth0Lock]
-            [ajax.core :refer [PUT]]))
+            [ajax.core :refer [PUT]]
+            [reagent.session :as session]))
 
 (enable-console-print!)
-
-(def user-id (atom nil))
 
 (def lock (new js/Auth0Lock
                "aCHybcxZ3qE6nWta60psS0An1jHUlgMm"
@@ -13,29 +12,35 @@
 
 (defn sign-in-out-component []
       (let [is-logged-in? (atom false)
-            _ (if (not (nil? (.getItem js/localStorage "userToken")))
-                (swap! is-logged-in? not))]
+            user-token (.getItem js/localStorage "userToken")
+            _ (if user-token
+                (.getProfile lock user-token
+                             (fn [err profile]
+                                 (if (not (nil? err))
+                                   (.log js/console err)
+                                   (do
+                                     (swap! is-logged-in? not)
+                                     (session/put! :user-id (.-user_id profile)))))))]
            (fn []
                [:div.pull-right
                 [:button.btn.btn-success.btn-lg
                  {:type    "button"
-                  :onClick (fn [_]
-                               (if-not @is-logged-in?
-                                       (.show lock #js {:popup true}
-                                              (fn [err profile token]
-                                                  (if (not (nil? err))
-                                                    (print err)
-                                                    (do
-                                                      (reset! user-id (.-user_id profile))
-                                                      (swap! is-logged-in? not)
-                                                      (.log js/console @user-id)
-                                                      ;; save the JWT token
-                                                      (.setItem js/localStorage "userToken" token)))))
-                                       (do
-                                         (swap! is-logged-in? not)
-                                         (.removeItem js/localStorage "userToken")))
-                               )} (if @is-logged-in? "log-out"
-                                                     "log-in")]])))
+                  :onClick #(if-not @is-logged-in?
+                                    (.show lock #js {:popup true}
+                                           (fn [err profile token]
+                                               (if (not (nil? err))
+                                                 (print err)
+                                                 (do
+                                                   (session/put! :user-id (.-user_id profile))
+                                                   (swap! is-logged-in? not)
+                                                   ;; save the JWT token
+                                                   (.setItem js/localStorage "userToken" token)))))
+                                    (do
+                                      (swap! is-logged-in? not)
+                                      (session/clear!)
+                                      (.removeItem js/localStorage "userToken")))}
+                 (if @is-logged-in? "log-out"
+                                    "log-in")]])))
 
 (defn custom-header-component []
       (let [img-src (atom "http://eskipaper.com/images/space-1.jpg")]
@@ -65,7 +70,7 @@
                                        ;; "http://owlet-cms.apps.aterial.org/api/users"
                                        (PUT "http://localhost:3000/api/users-district-id"
                                             {:params  {:district-id @district-id
-                                                       :user-id     @user-id}
+                                                       :user-id     (session/get :user-id)}
                                              :handler (fn [res]
                                                           (js/alert res))}))}]])))
 
