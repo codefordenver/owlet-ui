@@ -7,11 +7,13 @@
                  [pandeiro/boot-http        "0.6.3"      :scope "test"]
                  [org.clojure/clojurescript "1.7.122"]
                  [crisptrutski/boot-cljs-test "0.2.0-SNAPSHOT" :scope "test"]
-                 [reagent "0.5.0"]
                  [deraen/boot-less "0.2.1" :scope "test"]
                  [cljsjs/auth0-lock "8.1.5-1"]
                  [cljs-ajax "0.5.4"]
-                 [reagent-utils "0.1.7"]])
+                 [reagent "0.5.1"]
+                 [reagent-utils "0.1.7"]
+                 [reagent-forms "0.5.22"]
+                 [secretary "1.2.3"]])
 
 (require
  '[adzerk.boot-cljs      :refer [cljs]]

@@ -1,14 +1,31 @@
 (ns owlet.app
   (:require [reagent.core :as reagent :refer [atom]]
             [cljsjs.auth0-lock :as Auth0Lock]
-            [ajax.core :refer [PUT]]
-            [reagent.session :as session]))
+            [ajax.core :refer [GET PUT]]
+            [reagent.session :as session]
+            [reagent.validation :as validation]
+            [secretary.core :as secretary :include-macros true]
+            [goog.events :as events]
+            [goog.history.EventType :as HistoryEventType])
+  (:import goog.History))
 
 (enable-console-print!)
+
+(defonce server-url "http://localhost:3000")                ;; "http://owlet-cms.apps.aterial.org"
 
 (def lock (new js/Auth0Lock
                "aCHybcxZ3qE6nWta60psS0An1jHUlgMm"
                "codefordenver.auth0.com"))
+
+(def user-profile (atom nil))
+
+;; (add-watch user-profile :logger #(-> %4 clj->js js/console.log))
+
+(defn get-user-cms-profile [id]
+      (GET (str server-url "/api/user/" id)
+           {:response-format :json
+            :handler         (fn [res]
+                                 (reset! user-profile (clj->js res)))}))
 
 (defn sign-in-out-component []
       (let [is-logged-in? (atom false)
@@ -19,6 +36,7 @@
                                  (if (not (nil? err))
                                    (.log js/console err)
                                    (do
+                                     (get-user-cms-profile (.-user_id profile))
                                      (swap! is-logged-in? not)
                                      (session/put! :user-id (.-user_id profile)))))))]
            (fn []
@@ -57,7 +75,7 @@
                            ))} "change me!"]
                 [:img {:src @img-src}]])))
 
-(defn settings []
+(defn settings-page []
       (let [district-id (atom nil)]
            (fn []
                [:label "id"
@@ -66,15 +84,15 @@
                               :on-change #(reset! district-id (-> % .-target .-value))}]
                 [:input {:type     "submit"
                          :value    "Search"
-                         :on-click (fn []
-                                       ;; "http://owlet-cms.apps.aterial.org/api/users"
-                                       (PUT "http://localhost:3000/api/users-district-id"
-                                            {:params  {:district-id @district-id
-                                                       :user-id     (session/get :user-id)}
-                                             :handler (fn [res]
-                                                          (js/alert res))}))}]])))
+                         :on-click #(when (and (validation/has-value? (session/get :user-id))
+                                               (validation/has-value? @district-id))
+                                          (PUT (str server-url "/api/users-district-id")
+                                               {:params  {:district-id @district-id
+                                                          :user-id     (session/get :user-id)}
+                                                :handler (fn [res]
+                                                             (js/alert res))}))}]])))
 
-(defn main []
+(defn home-page []
       [:div.no-gutter
        [:div.left.col-lg-2.text-center
         [:img {:src "img/owlet-logo.png"}]
@@ -82,7 +100,8 @@
          [:h1 "owlet"]
          [:img {:src "img/icon1.png"}] [:br]
          [:img {:src "img/icon2.png"}] [:br]
-         [:img {:src "img/icon3.png"}]]]
+         [:a {:href "/#/settings"}
+          [:img {:src "img/icon3.png"}]]]]
        [:div.right.col-lg-10
         [custom-header-component]
         [:div.search
@@ -92,10 +111,41 @@
                   :name "sitesearch"}]
          [:input {:type  "submit"
                   :value "Search"}]]
-        [:div.content
-         [settings]]]])
+        [:div.content]]])
+
+(def pages
+  {:home     #'home-page
+   :settings #'settings-page})
+
+(defn page []
+      [(pages (session/get :page))])
+
+;; -------------------------
+;; Routes
+(secretary/set-config! :prefix "#")
+
+(secretary/defroute "/" []
+                    (session/put! :page :home))
+
+(secretary/defroute "/settings" []
+                    (session/put! :page :settings))
+;; -------------------------
+;; History
+;; must be called after routes have been defined
+(defn hook-browser-navigation! []
+      (doto (History.)
+            (events/listen
+              HistoryEventType/NAVIGATE
+              (fn [event]
+                  (secretary/dispatch! (.-token event))))
+            (.setEnabled true)))
+
+;; -------------------------
+;; Initialize app
+(defn mount-components []
+      (reagent/render [#'page]
+                      (.getElementById js/document "mount")))
 
 (defn init []
-      (reagent/render-component
-        [main]
-        (.getElementById js/document "mount")))
+      (hook-browser-navigation!)
+      (mount-components))
