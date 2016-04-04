@@ -61,7 +61,8 @@
                                     "log-in")]])))
 
 (defn custom-header-component []
-      (let [img-src (atom "http://eskipaper.com/images/space-1.jpg")]
+      (let [img-src (atom (or (.getItem js/localStorage "custom-image-url" url)
+                              "http://eskipaper.com/images/space-1.jpg"))]
            (fn []
                [:div.custom-header.no-gutter
                 [:button.btn-primary
