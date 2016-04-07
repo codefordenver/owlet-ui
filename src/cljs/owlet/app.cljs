@@ -6,7 +6,10 @@
             [reagent.validation :as validation]
             [secretary.core :as secretary :include-macros true]
             [goog.events :as events]
-            [goog.history.EventType :as HistoryEventType])
+            [goog.history.EventType :as HistoryEventType]
+    ;;[kioo.reagent :refer [content set-attr do-> substitute listen]
+    ;;:refer-macros [defsnippet deftemplate]]
+            )
   (:import goog.History))
 
 (enable-console-print!)
@@ -61,7 +64,7 @@
                                     "log-in")]])))
 
 (defn custom-header-component []
-      (let [img-src (atom (or (.getItem js/localStorage "custom-image-url" url)
+      (let [img-src (atom (or (.getItem js/localStorage "custom-image-url")
                               "http://eskipaper.com/images/space-1.jpg"))]
            (fn []
                [:div.custom-header.no-gutter

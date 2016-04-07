@@ -13,7 +13,8 @@
                  [reagent "0.5.1"]
                  [reagent-utils "0.1.7"]
                  [reagent-forms "0.5.22"]
-                 [secretary "1.2.3"]])
+                 [secretary "1.2.3"]
+                 [kioo "0.4.2"]])
 
 (require
  '[adzerk.boot-cljs      :refer [cljs]]
