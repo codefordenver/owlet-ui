@@ -14,3 +14,9 @@
 Then evaluate this at the repl:
 
 `(start-repl)`
+
+## Dev notes:
+
+Setting up a watcher on an atom:
+
+`(add-watch my-atom :logger #(-> %4 clj->js js/console.log))`
