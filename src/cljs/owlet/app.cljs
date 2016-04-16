@@ -66,6 +66,8 @@
       (reagent/render [#'page]
                       (.getElementById js/document "mount")))
 
-(defn init []
+(defn init! []
       (hook-browser-navigation!)
       (mount-components))
+
+(init!)
