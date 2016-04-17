@@ -1,8 +1,9 @@
 (ns owlet.app
   (:require
-    [owlet.components.settings :refer [settings-page]]
+    [owlet.views.settings :refer [settings-page]]
     [owlet.components.header :refer [header-component]]
     [owlet.components.login :refer [login-component]]
+    [owlet.components.sidebar :refer [sidebar-component]]
     [reagent.core :as reagent :refer [atom]]
     [reagent.session :as session]
     [secretary.core :as secretary :include-macros true]
@@ -14,14 +15,7 @@
 
 (defn main-page []
       [:div.no-gutter
-       [:div.left.col-lg-2.text-center
-        [:img {:src "img/owlet-logo.png"}]
-        [:div.options
-         [:h1 "owlet"]
-         [:img {:src "img/icon1.png"}] [:br]
-         [:img {:src "img/icon2.png"}] [:br]
-         [:a {:href "/#/settings"}
-          [:img {:src "img/icon3.png"}]]]]
+       [sidebar-component]
        [:div.right.col-lg-10
         [header-component]
         [:div.search
