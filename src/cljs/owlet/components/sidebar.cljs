@@ -5,8 +5,8 @@
 (defn sidebar-component []
    [:div#sidebar.col-md-3.col-lg-2.sidebar-offcanvas
      [:a {:href "/#/"}
-      [:img.logo {:src "img/owlet-logo.png"}]]
-     [:div.options
+      [:img.owlet {:src "img/owlet-logo.png"}]]
+     [:div.menu
       [:h1 "owlet"]
       [:ul.nav.nav-pills.nav-stacked
        [:li.nav-item

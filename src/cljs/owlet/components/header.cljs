@@ -9,8 +9,8 @@
       (let [img-src (atom (or (.getItem js/localStorage "custom-image-url")
                               "http://eskipaper.com/images/space-1.jpg"))]
            (fn []
-               [:div.custom-header.no-gutter
-                [:button.btn-primary
+               [:div.custom-header
+                [:button.btn-primary-outline.btn-sm
                  {:onClick
                   (fn []
                       (let [url (js/prompt "i need a url")]
@@ -19,4 +19,3 @@
                                    (.setItem js/localStorage "custom-image-url" url)
                                    (reset! img-src url)))))} "change me!"]
                 [:img {:src @img-src}]])))
-              

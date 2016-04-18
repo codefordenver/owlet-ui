@@ -18,22 +18,22 @@
       [:div.container-fluid
        [:div.row.row-offcanvas.row-offcanvas-left
         [sidebar-component]
-        [:div.col-md-9.col-lg-10.main.no-gutter
+        [:div.col-md-9.col-lg-10
          [header-component]
-         [:p.hidden-md-up
-           [:button.btn.btn-primary-outline.btn-md {:type "button"
-                                                    :data-toggle "offcanvas"
-                                                    :onClick
-                                                      (fn []
-                                                        (-> (js/$ ".row-offcanvas")
-                                                          (.toggleClass "active")))} "Menu"]]
+         [:span.hidden-md-up
+           [:button.btn-primary.btn-md {:type "button"
+                                        :data-toggle "offcanvas"
+                                        :onClick
+                                          (fn []
+                                            (-> (js/$ ".row-offcanvas")
+                                              (.toggleClass "active")))} "Menu"]]
          [:div.login
           [login-component]]
          [:div.search.pull-right
           [:input {:type "search"
                    :name "sitesearch"}]
           [:input {:type "submit"
-                   :value "Search"}]]]]]])
+                   :value "\uD83D\uDD0D"}]]]]]])
 
 (def pages
   {:main     #'main-page
