@@ -26,9 +26,9 @@
 
 (deftask build []
   (comp (speak)
-        
+
         (cljs)
-        
+
         (less)
         (sift   :move {#"less.css" "css/less.css" #"less.main.css.map" "css/less.main.css.map"})))
 
