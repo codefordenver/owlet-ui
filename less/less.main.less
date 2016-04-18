@@ -1,11 +1,22 @@
 @font-stack:    "Gill Sans", sans-serif;
 @primary-color: #333;
 
-body {
+body{
+  margin: 0 auto;
+  padding: 0 auto;
   font: 100% @font-stack;
   color: @primary-color;
 }
 
+body,html {
+  height: 100%;
+}
+
+/* workaround modal-open padding issue */
+body.modal-open {
+    padding-right:0 !important;
+}
+/*
 .left {
   position: absolute;
   background-color: #0c171b;
@@ -13,15 +24,29 @@ body {
   top: 0;
   bottom: 0;
 }
+*/
+#sidebar {
+   padding-left:0;
+   text-align: center;
+   background-color: #0c171b;
+   color: #cffffd;
+   top: 0;
+   bottom: 0;
+   height: 100%;
+}
+
+.logo {
+  width: 87%
+}
 
 .options {
+  width: auto;
   padding-top:10px;
+  margin-bottom: -9999px;
+  padding-bottom: 9999px;
+  overflow: hidden;
   background-color: #2a2b31;
   border-radius: 10px 10px 0px 0px;
-  width: 100%;
-  position: absolute;
-  top: 143px;
-  bottom:0;
   img {
     margin: 30px;
   }
@@ -33,9 +58,53 @@ body {
   }
 }
 
-.right {
-  position: relative;
-  float: right;
+/*
+ * Off Canvas at medium breakpoint
+ * --------------------------------------------------
+ */
+@media screen and (max-width: 48em) {
+
+  .row-offcanvas {
+    position: relative;
+    -webkit-transition: all 0.25s ease-out;
+    -moz-transition: all 0.25s ease-out;
+    transition: all 0.25s ease-out;
+  }
+
+  .row-offcanvas-left
+  .sidebar-offcanvas {
+    left: -33%;
+  }
+
+  .row-offcanvas-left.active {
+    left: 33%;
+  }
+
+  .sidebar-offcanvas {
+    position: absolute;
+    top: 0;
+    width: 33%;
+    height: 100%;
+  }
+}
+
+/*
+ * Off Canvas wider at sm breakpoint
+ * --------------------------------------------------
+ */
+@media screen and (max-width: 34em) {
+  .row-offcanvas-left
+  .sidebar-offcanvas {
+    left: -45%;
+  }
+
+  .row-offcanvas-left.active {
+    left: 45%;
+  }
+
+  .sidebar-offcanvas {
+    width: 45%;
+  }
 }
 
 .custom-header {
@@ -50,10 +119,14 @@ body {
   }
 }
 
-.search {
+.login {
   position: absolute;
-  top: 95px;
-  right: 30px;
+  top: 10px;
+  right: 10px;
+}
+
+.search {
+  padding: 10px;
   input {
     border-radius: 5px;
     margin-left: 10px;
@@ -64,6 +137,7 @@ body {
   float: right;
   background-color: #e6e7e8;
 }
+
 
 .no-gutter {
   margin-left: 0;

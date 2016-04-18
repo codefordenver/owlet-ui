@@ -31,8 +31,7 @@
                                      (swap! is-logged-in? not)
                                      (session/put! :user-id (.-user_id profile)))))))]
            (fn []
-               [:div.pull-right
-                [:button.btn.btn-success.btn-lg
+               [:button.btn.btn-success.btn-md
                  {:type    "button"
                   :onClick #(if-not @is-logged-in?
                                     (.show lock #js {:popup true}
@@ -50,4 +49,4 @@
                                       (session/remove! :user-id)
                                       (.removeItem js/localStorage "userToken")))}
                  (if @is-logged-in? "log-out"
-                                    "log-in")]])))
+                                    "log-in")])))

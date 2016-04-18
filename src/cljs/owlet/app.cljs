@@ -1,8 +1,9 @@
 (ns owlet.app
   (:require
-    [owlet.components.settings :refer [settings-page]]
+    [owlet.views.settings :refer [settings-page]]
     [owlet.components.header :refer [header-component]]
     [owlet.components.login :refer [login-component]]
+    [owlet.components.sidebar :refer [sidebar-component]]
     [reagent.core :as reagent :refer [atom]]
     [reagent.session :as session]
     [secretary.core :as secretary :include-macros true]
@@ -13,25 +14,26 @@
 (enable-console-print!)
 
 (defn main-page []
-      [:div.no-gutter
-       [:div.left.col-lg-2.text-center
-        [:img {:src "img/owlet-logo.png"}]
-        [:div.options
-         [:h1 "owlet"]
-         [:img {:src "img/icon1.png"}] [:br]
-         [:img {:src "img/icon2.png"}] [:br]
-         [:a {:href "/#/settings"}
-          [:img {:src "img/icon3.png"}]]]]
-       [:div.right.col-lg-10
-        [header-component]
-        [:div.search
-         [login-component]
-         [:input {
-                  :type "search"
-                  :name "sitesearch"}]
-         [:input {:type  "submit"
-                  :value "Search"}]]
-        [:div.content]]])
+     [:div.no-gutter
+      [:div.container-fluid
+       [:div.row.row-offcanvas.row-offcanvas-left
+        [sidebar-component]
+        [:div.col-md-9.col-lg-10.main.no-gutter
+         [header-component]
+         [:p.hidden-md-up
+           [:button.btn.btn-primary-outline.btn-md {:type "button"
+                                                    :data-toggle "offcanvas"
+                                                    :onClick
+                                                      (fn []
+                                                        (-> (js/$ ".row-offcanvas")
+                                                          (.toggleClass "active")))} "Menu"]]
+         [:div.login
+          [login-component]]
+         [:div.search.pull-right
+          [:input {:type "search"
+                   :name "sitesearch"}]
+          [:input {:type "submit"
+                   :value "Search"}]]]]]])
 
 (def pages
   {:main     #'main-page
