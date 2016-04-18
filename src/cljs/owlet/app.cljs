@@ -14,18 +14,26 @@
 (enable-console-print!)
 
 (defn main-page []
-      [:div.no-gutter
-       [sidebar-component]
-       [:div.right.col-lg-10
-        [header-component]
-        [:div.search
-         [login-component]
-         [:input {
-                  :type "search"
-                  :name "sitesearch"}]
-         [:input {:type  "submit"
-                  :value "Search"}]]
-        [:div.content]]])
+     [:div.no-gutter
+      [:div.container-fluid
+       [:div.row.row-offcanvas.row-offcanvas-left
+        [sidebar-component]
+        [:div.col-md-9.col-lg-10.main.no-gutter
+         [header-component]
+         [:p.hidden-md-up
+           [:button.btn.btn-primary-outline.btn-md {:type "button"
+                                                    :data-toggle "offcanvas"
+                                                    :onClick
+                                                      (fn []
+                                                        (-> (js/$ ".row-offcanvas")
+                                                          (.toggleClass "active")))} "Menu"]]
+         [:div.login
+          [login-component]]
+         [:div.search.pull-right
+          [:input {:type "search"
+                   :name "sitesearch"}]
+          [:input {:type "submit"
+                   :value "Search"}]]]]]])
 
 (def pages
   {:main     #'main-page

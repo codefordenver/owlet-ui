@@ -13,18 +13,22 @@
 (defn settings-page []
   (let [district-id (atom nil)]
        (fn []
-          [:div.no-gutter
+         [:div#main.container-fluid
+          [:div.row.row-offcanvas.row-offcanvas-left
            [sidebar-component]
-           [:div.right.col-lg-10
+           [:div.col-md-9.col-lg-10.main
             [header-component]
+            [:p.hidden-md-up
+              [:button.btn.btn-primary-outline.btn-sm {:type "button"
+                                                       :data-toggle "offcanvas"
+                                                       :value "Menu"}]]
+            [login-component]
             [:div.search
-             [login-component]
-             [:input {
-                      :type "search"
+             [:input {:type "search"
                       :name "sitesearch"}]
              [:input {:type  "submit"
                       :value "Search"}]]
-            [:div.content
+
             [:label "id"
              [:input.test {:type      "text"
                            :value     @district-id

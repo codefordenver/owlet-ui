@@ -1,5 +1,7 @@
 (ns owlet.components.header
-  (:require [reagent.core :refer [atom]]))
+  (:require
+    [owlet.components.login :refer [login-component]]
+    [reagent.core :refer [atom]]))
 
 (defonce server-url "http://localhost:3000")
 
@@ -17,3 +19,4 @@
                                    (.setItem js/localStorage "custom-image-url" url)
                                    (reset! img-src url)))))} "change me!"]
                 [:img {:src @img-src}]])))
+              
