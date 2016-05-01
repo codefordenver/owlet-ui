@@ -18,7 +18,7 @@
        [:div.search.pull-right
         [:input {:type "search"
                  :name "sitesearch"}]
-        [:input {:type "submit"
+        [:input {:type  "submit"
                  :value "\uD83D\uDD0D"}]]
        [:div.container-fluid
         [:div.row
@@ -50,7 +50,12 @@
             (events/listen
               HistoryEventType/NAVIGATE
               (fn [event]
-                  (secretary/dispatch! (.-token event))))
+                  (let [url (.-token event)]
+                       (if-not (= url "/")
+                               (if (session/get :is-logged-in?)
+                                 (secretary/dispatch! url)
+                                 (secretary/dispatch! "/"))
+                               (secretary/dispatch! url)))))
             (.setEnabled true)))
 
 ;; -------------------------
