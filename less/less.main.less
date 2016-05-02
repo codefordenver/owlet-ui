@@ -1,4 +1,4 @@
-@font-stack:    "century gothic", sans-serif;
+@font-stack: "century gothic", sans-serif;
 @primary-color: #0c171b;
 
 body {
@@ -6,20 +6,19 @@ body {
   color: @primary-color;
   font-size: 1.2rem;
   background-color: #e6e7e8;
-}
-
-body,html {
-  height: 100%;
+  display: flex;
 }
 
 #sidebar {
-   padding-left:0;
-   text-align: center;
-   background-color: #0c171b;
-   color: #cffffd;
-   top: 0;
-   bottom: 0;
-   height: 100%;
+  padding-left: 0;
+  text-align: center;
+  background-color: #0c171b;
+  color: #cffffd;
+  top: 0;
+  bottom: 0;
+  height: 100%;
+  width: 220px;
+  order: 0;
 }
 
 .owlet {
@@ -27,7 +26,7 @@ body,html {
 }
 
 .menu {
-  padding-top:10px;
+  padding-top: 10px;
   margin-bottom: -9999px;
   padding-bottom: 9999px;
   overflow: hidden;
@@ -37,24 +36,29 @@ body,html {
     margin: 30px;
   }
   h1 {
-    margin-top:10px;
+    margin-top: 10px;
     margin-bottom: 25px;
     font-size: 3em;
     font-weight: 100;
   }
 }
 
-.custom-header {
-  height:145px;
+// TODO: touch this class
+#header {
+  height: 145px;
   overflow: hidden;
+  flex-direction: row;
+  order: 1;
   img {
     height: auto;
     width: 100%;
   }
-  button {
-    position:absolute;
-    top: 113px;
-  }
+}
+
+#change-header-btn {
+  top: 113px;
+  position: absolute;
+
 }
 
 /* buttons and inputs */
@@ -82,12 +86,14 @@ button {
 
 /* main content */
 
+#main {
+  flex-direction: row;
+}
+
+// TODO: touch this class
+// affects .header & .main areas
 .content {
-  margin: 35px;
-  h1 {
-    margin-bottom: 20px;
-    font-size: 2rem;
-  }
+
 }
 
 /* no gutters! */

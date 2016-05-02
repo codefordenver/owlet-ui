@@ -29,6 +29,7 @@
                                    (do
                                      (get-user-cms-profile (.-user_id profile))
                                      (swap! is-logged-in? not)
+                                     (session/put! :is-logged-in? true)
                                      (session/put! :user-id (.-user_id profile)))))))]
            (fn []
                [:button.btn.btn-success.btn-sm
@@ -40,12 +41,14 @@
                                                  (print err)
                                                  (do
                                                    (session/put! :user-id (.-user_id profile))
+                                                   (session/put! :is-logged-in? true)
                                                    (.log js/console profile)
                                                    (swap! is-logged-in? not)
                                                    ;; save the JWT token
                                                    (.setItem js/localStorage "userToken" token)))))
                                     (do
                                       (swap! is-logged-in? not)
+                                      (session/put! :is-logged-in? false)
                                       (session/remove! :user-id)
                                       (.removeItem js/localStorage "userToken")))}
                  (if @is-logged-in? "Log out"

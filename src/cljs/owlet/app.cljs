@@ -2,7 +2,6 @@
   (:require
     [owlet.views.settings :refer [settings-page]]
     [owlet.components.header :refer [header-component]]
-    [owlet.components.login :refer [login-component]]
     [owlet.components.sidebar :refer [sidebar-component]]
     [reagent.core :as reagent :refer [atom]]
     [reagent.session :as session]
@@ -14,26 +13,18 @@
 (enable-console-print!)
 
 (defn main-page []
-     [:div.no-gutter
-      [:div.container-fluid
-       [:div.row.row-offcanvas.row-offcanvas-left
-        [sidebar-component]
-        [:div.col-md-9.col-lg-10
-         [header-component]
-         [:span.hidden-md-up
-           [:button.btn-primary.btn-md {:type "button"
-                                        :data-toggle "offcanvas"
-                                        :onClick
-                                          (fn []
-                                            (-> (js/$ ".row-offcanvas")
-                                              (.toggleClass "active")))} "Menu"]]
-         [:div.login
-          [login-component]]
-         [:div.search.pull-right
-          [:input {:type "search"
-                   :name "sitesearch"}]
-          [:input {:type "submit"
-                   :value "\uD83D\uDD0D"}]]]]]])
+      [:div.jumbotron
+       ;; TODO: refactor search into own component
+       [:div.search.pull-right
+        [:input {:type "search"
+                 :name "sitesearch"}]
+        [:input {:type  "submit"
+                 :value "\uD83D\uDD0D"}]]
+       [:div.container-fluid
+        [:div.row
+         [:div.col-lg-12
+          [:p.text-center
+           "main content area"]]]]])
 
 (def pages
   {:main     #'main-page
@@ -59,14 +50,23 @@
             (events/listen
               HistoryEventType/NAVIGATE
               (fn [event]
-                  (secretary/dispatch! (.-token event))))
+                  (let [url (.-token event)]
+                       (if-not (= url "/")
+                               (if (session/get :is-logged-in?)
+                                 (secretary/dispatch! url)
+                                 (secretary/dispatch! "/"))
+                               (secretary/dispatch! url)))))
             (.setEnabled true)))
 
 ;; -------------------------
 ;; Initialize app
 (defn mount-components []
+      (reagent/render [#'sidebar-component]
+                      (.getElementById js/document "sidebar"))
+      (reagent/render [#'header-component]
+                      (.getElementById js/document "header"))
       (reagent/render [#'page]
-                      (.getElementById js/document "mount")))
+                      (.getElementById js/document "main")))
 
 (defn init! []
       (hook-browser-navigation!)
