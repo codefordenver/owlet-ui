@@ -4,7 +4,7 @@
 
 (defn sidebar-component []
       [:div#sidebar
-       [:a {:href "/#/"}
+       [:a {:href "#/"}
         [:img.owlet {:src "img/owlet-logo.png"}]]
        ;; TODO: fix responsive menu
        [:div.menu
@@ -18,11 +18,11 @@
         [:h1 "owlet"]
         [:ul.nav.nav-pills.nav-stacked
          [:li.nav-item
-          [:a.nav-link {:href "/#/"}
+          [:a.nav-link {:href "#/"}
            [:img {:src "img/icon1.png"}]]]
          [:li.nav-item
-          [:a.nav-link {:href "/#/"}
+          [:a.nav-link {:href "#/"}
            [:img {:src "img/icon2.png"}]]]
          [:li.nav-item
-          [:a.nav-link {:href "/#/settings"}
+          [:a.nav-link {:href "#/settings"}
            [:img {:src "img/icon3.png"}]]]]]])
