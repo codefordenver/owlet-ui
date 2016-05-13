@@ -1,23 +1,37 @@
 (ns owlet.components.header
   (:require
+    [owlet.utils :refer [hydrate!]]
     [owlet.components.login :refer [login-component]]
-    [reagent.core :refer [atom]]))
+    [ajax.core :refer [POST]]
+    [reagent.session :as session]
+    [reagent.core :as reagent :refer [atom]]))
 
 (defonce server-url "http://localhost:3000")
 
-(defn header-component []
-      (let [img-src (atom (or (.getItem js/localStorage "custom-image-url")
-                              "http://eskipaper.com/images/space-1.jpg"))]
-           (fn []
-               [:div#header
-                [:div.login
-                 [login-component]]
-                [:button#change-header-btn.btn-primary-outline.btn-sm
-                 {:onClick
-                  (fn []
-                      (let [url (js/prompt "i need a url")]
-                           (when url
-                                 (do
-                                   (.setItem js/localStorage "custom-image-url" url)
-                                   (reset! img-src url)))))} "change me!"]
-                [:img {:src @img-src}]])))
+(defn header-component [& [url]]
+      (let [img-src (atom nil)
+            ;; (or url "http://eskipaper.com/images/space-2.jpg")
+            _ (println url)
+            ]
+           (reagent/create-class
+             {:reagent-render
+              (fn []
+                  [:div#header
+                   [:div.login
+                    [login-component]]
+                   [:button#change-header-btn.btn-primary-outline.btn-sm
+                    {:on-click
+                     (fn []
+                         (let [url (js/prompt "i need a url")]
+                              (when url
+                                    (POST (str server-url "/api/content/create/entry")
+                                          {:params        {:content-type  "userBgImage"
+                                                           :url           url
+                                                           :social-id     (session/get :user-id)
+                                                           :auto-publish? true}
+                                           :handler       (fn [res]
+                                                              (println res)
+                                                              (reset! img-src url))
+                                           :error-handler (fn [err]
+                                                              (println err))}))))} "change me!"]
+                   [:img {:src @img-src}]])})))

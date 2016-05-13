@@ -8,10 +8,9 @@
 
 (defonce server-url "http://localhost:3000")
 
-(def district-id
-  (atom nil))
+(def district-id (atom nil))
 
-(defn settings-page []
+(defn settings-view []
       (reagent/create-class
         {:component-did-mount
          (fn []

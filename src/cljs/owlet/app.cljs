@@ -1,47 +1,69 @@
 (ns owlet.app
   (:require
-    [owlet.views.settings :refer [settings-page]]
+    [owlet.utils :refer [hydrate! get-user-cms-profile]]
+    [owlet.views.settings :refer [settings-view]]
+    [owlet.views.welcome :refer [welcome-view]]
     [owlet.components.header :refer [header-component]]
     [owlet.components.sidebar :refer [sidebar-component]]
     [reagent.core :as reagent :refer [atom]]
     [reagent.session :as session]
     [secretary.core :as secretary :include-macros true]
     [goog.events :as events]
-    [goog.history.EventType :as HistoryEventType])
+    [goog.history.EventType :as HistoryEventType]
+    [cljsjs.auth0-lock :as Auth0Lock])
   (:import goog.History))
 
 (enable-console-print!)
 
-(defn main-page []
-      [:div.jumbotron
-       ;; TODO: refactor search into own component
-       [:div.search.pull-right
-        [:input {:type "search"
-                 :name "sitesearch"}]
-        [:input {:type  "submit"
-                 :value "\uD83D\uDD0D"}]]
-       [:div.container-fluid
-        [:div.row
-         [:div.col-lg-12
-          [:p.text-center
-           "main content area"]]]]])
+(def lock (new js/Auth0Lock
+               "aCHybcxZ3qE6nWta60psS0An1jHUlgMm"
+               "codefordenver.auth0.com"))
 
-(def pages
-  {:main     #'main-page
-   :settings #'settings-page})
+(defn main [child]
+      (let [user-token (.getItem js/localStorage "userToken")
+            user-content-types (atom {})
+            get-header-content-type (fn [coll]
+                                        (let [f (filterv #(= (get-in % [:sys :contentType :sys :id]) "userBgImage") coll)
+                                              _ (println f)]
+                                             (first f)))]
+           (reagent/create-class
+             {:component-did-mount
+              (fn []
+                  (when user-token
+                        (.getProfile lock user-token
+                                     (fn [err profile]
+                                         (if-not (nil? err)
+                                                 (let [user-id (.-user_id profile)]
+                                                      (session/put! :user-id user-id)
+                                                      (get-user-cms-profile user-id
+                                                                            (fn [e]
+                                                                                (hydrate! (:sid e) #(reset! user-content-types %))))
+                                                      (session/put! :is-logged-in? true))))))
+                  (.log js/console "did-mount"))
+              :reagent-render
+              (fn []
+                  [:div#main
+                   [sidebar-component (get-header-content-type @user-content-types)]
+                   [:div.content
+                    [header-component]
+                    [child]]])})))
 
-(defn page []
-      [(pages (session/get :page))])
+(def views
+  {:main     (main welcome-view)
+   :settings (main settings-view)})
+
+(defn view []
+      [(views (session/get :view))])
 
 ;; -------------------------
 ;; Routes
 (secretary/set-config! :prefix "#")
 
 (secretary/defroute "/" []
-                    (session/put! :page :main))
+                    (session/put! :view :main))
 
 (secretary/defroute "/settings" []
-                    (session/put! :page :settings))
+                    (session/put! :view :settings))
 ;; -------------------------
 ;; History
 ;; must be called after routes have been defined
@@ -61,12 +83,8 @@
 ;; -------------------------
 ;; Initialize app
 (defn mount-components []
-      (reagent/render [#'sidebar-component]
-                      (.getElementById js/document "sidebar"))
-      (reagent/render [#'header-component]
-                      (.getElementById js/document "header"))
-      (reagent/render [#'page]
-                      (.getElementById js/document "main")))
+      (reagent/render [#'view]
+                      (.getElementById js/document "mount")))
 
 (defn init! []
       (hook-browser-navigation!)

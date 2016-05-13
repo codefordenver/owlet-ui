@@ -6,7 +6,6 @@ body {
   color: @primary-color;
   font-size: 1.2rem;
   background-color: #e6e7e8;
-  display: flex;
 }
 
 #sidebar {
@@ -18,10 +17,9 @@ body {
   bottom: 0;
   height: 100%;
   width: 220px;
-  order: 0;
 }
 
-.owlet {
+img.owlet {
   width: 87%
 }
 
@@ -47,8 +45,6 @@ body {
 #header {
   height: 145px;
   overflow: hidden;
-  flex-direction: row;
-  order: 1;
   img {
     height: auto;
     width: 100%;
@@ -87,13 +83,12 @@ button {
 /* main content */
 
 #main {
-  flex-direction: row;
+  display: flex;
 }
 
-// TODO: touch this class
-// affects .header & .main areas
 .content {
-
+  flex-direction: column;
+  width: 100%;
 }
 
 /* no gutters! */

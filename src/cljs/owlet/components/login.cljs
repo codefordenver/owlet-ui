@@ -27,7 +27,7 @@
            (fn []
                [:button.btn.btn-success.btn-sm
                 {:type    "button"
-                 :onClick #(if-not @is-logged-in?
+                 :on-click #(if-not @is-logged-in?
                                    (.show lock #js {:popup true}
                                           (fn [err profile token]
                                               (if (not (nil? err))
