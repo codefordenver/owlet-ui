@@ -20,3 +20,7 @@ Then evaluate this at the repl:
 Setting up a watcher on an atom:
 
 `(add-watch my-atom :logger #(-> %4 clj->js js/console.log))`
+
+## Building Static Assets for Deployment:
+
+`boot production build target`
