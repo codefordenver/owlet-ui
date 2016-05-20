@@ -8,11 +8,13 @@
 
 (defonce server-url "http://localhost:3000")
 
-(defn header-component [& [url]]
-      (let [img-src (atom nil)
-            ;; (or url "http://eskipaper.com/images/space-2.jpg")
-            _ (println url)
-            ]
+(defn header-component []
+      (let [get-content-type-id #(get-in % [:sys :contentType :sys :id])
+            filter-user-bg-image (fn [coll]
+                                     (last (filterv #(= (get-content-type-id %) "userBgImage") coll)))
+            img-src (atom (or (-> (filter-user-bg-image (session/get :content-types))
+                                  (get-in [:fields :url]))
+                              "http://eskipaper.com/images/space-2.jpg"))]
            (reagent/create-class
              {:reagent-render
               (fn []

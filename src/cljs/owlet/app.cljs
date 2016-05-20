@@ -1,11 +1,11 @@
-(ns owlet.app
+(ns ^:figwheel-always owlet.app
   (:require
     [owlet.utils :refer [hydrate! get-user-cms-profile]]
     [owlet.views.settings :refer [settings-view]]
     [owlet.views.welcome :refer [welcome-view]]
     [owlet.components.header :refer [header-component]]
     [owlet.components.sidebar :refer [sidebar-component]]
-    [reagent.core :as reagent :refer [atom]]
+    [reagent.core :as reagent]
     [reagent.session :as session]
     [secretary.core :as secretary :include-macros true]
     [goog.events :as events]
@@ -19,31 +19,36 @@
                "aCHybcxZ3qE6nWta60psS0An1jHUlgMm"
                "codefordenver.auth0.com"))
 
+(def app-state (reagent/atom {:user
+                              {:is-user-logged-in? false}}))
+#_(when user-token
+        (do
+          (println "got token")
+          (.getProfile lock user-token
+                       (fn [err profile]
+                           (println "got here 1")
+                           (if-not (nil? err)
+                                   (let [user-id (.-user_id profile)]
+                                        (session/put! :user-id user-id)
+                                        (get-user-cms-profile user-id
+                                                              (fn [e]
+                                                                  (.log js/console e)
+                                                                  (hydrate! (:sid e) #(reset! user-content-types %))))
+                                        (session/put! :is-logged-in? true)))))
+          [:p @user-content-types]))
+;; (hydrate! "facebook|10156905787420019")
+
 (defn main [child]
       (let [user-token (.getItem js/localStorage "userToken")
-            user-content-types (atom {})
-            get-header-content-type (fn [coll]
-                                        (let [f (filterv #(= (get-in % [:sys :contentType :sys :id]) "userBgImage") coll)
-                                              _ (println f)]
-                                             (first f)))]
+            user-content-types (reagent/atom {})]
            (reagent/create-class
              {:component-did-mount
               (fn []
-                  (when user-token
-                        (.getProfile lock user-token
-                                     (fn [err profile]
-                                         (if-not (nil? err)
-                                                 (let [user-id (.-user_id profile)]
-                                                      (session/put! :user-id user-id)
-                                                      (get-user-cms-profile user-id
-                                                                            (fn [e]
-                                                                                (hydrate! (:sid e) #(reset! user-content-types %))))
-                                                      (session/put! :is-logged-in? true))))))
-                  (.log js/console "did-mount"))
+                  (hydrate! "facebook|10156905787420019"))
               :reagent-render
               (fn []
                   [:div#main
-                   [sidebar-component (get-header-content-type @user-content-types)]
+                   [sidebar-component]
                    [:div.content
                     [header-component]
                     [child]]])})))

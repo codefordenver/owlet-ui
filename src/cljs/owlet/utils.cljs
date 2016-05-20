@@ -19,5 +19,6 @@
            {:response-format :json
             :keywords?       true
             :handler         (fn [res]
+                                 (session/put! :content-types res)
                                  (when cb
                                        (cb res)))}))

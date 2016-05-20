@@ -14,7 +14,8 @@
                  [reagent-utils "0.1.7"]
                  [reagent-forms "0.5.22"]
                  [secretary "1.2.3"]
-                 [kioo "0.4.2"]])
+                 [kioo "0.4.2"]
+                 [re-frame "0.7.0"]])
 
 (require
  '[adzerk.boot-cljs      :refer [cljs]]
@@ -46,7 +47,7 @@
 
 (deftask development []
   (task-options! cljs {:optimizations :none :source-map true}
-                 reload {:on-jsload   'owlet.app/mount-components}
+                 ;;reload {:on-jsload   'owlet.app/mount-components}
                  less   {:source-map  true})
   identity)
 
