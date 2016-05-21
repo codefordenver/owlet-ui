@@ -1,6 +1,6 @@
 (ns owlet.utils
   (:require
-    [ajax.core :refer [GET]]
+    [ajax.core :refer [GET POST]]
     [reagent.session :as session]))
 
 (defonce server-url "http://localhost:3000")                ;; "http://owlet-cms.apps.aterial.org"
@@ -19,6 +19,9 @@
            {:response-format :json
             :keywords?       true
             :handler         (fn [res]
-                                 (session/put! :content-types res)
                                  (when cb
                                        (cb res)))}))
+
+(defn CONTENTFUL-CREATE [endpoint opts]
+      (POST (str server-url endpoint)
+            opts))

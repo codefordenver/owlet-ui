@@ -10,6 +10,6 @@
        [:div.container-fluid
         [:div.row
          [:div.col-lg-12
-          [:p "welcome"]
+          [:h1 "Welcome"]
           [:p.text-center
            "main content area"]]]]])
