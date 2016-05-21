@@ -47,7 +47,7 @@
 
 (deftask development []
   (task-options! cljs {:optimizations :none :source-map true}
-                 ;;reload {:on-jsload   'owlet.app/mount-components}
+                 reload {:on-jsload   'owlet.app/mount-components}
                  less   {:source-map  true})
   identity)
 

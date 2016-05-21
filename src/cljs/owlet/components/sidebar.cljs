@@ -16,7 +16,7 @@
         [:h1 "owlet"]
         [:ul.nav.nav-pills.nav-stacked
          [:li.nav-item
-          [:a.nav-link {:href "#/"}
+          [:a.nav-link {:href "#/library"}
            [:img {:src "img/icon1.png"}]]]
          [:li.nav-item
           [:a.nav-link {:href "#/"}
