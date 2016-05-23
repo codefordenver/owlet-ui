@@ -39,10 +39,10 @@
 (re-frame/register-handler
   :update-social-id!
   (re-frame/path [:user])
-  (fn [db [_ val]]
+  (fn [db [_ sid]]
       (let []
-           (hydrate! val #(re-frame/dispatch-sync [:set-user-background-image! %]))
-           (assoc db :social-id val))))
+           (hydrate! sid #(re-frame/dispatch-sync [:set-user-background-image! %]))
+           (assoc db :social-id sid))))
 
 (re-frame/register-handler
   :initialise-db!
@@ -51,14 +51,12 @@
 
 (re-frame/register-handler
   :set-user-background-image!
-  (re-frame/path [:user :background-image])
+  (re-frame/path [:user :background-image-entry])
   (fn [db [_ coll]]
       (let [filter-user-bg-image (fn [c]
                                      (filterv #(= (get-in % [:sys :contentType :sys :id])
                                                   "userBgImage") c))]
-           (-> (filter-user-bg-image coll)
-               last
-               (get-in [:fields :url])))))
+           (last (filter-user-bg-image coll)))))
 
 ;; -- Subscription Handlers ---------------------------------------------------
 
@@ -75,7 +73,7 @@
 (re-frame/register-sub
   :user-has-background-image?
   (fn [db]
-      (reaction (get-in @db [:user :background-image]))))
+      (reaction (get-in @db [:user :background-image-entry]))))
 
 ;; -- Reagent/React Componentry -----------------------------------------------
 
