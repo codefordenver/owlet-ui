@@ -46,7 +46,9 @@
   identity)
 
 (deftask development []
-  (task-options! cljs {:optimizations :none :source-map true}
+  (task-options! cljs {:optimizations :none
+                       :source-map true
+                       :closure-defines {"goog.DEBUG" false}}
                  reload {:on-jsload   'owlet.app/mount-components}
                  less   {:source-map  true})
   identity)

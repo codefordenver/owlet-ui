@@ -1,9 +1,6 @@
 (ns owlet.components.login
   (:require
-    [owlet.utils :refer [get-user-cms-profile]]
-    [reagent.core :refer [atom]]
     [reagent.session :as session]
-    [ajax.core :refer [PUT]]
     [cljsjs.auth0-lock :as Auth0Lock]
     [secretary.core :as secretary]
     [re-frame.core :as re-frame]))
@@ -12,27 +9,33 @@
                "aCHybcxZ3qE6nWta60psS0An1jHUlgMm"
                "codefordenver.auth0.com"))
 
+(defn login-button []
+      [:button.btn.btn-success.btn-sm
+       {:type     "button"
+        :on-click #(.show lock #js {:popup true}
+                              (fn [err profile token]
+                                  (if (not (nil? err))
+                                    (.log js/console err)
+                                    (do
+                                      (re-frame/dispatch [:user-has-logged-in-out! true])
+                                      (re-frame/dispatch [:update-social-id! (.-user_id profile)])
+                                      ;; save the JWT token
+                                      (.setItem js/localStorage "userToken" token)))))}
+       "Log in"])
+
+(defn logout-button []
+      [:button.btn.btn-success.btn-sm
+       {:type     "button"
+        :on-click #(do
+                    (re-frame/dispatch [:user-has-logged-in-out! false])
+                    (session/remove! :user-id)
+                    (.removeItem js/localStorage "userToken")
+                    (secretary/dispatch! "/"))}
+       "Log out"])
+
 (defn login-component []
-      (let [state (re-frame/subscribe [:is-user-logged-in?])]
+      (let [is-user-logged-in? (re-frame/subscribe [:is-user-logged-in?])]
            (fn []
-               [:button.btn.btn-success.btn-sm
-                {:type     "button"
-                 :on-click (fn []
-                               (if @state
-                                 (do
-                                   (re-frame/dispatch [:user-has-logged-in-out! false])
-                                   (re-frame/dispatch [:update-social-id! nil])
-                                   (session/remove! :user-id)
-                                   (.removeItem js/localStorage "userToken")
-                                   (secretary/dispatch! "/"))
-                                 (.show lock #js {:popup true}
-                                        (fn [err profile token]
-                                            (if (not (nil? err))
-                                              (.log js/console err)
-                                              (do
-                                                (re-frame/dispatch [:user-has-logged-in-out! true])
-                                                (re-frame/dispatch [:update-social-id! (.-user_id profile)])
-                                                ;; save the JWT token
-                                                (.setItem js/localStorage "userToken" token)))))))}
-                (if @state "Log out"
-                           "Log in")])))
+               (if @is-user-logged-in?
+                 [logout-button]
+                 [login-button]))))
