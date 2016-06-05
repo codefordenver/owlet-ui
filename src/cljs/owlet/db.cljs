@@ -5,4 +5,5 @@
   {:user {:logged-in?       false
           :social-id        nil
           :content-entries  []
-          :background-image nil}})
+          :background-image {}}
+   :app  {:initialized? false}})
