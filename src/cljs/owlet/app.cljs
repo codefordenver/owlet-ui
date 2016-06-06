@@ -1,7 +1,6 @@
 (ns owlet.app
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require
-    [owlet.utils :refer [hydrate! get-user-cms-profile]]
     [owlet.views.settings :refer [settings-view]]
     [owlet.views.welcome :refer [welcome-view]]
     [owlet.views.library :refer [library-view]]
@@ -43,8 +42,7 @@
                                        (do
                                          (re-frame/dispatch [:user-has-logged-in-out! true])
                                          (re-frame/dispatch [:update-social-id! (.-user_id profile)])
-                                         (session/put! :user-id (.-user_id profile))
-                                         (hydrate! (.-user_id profile) #(re-frame/dispatch [:set-user-background-image! %]))))))))
+                                         (session/put! :user-id (.-user_id profile))))))))
               :reagent-render
               (fn []
                   [:div#main
@@ -92,15 +90,17 @@
                                (secretary/dispatch! url)))))
             (.setEnabled true)))
 
-;; -- Init App --------------------------------------------
+;; -- Init App ---------------------------------------------
 
 (defn mount-components []
       (reagent/render [#'view]
                       (.getElementById js/document "mount")))
 
-(defn ^:export init! []
+(defn init []
+      ;(when-not @(re-frame/subscribe [:initialized?])
+      ;          (re-frame/dispatch [:initialise-db!]))
       (hook-browser-navigation!)
       (re-frame/dispatch [:initialise-db!])
       (mount-components))
 
-(init!)
+(init)

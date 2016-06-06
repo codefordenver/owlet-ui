@@ -14,14 +14,6 @@
                                  (when cb
                                        (cb res)))}))
 
-(defn hydrate! [social-id & [cb]]
-      (GET (str server-url "/api/content/get/entries?social-id=" social-id)
-           {:response-format :json
-            :keywords?       true
-            :handler         (fn [res]
-                                 (when cb
-                                       (cb res)))}))
-
 (defn CONTENTFUL-CREATE [endpoint opts]
       (POST (str server-url endpoint)
             opts))

@@ -7,6 +7,10 @@
 - run $ boot dev
 - visit localhost:4000
 
+## DevCards server:
+
+`boot cards`
+
 ## ClojureScript repl:
 
 `boot repl --client`

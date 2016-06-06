@@ -1,8 +1,19 @@
 (ns owlet.handlers
-  (:require [re-frame.core :as re-frame]
-            [owlet.db :as db]))
+  (:require-macros [cljs-log.core :refer [debug info warn severe]])
+  (:require [owlet.db :as db]
+            [owlet.utils :refer [CONTENTFUL-CREATE CONTENTFUL-UPDATE]]
+            [reagent.session :as session]
+            [ajax.core :refer [GET]]
+            [re-frame.core :as re-frame]))
+
+(defonce server-url "http://localhost:3000")
 
 ;; -- Event Handlers ----------------------------------------------------------
+
+(re-frame/register-handler
+  :initialise-db!
+  (fn [_ _]
+      (assoc db/default-db :initialized? true)))
 
 (re-frame/register-handler
   :user-has-logged-in-out!
@@ -14,12 +25,19 @@
   :update-social-id!
   (re-frame/path [:user])
   (fn [db [_ sid]]
+      (GET (str server-url "/api/content/get/entries?social-id=" sid)
+           {:response-format :json
+            :keywords?       true
+            :handler         #(re-frame/dispatch [:process-fetch-entries-success! %1])
+            :error-handler   #(println %)})
       (assoc db :social-id sid)))
 
 (re-frame/register-handler
-  :initialise-db!
-  (fn [_ _]
-      db/default-db))
+  :process-fetch-entries-success!
+  (re-frame/path [:user :content-entries])
+  (fn [db [_ entries]]
+      (re-frame/dispatch [:set-user-background-image! entries])
+      (conj db entries)))
 
 (re-frame/register-handler
   :set-user-background-image!
@@ -29,3 +47,33 @@
                                      (filterv #(= (get-in % [:sys :contentType :sys :id])
                                                   "userBgImage") c))]
            (last (filter-user-bg-image coll)))))
+
+(re-frame/register-handler
+  :update-user-background!
+  (fn [db [_ url]]
+      (fn []
+          ;(info :test url)
+          #_(if
+            (CONTENTFUL-UPDATE
+              "/api/content/update/entry"
+              {:params        {:content-type "userBgImage"
+                               :fields       {:url      {"en-US" url}
+                                              :socialid {"en-US" (session/get :user-id)}}
+                               :entry-id     entry-id}
+               :handler       (fn [res]
+                                  (println res))
+               :error-handler (fn [err]
+                                  (println err))})
+            (CONTENTFUL-CREATE
+              "/api/content/create/entry"
+              {:params        {:content-type  "userBgImage"
+                               :fields        {:url      {"en-US" url}
+                                               :socialid {"en-US" (session/get :user-id)}}
+                               :auto-publish? true}
+               :handler       (fn [res]
+                                  (println res))
+               :error-handler (fn [err]
+                                  (println err))}))
+          (identity db))))
+
+

@@ -13,14 +13,14 @@
       [:button.btn.btn-success.btn-sm
        {:type     "button"
         :on-click #(.show lock #js {:popup true}
-                              (fn [err profile token]
-                                  (if (not (nil? err))
-                                    (.log js/console err)
-                                    (do
-                                      (re-frame/dispatch [:user-has-logged-in-out! true])
-                                      (re-frame/dispatch [:update-social-id! (.-user_id profile)])
-                                      ;; save the JWT token
-                                      (.setItem js/localStorage "userToken" token)))))}
+                          (fn [err profile token]
+                              (if (not (nil? err))
+                                (.log js/console err)
+                                (do
+                                  (re-frame/dispatch [:user-has-logged-in-out! true])
+                                  (re-frame/dispatch [:update-social-id! (.-user_id profile)])
+                                  ;; save the JWT token
+                                  (.setItem js/localStorage "userToken" token)))))}
        "Log in"])
 
 (defn logout-button []

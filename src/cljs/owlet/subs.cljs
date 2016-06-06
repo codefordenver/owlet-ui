@@ -18,3 +18,8 @@
   :user-has-background-image?
   (fn [db]
       (reaction (get-in @db [:user :background-image-entry]))))
+
+(re-frame/register-sub
+  :initialized?
+  (fn [db _]
+      (reaction (get-in @db [:app :initialized?]))))
