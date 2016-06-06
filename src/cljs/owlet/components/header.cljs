@@ -1,23 +1,27 @@
 (ns owlet.components.header
   (:require
     [owlet.components.login :refer [login-component]]
-    [reagent.core :refer [atom]]))
-
-(defonce server-url "http://localhost:3000")
+    [re-frame.core :as re-frame]))
 
 (defn header-component []
-      (let [img-src (atom (or (.getItem js/localStorage "custom-image-url")
-                              "http://eskipaper.com/images/space-1.jpg"))]
+      (let [user-bg-image (re-frame/subscribe [:user-has-background-image?])
+            is-user-logged-in? (re-frame/subscribe [:is-user-logged-in?])]
            (fn []
                [:div#header
                 [:div.login
                  [login-component]]
-                [:button#change-header-btn.btn-primary-outline.btn-sm
-                 {:onClick
-                  (fn []
-                      (let [url (js/prompt "i need a url")]
-                           (when url
-                                 (do
-                                   (.setItem js/localStorage "custom-image-url" url)
-                                   (reset! img-src url)))))} "change me!"]
-                [:img {:src @img-src}]])))
+                (let [entry-id (get-in @user-bg-image [:sys :id])]
+                     [:button#change-header-btn.btn-primary-outline.btn-sm
+                      {:type     "button"
+                       :style    {:display (if @is-user-logged-in?
+                                             "block"
+                                             "none")}
+                       :on-click (fn [e]
+                                     (.preventDefault e)
+                                     (let [url (js/prompt "i need a url")]
+                                          (when url
+                                                (re-frame/dispatch [:update-user-background! url]))))
+
+                       } "change me!"])
+                (let [src (get-in @user-bg-image [:fields :url :en-US])]
+                     [:img {:src src}])])))

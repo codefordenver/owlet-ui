@@ -1,75 +1,106 @@
 (ns owlet.app
+  (:require-macros [reagent.ratom :refer [reaction]])
   (:require
-    [owlet.views.settings :refer [settings-page]]
+    [owlet.views.settings :refer [settings-view]]
+    [owlet.views.welcome :refer [welcome-view]]
+    [owlet.views.library :refer [library-view]]
+    [owlet.config :as config]
+    [owlet.handlers]
+    [owlet.subs]
     [owlet.components.header :refer [header-component]]
     [owlet.components.sidebar :refer [sidebar-component]]
-    [reagent.core :as reagent :refer [atom]]
+    [reagent.core :as reagent]
     [reagent.session :as session]
     [secretary.core :as secretary :include-macros true]
     [goog.events :as events]
-    [goog.history.EventType :as HistoryEventType])
+    [goog.history.EventType :as HistoryEventType]
+    [cljsjs.auth0-lock :as Auth0Lock]
+    [re-frame.core :as re-frame])
   (:import goog.History))
 
-(enable-console-print!)
+(when config/debug?
+      (println "__dev-mode__"))
 
-(defn main-page []
-      [:div.jumbotron
-       ;; TODO: refactor search into own component
-       [:div.search.pull-right
-        [:input {:type "search"
-                 :name "sitesearch"}]
-        [:input {:type  "submit"
-                 :value "\uD83D\uDD0D"}]]
-       [:div.container-fluid
-        [:div.row
-         [:div.col-lg-12
-          [:p.text-center
-           "main content area"]]]]])
+(def lock (new js/Auth0Lock
+               "aCHybcxZ3qE6nWta60psS0An1jHUlgMm"
+               "codefordenver.auth0.com"))
 
-(def pages
-  {:main     #'main-page
-   :settings #'settings-page})
+;; -- Reagent/React Componentry -----------------------------------------------
 
-(defn page []
-      [(pages (session/get :page))])
+(defn main [child]
+      (let [user-token (.getItem js/localStorage "userToken")
+            user-logged-in? (re-frame/subscribe [:is-user-logged-in?])
+            sid (session/get :user-id)]
+           (reagent/create-class
+             {:component-did-mount
+              (fn []
+                  (if (and user-token (not @user-logged-in?))
+                    (.getProfile lock user-token
+                                 (fn [err profile]
+                                     (if (not (nil? err))
+                                       (.log js/console err)
+                                       (do
+                                         (re-frame/dispatch [:user-has-logged-in-out! true])
+                                         (re-frame/dispatch [:update-social-id! (.-user_id profile)])
+                                         (session/put! :user-id (.-user_id profile))))))))
+              :reagent-render
+              (fn []
+                  [:div#main
+                   [sidebar-component]
+                   [:div.content
+                    [header-component]
+                    [child]]])})))
 
-;; -------------------------
-;; Routes
+(def views
+  {:main     (main welcome-view)
+   :library  (main library-view)
+   :settings (main settings-view)})
+
+(defn view []
+      [(views (session/get :view))])
+
+;; -- Routes -----------------------------------------------
+
 (secretary/set-config! :prefix "#")
 
 (secretary/defroute "/" []
-                    (session/put! :page :main))
+                    (session/put! :view :main))
+
+(secretary/defroute "/library" []
+                    (session/put! :view :library))
 
 (secretary/defroute "/settings" []
-                    (session/put! :page :settings))
-;; -------------------------
-;; History
-;; must be called after routes have been defined
-(defn hook-browser-navigation! []
+                    (session/put! :view :settings))
+
+;; -- History ----------------------------------------------
+
+(defn hook-browser-navigation!
+      "must be called after routes have been defined"
+      []
       (doto (History.)
             (events/listen
               HistoryEventType/NAVIGATE
               (fn [event]
-                  (let [url (.-token event)]
+                  (let [url (.-token event)
+                        user-logged-in? (re-frame/subscribe [:is-user-logged-in?])]
                        (if-not (= url "/")
-                               (if (session/get :is-logged-in?)
+                               (if @user-logged-in?
                                  (secretary/dispatch! url)
-                                 (secretary/dispatch! "/"))
+                                 (secretary/dispatch! "#/"))
                                (secretary/dispatch! url)))))
             (.setEnabled true)))
 
-;; -------------------------
-;; Initialize app
-(defn mount-components []
-      (reagent/render [#'sidebar-component]
-                      (.getElementById js/document "sidebar"))
-      (reagent/render [#'header-component]
-                      (.getElementById js/document "header"))
-      (reagent/render [#'page]
-                      (.getElementById js/document "main")))
+;; -- Init App ---------------------------------------------
 
-(defn init! []
+(defn mount-components []
+      (reagent/render [#'view]
+                      (.getElementById js/document "mount")))
+
+(defn init []
+      ;(when-not @(re-frame/subscribe [:initialized?])
+      ;          (re-frame/dispatch [:initialise-db!]))
       (hook-browser-navigation!)
+      (re-frame/dispatch [:initialise-db!])
       (mount-components))
 
-(init!)
+(init)

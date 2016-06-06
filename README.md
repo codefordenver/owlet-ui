@@ -7,6 +7,10 @@
 - run $ boot dev
 - visit localhost:4000
 
+## DevCards server:
+
+`boot cards`
+
 ## ClojureScript repl:
 
 `boot repl --client`
@@ -20,3 +24,7 @@ Then evaluate this at the repl:
 Setting up a watcher on an atom:
 
 `(add-watch my-atom :logger #(-> %4 clj->js js/console.log))`
+
+## Building Static Assets for Deployment:
+
+`boot production build target`

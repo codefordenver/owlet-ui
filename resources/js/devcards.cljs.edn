@@ -1,0 +1,4 @@
+{:require          [owlet-devcards.app]
+ :compiler-options {:devcards   true
+                    :asset-path "js/devcards.out"}
+ :init-fns         [owlet-devcards.app/init]}
