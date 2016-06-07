@@ -10,7 +10,7 @@
                  [deraen/boot-less "0.2.1" :scope "test"]
                  [cljsjs/auth0-lock "8.1.5-1"]
                  [cljs-ajax "0.5.4"]
-                 [reagent "0.6.0-alpha2"]
+                 [reagent "0.5.1"]
                  [reagent-utils "0.1.7"]
                  [reagent-forms "0.5.22"]
                  [secretary "1.2.3"]
