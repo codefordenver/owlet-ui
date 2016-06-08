@@ -15,9 +15,10 @@
                  [reagent-forms "0.5.22"]
                  [secretary "1.2.3"]
                  [kioo "0.4.2"]
+                 [cljsjs/jquery "2.2.2-0"]
                  [re-frame "0.7.0"]
                  [cljs-log "0.2.2"]
-                 [devcards "0.2.1-7"]])
+                 [devcards "0.2.0-8"]])
 
 (require
  '[adzerk.boot-cljs      :refer [cljs]]

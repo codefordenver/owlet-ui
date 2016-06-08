@@ -1,5 +1,6 @@
 (ns owlet.components.sidebar
   (:require
+    [cljsjs.jquery]
     [reagent.core :refer [atom]]))
 
 (defn sidebar-component []

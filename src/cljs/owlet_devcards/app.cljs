@@ -1,15 +1,20 @@
 (ns owlet-devcards.app
   (:require [devcards.core]
             [reagent.core :as reagent]
-            )
+            [owlet.views.library :refer [library-view]]
+            [owlet.components.sidebar :refer [sidebar-component]])
   (:require-macros [devcards.core :as dc
                     :refer [defcard defcard-rg]]))
 
 (enable-console-print!)
 
-(defcard-rg rg-example-2
-            "some docs"
-            [:div "this works"])
+(defcard-rg library-view
+            "**library view**"
+            [library-view])
+
+(defcard-rg sidebar-component
+            "**our sidebar component**"
+            [sidebar-component])
 
 (defn init []
       (dc/start-devcard-ui!))
