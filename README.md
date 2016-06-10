@@ -1,30 +1,33 @@
 # owlet-ui
 
+**Front-end for owlet curriculum project**
+
 ## Development:
 
-- install boot from http://boot-clj.com/
-- cd into owlet-ui/ directory
-- run $ boot dev
-- visit localhost:4000
+- [install boot](http://boot-clj.com/)
+- `cd` into `owlet-ui` directory
+- `$ boot dev`
+- visit `localhost:4000`
 
-## DevCards server:
+## [Devcards](http://rigsomelight.com/devcards/#!/devdemos.core) Server:
 
-`boot cards`
+- `$ boot cards`
 
-## ClojureScript repl:
+- visit: **http://localhost:5000/cards.html**
 
-`boot repl --client`
+## ClojureScript REPL:
 
-Then evaluate this at the repl:
+- `$ boot repl --client`
 
+- Then evaluate this at the repl:
 `(start-repl)`
 
-## Dev notes:
+## Dev Notes:
 
-Setting up a watcher on an atom:
+- Setting up a watcher on an atom:
 
 `(add-watch my-atom :logger #(-> %4 clj->js js/console.log))`
 
 ## Building Static Assets for Deployment:
 
-`boot production build target`
+- `$ boot production build target`
