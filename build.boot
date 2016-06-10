@@ -58,7 +58,6 @@
 (deftask devcard-development []
              (task-options! cljs {:optimizations :none
                                   :source-map true
-                                  :compiler-options {:devcards true}
                                   :closure-defines {"goog.DEBUG" false}}
                             reload {:on-jsload   'owlet-devcards.app/init}
                             less   {:source-map  true})
