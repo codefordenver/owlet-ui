@@ -1,3 +1,5 @@
+/*.log
 /target
-/.nrepl-port
-.nrepl-history
+/*-init.clj
+/resources/public/js/compiled
+out
