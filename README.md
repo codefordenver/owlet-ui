@@ -1,33 +1,58 @@
 # owlet-ui
 
-**Front-end for owlet curriculum project**
+A [re-frame](https://github.com/Day8/re-frame) application designed to ... well, that part is up to you.
 
-## Development:
+## Development Mode
 
-- [install boot](http://boot-clj.com/)
-- `cd` into `owlet-ui` directory
-- `$ boot dev`
-- visit `localhost:4000`
+### Compile css:
 
-## [Devcards](http://rigsomelight.com/devcards/#!/devdemos.core) Server:
+Compile css file once.
 
-- `$ boot cards`
+```
+lein less once
+```
 
-- visit: **http://localhost:5000/cards.html**
+Automatically recompile css file on change.
 
-## ClojureScript REPL:
+```
+lein less auto
+```
 
-- `$ boot repl --client`
+### Run application:
 
-- Then evaluate this at the repl:
-`(start-repl)`
+```
+lein clean
+rlwrap lein figwheel dev
+```
 
-## Dev Notes:
+Figwheel will automatically push cljs changes to the browser.
 
-- Setting up a watcher on an atom:
+Wait a bit, then browse to [http://localhost:3449](http://localhost:3449).
 
-`(add-watch my-atom :logger #(-> %4 clj->js js/console.log))`
+### Run tests:
 
-## Building Static Assets for Deployment:
+```
+lein clean
+lein doo phantom test once
+```
 
-- `$ boot production build target`
+The above command assumes that you have [phantomjs](https://www.npmjs.com/package/phantomjs) installed. However, please note that [doo](https://github.com/bensu/doo) can be configured to run cljs.test in many other JS environments (chrome, ie, safari, opera, slimer, node, rhino, or nashorn).
+
+## Production Build
+
+```
+lein clean
+lein uberjar
+```
+
+That should compile the clojurescript code first, and then create the standalone jar.
+
+When you run the jar you can set the port the ring server will use by setting the environment variable PORT.
+If it's not set, it will run on port 3000 by default.
+
+If you only want to compile the clojurescript code:
+
+```
+lein clean
+lein cljsbuild once min
+```
