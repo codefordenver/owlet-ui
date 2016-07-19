@@ -1,14 +1,10 @@
 (ns owlet.handlers
-  (:require-macros [cljs-log.core :refer [debug info warn severe]])
   (:require [owlet.db :as db]
+            [owlet.config :as config]
             [owlet.utils :refer [CONTENTFUL-CREATE CONTENTFUL-UPDATE]]
             [reagent.session :as session]
             [ajax.core :refer [GET]]
             [re-frame.core :as re-frame]))
-
-(defonce server-url "http://localhost:3000")
-
-;; -- Event Handlers ----------------------------------------------------------
 
 (re-frame/register-handler
   :initialise-db!
@@ -25,7 +21,7 @@
   :update-social-id!
   (re-frame/path [:user])
   (fn [db [_ sid]]
-      (GET (str server-url "/api/content/get/entries?social-id=" sid)
+      (GET (str config/server-url "/api/content/get/entries?social-id=" sid)
            {:response-format :json
             :keywords?       true
             :handler         #(re-frame/dispatch [:process-fetch-entries-success! %1])
@@ -52,7 +48,6 @@
   :update-user-background!
   (fn [db [_ url]]
       (fn []
-          ;(info :test url)
           #_(if
             (CONTENTFUL-UPDATE
               "/api/content/update/entry"

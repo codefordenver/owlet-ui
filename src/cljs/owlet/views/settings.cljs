@@ -2,12 +2,11 @@
   (:require
     [owlet.utils :refer [get-user-cms-profile]]
     [reagent.validation :as validation]
+    [owlet.config :as config]
     [reagent.session :as session]
     [reagent.core :as reagent :refer [atom]]
     [ajax.core :refer [PUT]]
     [re-frame.core :as re-frame]))
-
-(defonce server-url "http://localhost:3000")
 
 (def district-id (atom nil))
 
@@ -38,7 +37,7 @@
                                       :value    "Enter"
                                       :on-click #(when (and (validation/has-value? (session/get :user-id))
                                                             (validation/has-value? @district-id))
-                                                       (PUT (str server-url "/api/users-district-id")
+                                                       (PUT (str config/server-url "/api/users-district-id")
                                                             {:params  {:district-id @district-id
                                                                        :user-id     (session/get :user-id)}
                                                              :handler (fn [res]
