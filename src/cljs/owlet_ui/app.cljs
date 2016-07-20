@@ -1,19 +1,11 @@
 (ns owlet-ui.app
     (:require [re-frame.core :as re-frame]
+              [owlet-ui.config :as config]
               [owlet-ui.components.sidebar :refer [sidebar-component]]
               [owlet-ui.components.header :refer [header-component]]
               [owlet-ui.views.welcome :refer [welcome-view]]
               [owlet-ui.views.library :refer [library-view]]
               [owlet-ui.views.settings :refer [settings-view]]))
-
-;; home
-
-(defn home-view []
-  (let []
-    (fn []
-      [:div])))
-
-;; main
 
 (defmulti views identity)
 (defmethod views :welcome-view [] [welcome-view])
@@ -26,7 +18,8 @@
   [views view-name])
 
 (defn main-view []
-  (let [active-view (re-frame/subscribe [:active-view])]
+  (let [_ (re-frame/dispatch [:get-auth0-profile])
+        active-view (re-frame/subscribe [:active-view])]
     (fn []
       [:div#main
         [sidebar-component]
