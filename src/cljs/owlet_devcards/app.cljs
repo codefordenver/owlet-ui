@@ -1,8 +1,8 @@
 (ns owlet-devcards.app
   (:require [devcards.core]
             [reagent.core :as reagent]
-            [owlet.views.library :refer [library-view]]
-            [owlet.components.sidebar :refer [sidebar-component]])
+            [owlet-ui.views.library :refer [library-view]]
+            [owlet-ui.components.sidebar :refer [sidebar-component]])
   (:require-macros [devcards.core :as dc
                     :refer [defcard defcard-rg]]))
 

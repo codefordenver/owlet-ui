@@ -11,7 +11,8 @@
                  [cljsjs/jquery "2.2.2-0"]
                  [cljs-ajax "0.5.4"]
                  [cljsjs/auth0-lock "8.1.5-1"]
-                 [reagent-utils "0.1.7"]]
+                 [reagent-utils "0.1.7"]
+                 [devcards "0.2.1-7"]]
 
 
 
