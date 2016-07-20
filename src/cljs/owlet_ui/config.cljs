@@ -1,4 +1,5 @@
-(ns owlet-ui.config)
+(ns owlet-ui.config
+  (:require [cljsjs.auth0-lock :as Auth0Lock]))
 
 (def debug?
   ^boolean js/goog.DEBUG)
@@ -12,3 +13,7 @@
 
 (when debug?
   (enable-console-print!))
+
+(def lock (new js/Auth0Lock
+               "aCHybcxZ3qE6nWta60psS0An1jHUlgMm"
+               "codefordenver.auth0.com"))

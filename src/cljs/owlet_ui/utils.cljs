@@ -1,6 +1,6 @@
 (ns owlet-ui.utils
   (:require
-    [owlet.config :as config]
+    [owlet-ui.config :as config]
     [ajax.core :refer [GET POST PUT]]
     [reagent.session :as session]))
 

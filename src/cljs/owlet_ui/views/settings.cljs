@@ -1,7 +1,7 @@
 (ns owlet-ui.views.settings
   (:require
     [owlet-ui.utils :refer [get-user-cms-profile]]
-    [owlet.config :as config]
+    [owlet-ui.config :as config]
     [reagent.validation :as validation]
     [reagent.session :as session]
     [reagent.core :as reagent :refer [atom]]
