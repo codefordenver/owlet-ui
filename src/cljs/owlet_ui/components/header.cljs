@@ -4,7 +4,7 @@
     [re-frame.core :as re-frame]))
 
 (defn header-component []
-  (let [user-bg-image (re-frame/subscribe [:user-has-background-image?])
+  (let [src (re-frame/subscribe [:user-has-background-image?])
         is-user-logged-in? (re-frame/subscribe [:is-user-logged-in?])]
     (fn []
       [:div#header
@@ -22,4 +22,4 @@
 
 
         "change me!"]
-       [:img {:src @user-bg-image}]])))
+       [:img {:src @src}]])))

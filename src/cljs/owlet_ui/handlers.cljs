@@ -16,9 +16,12 @@
 
 (re-frame/register-handler
   :user-has-logged-in-out!
-  (re-frame/path [:user])                                   ;; path is midddleware
-  (fn [db [_ val]]                                          ;; for traversing
-    (assoc db :logged-in? val)))                            ;; init-app-state
+  (re-frame/path [:user])
+  (fn [db [_ val]]
+    ;; reset user-bg-image on logout
+    (when (false? val)
+      (re-frame/dispatch [:reset-user-bg-image! config/default-header-bg-image]))
+    (assoc db :logged-in? val)))
 
 (re-frame/register-handler
   :update-social-id!
@@ -50,7 +53,19 @@
 (re-frame/register-handler
   :update-user-background!
   (fn [db [_ url entry-id]]
-    (if url
+    (if (and url entry-id)
+      (PUT
+        (str config/server-url "/api/content/entries")
+        {:response-format :json
+         :keywords?       true
+         :params        {:content-type "userBgImage"
+                         :fields       {:url      {"en-US" url}
+                                        :socialid {"en-US" (get-in db [:user :social-id])}}
+                         :entry-id     entry-id}
+         :handler       (fn [res]
+                          (prn res))
+         :error-handler (fn [err]
+                          (prn err))})
       (POST
         (str config/server-url "/api/content/entries")
         {:response-format :json
@@ -59,16 +74,29 @@
                          :fields        {:url      {"en-US" url}
                                          :socialid {"en-US" (get-in db [:user :social-id])}}
                          :auto-publish? true}
-         :handler       (fn [res]
-                          (re-frame/dispatch [:update-user-background-after-success-post! res]))
+         :handler       #(re-frame/dispatch [:update-user-background-after-successful-post! %1])
          :error-handler #(prn %)}))
     db))
 
 (re-frame/register-handler
-  :update-user-background-after-success-post!
+  :update-user-background-after-successful-post!
   (re-frame/path [:user :background-image])
   (fn [_ [_ res]]
+    (re-frame/dispatch [:set-user-background-image-version! res])
     (get-in res [:fields :url :en-US])))
+
+(re-frame/register-handler
+  :set-user-background-image-version!
+  (re-frame/path [:user :background-image-version])
+  (fn [db [_ res]]
+    (prn res)
+    db))
+
+(re-frame/register-handler
+  :reset-user-bg-image!
+  (re-frame/path [:user :background-image])
+  (fn [_ [_ url]]
+    url))
 
 (re-frame/register-handler
   :get-auth0-profile

@@ -17,3 +17,6 @@
 (def lock (new js/Auth0Lock
                "aCHybcxZ3qE6nWta60psS0An1jHUlgMm"
                "codefordenver.auth0.com"))
+
+(def default-header-bg-image
+  "http://weknowyourdreams.com/images/space/space-03.jpg")
