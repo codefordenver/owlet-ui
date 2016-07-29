@@ -2,7 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [owlet-ui.db :as db]
             [owlet-ui.config :as config]
-            [ajax.core :refer [GET]]))
+            [ajax.core :refer [GET POST PUT]]))
 
 (re-frame/register-handler
   :initialize-db
@@ -24,7 +24,7 @@
   :update-social-id!
   (re-frame/path [:user])
   (fn [db [_ sid]]
-      (GET (str config/server-url "/api/content/entries?social-id=" sid)
+    (GET (str config/server-url "/api/content/entries?social-id=" sid)
          {:response-format :json
           :keywords?       true
           :handler         #(re-frame/dispatch [:process-fetch-entries-success! %1])
@@ -35,47 +35,40 @@
   :process-fetch-entries-success!
   (re-frame/path [:user :content-entries])
   (fn [db [_ entries]]
-    (prn entries)
     (re-frame/dispatch [:set-user-background-image! entries])
     (conj db entries)))
 
 (re-frame/register-handler
   :set-user-background-image!
-  (re-frame/path [:user :background-image-entry])
+  (re-frame/path [:user :background-image])
   (fn [db [_ coll]]
     (let [filter-user-bg-image (fn [c]
                                  (filterv #(= (get-in % [:sys :contentType :sys :id])
                                               "userBgImage") c))]
-      (last (filter-user-bg-image coll)))))
+      (get-in (last (filter-user-bg-image coll)) [:fields :url :en-US]))))
 
 (re-frame/register-handler
   :update-user-background!
-  (fn [db [_ url]]
-    (fn []
-      (prn url)
-      ;(info :test url)
-      ;  (if ()
-      ;      (CONTENTFUL-UPDATE
-      ;       "/api/content/update/entry"
-      ;       {:params        {:content-type "userBgImage"
-      ;                        :fields       {:url      {"en-US" url}
-      ;                                       :socialid {"en-US" (session/get :user-id)}}
-      ;                        :entry-id     entry-id}
-      ;        :handler       (fn [res]
-      ;                         (println res))
-      ;        :error-handler (fn [err]
-      ;                         (println err))})
-      ;      (CONTENTFUL-CREATE
-      ;       "/api/content/create/entry"
-      ;       {:params        {:content-type  "userBgImage"
-      ;                        :fields        {:url      {"en-US" url}
-      ;                                        :socialid {"en-US" (session/get :user-id)}}
-      ;                        :auto-publish? true}
-      ;        :handler       (fn [res]
-      ;                         (println res))
-      ;        :error-handler (fn [err]
-      ;                         (println err))}))
-      db)))
+  (fn [db [_ url entry-id]]
+    (if url
+      (POST
+        (str config/server-url "/api/content/entries")
+        {:response-format :json
+         :keywords?       true
+         :params        {:content-type  "userBgImage"
+                         :fields        {:url      {"en-US" url}
+                                         :socialid {"en-US" (get-in db [:user :social-id])}}
+                         :auto-publish? true}
+         :handler       (fn [res]
+                          (re-frame/dispatch [:update-user-background-after-success-post! res]))
+         :error-handler #(prn %)}))
+    db))
+
+(re-frame/register-handler
+  :update-user-background-after-success-post!
+  (re-frame/path [:user :background-image])
+  (fn [_ [_ res]]
+    (get-in res [:fields :url :en-US])))
 
 (re-frame/register-handler
   :get-auth0-profile

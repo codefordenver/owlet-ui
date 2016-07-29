@@ -9,7 +9,7 @@
 ;; to toggle this during development
 ;; http://localhost:3000
 (def server-url
-  "http://owlet-api.apps.aterial.org")
+  "https://owlet-api.herokuapp.com")
 
 (when debug?
   (enable-console-print!))

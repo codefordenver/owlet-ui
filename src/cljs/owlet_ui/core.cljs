@@ -8,7 +8,6 @@
               [owlet-ui.app :as app]
               [owlet-ui.config :as config]))
 
-
 (defn dev-setup []
   (when config/debug?
     (println "dev mode")
