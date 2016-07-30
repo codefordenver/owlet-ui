@@ -7,7 +7,5 @@
           :social-id        nil
           :content-entries  []
           :background-image config/default-header-bg-image
-          :background-image-entry-id nil
-          :background-image-entry-version 0
-          }
+          :background-image-entry-id nil}
    :app  {:initialized? false}})

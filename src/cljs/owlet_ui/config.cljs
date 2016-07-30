@@ -19,4 +19,4 @@
                "codefordenver.auth0.com"))
 
 (def default-header-bg-image
-  "http://weknowyourdreams.com/images/space/space-03.jpg")
+  "http://apod.nasa.gov/apod/image/1607/OrionNebula_ESO_4000.jpg")

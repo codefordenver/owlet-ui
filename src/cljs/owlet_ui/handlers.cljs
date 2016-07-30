@@ -20,8 +20,15 @@
   (fn [db [_ val]]
     ;; reset user-bg-image on logout
     (when (false? val)
-      (re-frame/dispatch [:reset-user-bg-image! config/default-header-bg-image]))
+      (do
+        (re-frame/dispatch [:reset-user-bg-image! config/default-header-bg-image])
+        (re-frame/dispatch [:reset-user-db!])))
     (assoc db :logged-in? val)))
+
+(re-frame/register-handler
+  :reset-user-db!
+  (fn [_ [_ _]]
+    db/default-db))
 
 (re-frame/register-handler
   :update-social-id!
@@ -31,7 +38,7 @@
          {:response-format :json
           :keywords?       true
           :handler         #(re-frame/dispatch [:process-fetch-entries-success! %1])
-          :error-handler   #(println %)})
+          :error-handler   #(prn %)})
     (assoc db :social-id sid)))
 
 (re-frame/register-handler
@@ -47,50 +54,54 @@
   (fn [db [_ coll]]
     (let [filter-user-bg-image (fn [c]
                                  (filterv #(= (get-in % [:sys :contentType :sys :id])
-                                              "userBgImage") c))]
-      (get-in (last (filter-user-bg-image coll)) [:fields :url :en-US]))))
+                                              "userBgImage") c))
+          user-bg-image-entries (last (filter-user-bg-image coll))
+          entry-id (get-in user-bg-image-entries [:sys :id])]
+      ;; set :background-image-entry-id
+      (re-frame/dispatch [:set-backround-image-entry-id! entry-id])
+      (get-in user-bg-image-entries [:fields :url :en-US]))))
+
+(re-frame/register-handler
+  :set-backround-image-entry-id!
+  (re-frame/path [:user :background-image-entry-id])
+  (fn [_ [_ id]]
+    id))
 
 (re-frame/register-handler
   :update-user-background!
-  (fn [db [_ url entry-id]]
-    (if (and url entry-id)
-      (PUT
-        (str config/server-url "/api/content/entries")
-        {:response-format :json
-         :keywords?       true
-         :params        {:content-type "userBgImage"
-                         :fields       {:url      {"en-US" url}
-                                        :socialid {"en-US" (get-in db [:user :social-id])}}
-                         :entry-id     entry-id}
-         :handler       (fn [res]
-                          (prn res))
-         :error-handler (fn [err]
-                          (prn err))})
-      (POST
-        (str config/server-url "/api/content/entries")
-        {:response-format :json
-         :keywords?       true
-         :params        {:content-type  "userBgImage"
-                         :fields        {:url      {"en-US" url}
-                                         :socialid {"en-US" (get-in db [:user :social-id])}}
-                         :auto-publish? true}
-         :handler       #(re-frame/dispatch [:update-user-background-after-successful-post! %1])
-         :error-handler #(prn %)}))
+  (fn [db [_ url]]
+    ;; if we have a url and an entry-id, aka existing entry for *userBgImage*
+    ;; perform an update
+    (let [entry-id (get-in db [:user :background-image-entry-id])]
+      (if (and url entry-id)
+        (PUT
+          (str config/server-url "/api/content/entries")
+          {:response-format :json
+           :keywords?       true
+           :params          {:content-type "userBgImage"
+                             :fields       {:url      {"en-US" url}
+                                            :socialid {"en-US" (get-in db [:user :social-id])}}
+                             :entry-id     entry-id}
+           :handler         #(re-frame/dispatch [:update-user-background-after-successful-post! %1])
+           :error-handler   #(prn %)})
+        (POST
+          (str config/server-url "/api/content/entries")
+          {:response-format :json
+           :keywords?       true
+           :params          {:content-type  "userBgImage"
+                             :fields        {:url      {"en-US" url}
+                                             :socialid {"en-US" (get-in db [:user :social-id])}}
+                             :auto-publish? true}
+           :handler         #(re-frame/dispatch [:update-user-background-after-successful-post! %1])
+           :error-handler   #(prn %)})))
     db))
 
 (re-frame/register-handler
   :update-user-background-after-successful-post!
   (re-frame/path [:user :background-image])
   (fn [_ [_ res]]
-    (re-frame/dispatch [:set-user-background-image-version! res])
+    (re-frame/dispatch [:set-backround-image-entry-id! (get-in res [:sys :id])])
     (get-in res [:fields :url :en-US])))
-
-(re-frame/register-handler
-  :set-user-background-image-version!
-  (re-frame/path [:user :background-image-version])
-  (fn [db [_ res]]
-    (prn res)
-    db))
 
 (re-frame/register-handler
   :reset-user-bg-image!
