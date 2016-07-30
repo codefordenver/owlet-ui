@@ -12,11 +12,3 @@
                                  (session/put! :user-profile res)
                                  (when cb
                                        (cb res)))}))
-
-(defn CONTENTFUL-CREATE [endpoint opts]
-      (POST (str config/server-url endpoint)
-            opts))
-
-(defn CONTENTFUL-UPDATE [endpoint opts]
-      (PUT (str config/server-url endpoint)
-           opts))

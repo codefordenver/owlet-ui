@@ -20,4 +20,4 @@
 (re-frame/register-sub
  :user-has-background-image?
  (fn [db]
-     (reaction (get-in @db [:user :background-image-entry]))))
+     (reaction (get-in @db [:user :background-image]))))
