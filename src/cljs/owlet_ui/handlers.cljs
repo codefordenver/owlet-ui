@@ -121,3 +121,28 @@
                          (re-frame/dispatch [:user-has-logged-in-out! true])
                          (re-frame/dispatch [:update-social-id! (.-user_id profile)])))))
       db)))
+
+(re-frame/register-handler
+  :get-library-content
+  (fn [db [_ _]]
+    (GET (str config/server-url "/api/content/entries?library-view=true&space-id=" config/library-space-id)
+         {:response-format :json
+          :keywords?       true
+          :handler         #(re-frame/dispatch [:process-activities-successful %])
+          :error-handler   #(prn %)})
+    db))
+
+(re-frame/register-handler
+  :process-activities-successful
+  (fn [db [_ res]]
+    (let [items (:items res)
+          assets (get-in res [:includes :Asset])
+          items_mod (mapv (fn [k] (let [item-id (get-in k [:fields :preview :sys :id])
+                                        img (some #(when
+                                                    (= (get-in % [:sys :id]) item-id)
+                                                    %)
+                                                  assets)
+                                        url (get-in img [:fields :file :url])]
+                                    (assoc (:fields k)
+                                      :activity-picture-url url))) items)]
+      (assoc db :activities items_mod))))

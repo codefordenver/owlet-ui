@@ -21,3 +21,8 @@
  :user-has-background-image?
  (fn [db]
      (reaction (get-in @db [:user :background-image]))))
+
+(re-frame/register-sub
+  :library-activities
+  (fn [db]
+    (reaction (get-in @db [:activities]))))

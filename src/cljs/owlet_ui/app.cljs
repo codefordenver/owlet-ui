@@ -18,8 +18,8 @@
   [views view-name])
 
 (defn main-view []
-  (let [_ (re-frame/dispatch [:get-auth0-profile])
-        active-view (re-frame/subscribe [:active-view])]
+  (re-frame/dispatch [:get-auth0-profile])
+  (let [active-view (re-frame/subscribe [:active-view])]
     (fn []
       [:div#main
         [sidebar-component]
