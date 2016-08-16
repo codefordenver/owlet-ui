@@ -12,17 +12,15 @@
                  [cljs-ajax "0.5.4"]
                  [cljsjs/auth0-lock "8.1.5-1"]
                  [reagent-utils "0.1.7"]
-                 [devcards "0.2.1-7"]]
-
-
-
+                 [devcards "0.2.1-7"]
+                 [figwheel-sidecar "0.5.4-7"]]
 
   :plugins [[lein-cljsbuild "1.1.3"]
             [lein-less "1.7.5"]]
 
   :min-lein-version "2.5.3"
 
-  :source-paths ["src/clj"]
+  :source-paths ["src/clj" "script"]
 
   :clean-targets ^{:protect false} ["resources/public/js/compiled" "target"
                                     "test/js"]
@@ -38,8 +36,7 @@
   {:dev
    {:dependencies []
 
-    :plugins      [[lein-figwheel "0.5.4-3"]
-                   [lein-doo "0.1.6"]]}}
+    :plugins      [[lein-doo "0.1.6"]]}}
 
 
   :cljsbuild
@@ -53,8 +50,6 @@
                     :asset-path           "js/compiled/out"
                     :source-map-timestamp true}}
 
-
-
     {:id           "min"
      :source-paths ["src/cljs"]
      :jar true
@@ -63,6 +58,7 @@
                     :optimizations   :advanced
                     :closure-defines {goog.DEBUG false}
                     :pretty-print    false}}
+
     {:id           "test"
      :source-paths ["src/cljs" "test/cljs"]
      :compiler     {:output-to     "resources/public/js/compiled/test.js"
