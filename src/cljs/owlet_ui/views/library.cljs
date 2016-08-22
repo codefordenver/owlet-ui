@@ -1,20 +1,21 @@
 (ns owlet-ui.views.library
-  (:require [re-frame.core :as re-frame]
-            [owlet-ui.components.activity-thumbnail :refer [activity-thumbnail-component]]))
+  (:require [re-frame.core :as re]
+            [owlet-ui.components.activity-thumbnail :refer [activity-thumbnail]]))
+
 
 (defn library-view []
-  (re-frame/dispatch [:get-library-content])
-  (let [activities (re-frame/subscribe [:library-activities])]
+  (let [activities (re/subscribe [:library-activities])]
     (fn []
       [:div.jumbotron
        [:div.container-fluid
         [:div.row
          [:div.col-lg-12
           [:h1 "Library"]
-          [:p.text-center
-           "library content"]
-          (for [a @activities
-                :let [image (:activity-picture-url a)
-                      title (:title a)]]
-            ^{:key (get-in a [:preview :sys :id])}
-            [activity-thumbnail-component title image])]]]])))
+          [:p.text-center "library content"]
+          (for [activity @activities
+                :let [fields (:fields activity)
+                      id     (get-in fields [:preview :sys :id])
+                      image  (get-in fields [:preview :sys :url])
+                      title  (:title fields)]]
+            ^{:key id}
+            [activity-thumbnail title image])]]]])))
