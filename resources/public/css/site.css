@@ -50,6 +50,20 @@ img.owlet {
 button {
   font-size: 1rem;
 }
+.tracks .trackwrapper {
+  text-align: center;
+  background-color: #000;
+  border: 0.5em solid #e6e7e8;
+  border-radius: 0.75em;
+}
+.tracks .trackwrapper .track {
+  color: #CFFFFD;
+  text-decoration: none;
+}
+.tracks #title {
+  margin-left: 1em;
+  margin-top: 0.5em;
+}
 .login {
   position: absolute;
   top: 13px;
