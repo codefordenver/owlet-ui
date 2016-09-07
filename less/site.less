@@ -11,12 +11,29 @@ body {
 #sidebar {
   padding-left: 0;
   text-align: center;
-  background-color: #0c171b;
+  background-color: @primary-color;
   color: #cffffd;
   top: 0;
   bottom: 0;
   height: 100%;
-  width: 220px;
+  width: 180px;
+}
+
+#lpsidebar {
+  padding-left: 0;
+  text-align: center;
+  background-color: @primary-color;
+  color: #cffffd;
+  top: 0;
+  bottom: 0;
+  height: 10%;
+  width: 80px;
+  a {
+    margin: auto;
+  }
+  button {
+    margin-bottom: 20px;
+  }
 }
 
 img.owlet {
@@ -30,7 +47,7 @@ img.owlet {
   overflow: hidden;
   background-color: #2a2b31;
   border-radius: 10px 10px 0px 0px;
-  img {
+  a {
     margin: 30px;
   }
   h1 {
@@ -69,8 +86,11 @@ button {
     border: 0.5em solid #e6e7e8;
     border-radius: 0.75em;
     .track {
-      color: #CFFFFD;
+      color: #cffffd;
       text-decoration: none;
+    }
+    :hover {
+      color: #abfffb;
     }
   }
   #title {
