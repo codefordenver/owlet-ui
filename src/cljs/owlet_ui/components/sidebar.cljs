@@ -6,13 +6,15 @@
 (defn sidebar-component []
   [:div
     [:div#lpsidebar.hidden-sm-up
+      [:a#logo {:href "#/"}
+        [:img.owlet {:src "img/owlet-logo.png"}]]
       [:div.menu
         [:a {:href "#/library"}
-          [:button.btn-primary {:type "button"} "Library"]]
+          [:img {:src "img/icon1.png"}]]
         [:a {:href "#/"}
-          [:button.btn-primary {:type "button"} "Home"]]
+          [:img {:src "img/icon2.png"}]]
         [:a {:href "#/settings"}
-          [:button.btn-primary {:type "button"} "Settings"]]]]
+          [:img {:src "img/icon3.png"}]]]]
 
     [:div#sidebar.hidden-xs-down
       [:a {:href "#/"}

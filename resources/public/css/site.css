@@ -21,14 +21,18 @@ body {
   color: #cffffd;
   top: 0;
   bottom: 0;
-  height: 10%;
+  height: 100%;
   width: 80px;
 }
 #lpsidebar a {
-  margin: auto;
+  margin-left: auto;
+  margin-right: auto;
 }
-#lpsidebar button {
-  margin-bottom: 20px;
+#lpsidebar img {
+  margin-top: 30px;
+}
+#lpsidebar img.owlet {
+  margin-top: 0;
 }
 img.owlet {
   width: 87%;
@@ -66,17 +70,22 @@ img.owlet {
 button {
   font-size: 1rem;
 }
-.tracks .trackwrapper {
+.trackwrapper.col-xs-12.col-sm-6.col-lg-4 {
+  padding-right: inherit;
+  padding-left: inherit;
+}
+.tracks .trackwrap {
+  margin: 5px;
   text-align: center;
   background-color: #000;
-  border: 0.5em solid #e6e7e8;
-  border-radius: 0.75em;
+  border: 2px solid #000;
+  border-radius: 10px;
 }
-.tracks .trackwrapper .track {
+.tracks .trackwrap .track {
   color: #cffffd;
   text-decoration: none;
 }
-.tracks .trackwrapper :hover {
+.tracks .trackwrap :hover {
   color: #abfffb;
 }
 .tracks #title {

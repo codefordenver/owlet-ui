@@ -26,13 +26,17 @@ body {
   color: #cffffd;
   top: 0;
   bottom: 0;
-  height: 10%;
+  height: 100%;
   width: 80px;
   a {
-    margin: auto;
+    margin-left: auto;
+    margin-right: auto;
   }
-  button {
-    margin-bottom: 20px;
+  img {
+    margin-top: 30px;
+  }
+  img.owlet {
+    margin-top: 0;
   }
 }
 
@@ -79,12 +83,19 @@ img.owlet {
 button {
   font-size: 1rem;
 }
+
+.trackwrapper.col-xs-12.col-sm-6.col-lg-4 {
+  padding-right: inherit;
+  padding-left: inherit;
+}
+
 .tracks {
-  .trackwrapper {
+  .trackwrap {
+    margin: 5px;
     text-align: center;
     background-color: #000;
-    border: 0.5em solid #e6e7e8;
-    border-radius: 0.75em;
+    border: 2px solid #000;
+    border-radius: 10px;
     .track {
       color: #cffffd;
       text-decoration: none;
