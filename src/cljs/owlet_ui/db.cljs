@@ -10,4 +10,4 @@
           :background-image-entry-id nil}
    :app  {:initialized? false}
    :activities []
-   :models []})
+   :activity-models nil})

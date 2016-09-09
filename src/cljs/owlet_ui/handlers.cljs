@@ -150,19 +150,19 @@
     ; Obtains the URL for each preview image, and adds a :url field next to
     ; its :id field in [:activities  :fields :preview :sys] map.
 
-    (let [url-for-id  ; Maps preview image IDs to associated URLs.
-                      (->> (get-in res [:includes :Asset])
-                           (map (juxt (comp :id :sys)
-                                      (comp :url :file :fields)))
-                           (into {}))]
+    (let [url-for-id                                        ; Maps preview image IDs to associated URLs.
+          (->> (get-in res [:includes :Asset])
+               (map (juxt (comp :id :sys)
+                          (comp :url :file :fields)))
+               (into {}))]
 
-      (assoc db       ; Return new db, adding :url field to its [... :sys] map.
-             :activities
-             (for [item (:items res)]
-               (update-in item
-                          [:fields :preview :sys]
-                          (fn [{id :id :as sys}]
-                            (assoc sys :url (url-for-id id)))))))))
+      (assoc db                                             ; Return new db, adding :url field to its [... :sys] map.
+        :activities
+        (for [item (:items res)]
+          (update-in item
+                     [:fields :preview :sys]
+                     (fn [{id :id :as sys}]
+                       (assoc sys :url (url-for-id id)))))))))
 
 (re/register-handler
   :get-activity-models
@@ -177,4 +177,4 @@
 (re/register-handler
   :get-activity-models-successful
   (fn [db [_ res]]
-    (prn res)))
+    (assoc db :activity-models res)))

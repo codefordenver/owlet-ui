@@ -30,4 +30,4 @@
 (re-frame/register-sub
   :library-activity-models
   (fn [db]
-    (reaction (get-in @db [:models]))))
+    (reaction (get-in @db [:activity-models]))))
