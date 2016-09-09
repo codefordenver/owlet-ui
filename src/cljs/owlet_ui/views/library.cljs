@@ -4,7 +4,7 @@
 
 
 (defn library-view []
-  (let [activities (re/subscribe [:library-activities])]
+  (let [activities (re/subscribe [:get-library-content])]
     (fn []
       [:div.jumbotron
        [:div.container-fluid

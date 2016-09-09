@@ -134,6 +134,15 @@
                          (re/dispatch [:update-social-id! (.-user_id profile)])))))
       db)))
 
+(re/register-handler
+  :get-library-content
+  (fn [db [_ _]]
+    (GET (str config/server-url "/api/content/entries?library-view=true&space-id=" config/library-space-id)
+         {:response-format :json
+          :keywords?       true
+          :handler         #(re/dispatch [:activities-get-successful %])
+          :error-handler   #(prn %)})
+    db))
 
 (re/register-handler
   :activities-get-successful
