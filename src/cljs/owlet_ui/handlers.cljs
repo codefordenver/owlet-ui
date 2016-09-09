@@ -164,3 +164,17 @@
                           (fn [{id :id :as sys}]
                             (assoc sys :url (url-for-id id)))))))))
 
+(re/register-handler
+  :get-activity-models
+  (fn [db [_ _]]
+    (GET (str config/server-url "/api/content/models/" config/library-space-id)
+         {:response-format :json
+          :keywords?       true
+          :handler         #(re/dispatch [:get-activity-models-successful %])
+          :error-handler   #(prn %)})
+    db))
+
+(re/register-handler
+  :get-activity-models-successful
+  (fn [db [_ res]]
+    (prn res)))

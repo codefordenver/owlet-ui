@@ -26,3 +26,8 @@
   :library-activities
   (fn [db]
     (reaction (get-in @db [:activities]))))
+
+(re-frame/register-sub
+  :library-activity-models
+  (fn [db]
+    (reaction (get-in @db [:models]))))
