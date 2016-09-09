@@ -42,7 +42,7 @@
   (defroute "/library" []
             ; Before dispatching to the view, ensure we have current activity library.
             (get-then-dispatch library-url #(vector :activities-get-successful %))
-            (re/dispatch [:set-active-view :library-view]))
+            (re/dispatch [:set-active-view :tracks-view]))
 
   (defroute "/settings" []
             (re/dispatch [:set-active-view :settings-view]))
@@ -54,4 +54,3 @@
       (fn [event]
         (secretary/dispatch! (.-token event))))
     (.setEnabled true)))
-
