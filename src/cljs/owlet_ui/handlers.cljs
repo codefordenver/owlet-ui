@@ -177,4 +177,4 @@
 (re/register-handler
   :get-activity-models-successful
   (fn [db [_ res]]
-    (assoc db :activity-models res)))
+    (assoc db :activity-models (:models res))))
