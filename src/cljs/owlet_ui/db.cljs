@@ -10,4 +10,6 @@
           :background-image-entry-id nil}
    :app  {:initialized? false}
    :activities []
-   :activity-models nil})
+   :activity-models nil
+   :activities-by-track-in-view {}
+   :activities-by-track {}})
