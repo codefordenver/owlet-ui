@@ -26,3 +26,18 @@
   :library-activities
   (fn [db]
     (reaction (get-in @db [:activities]))))
+
+(re-frame/register-sub
+  :library-activity-models
+  (fn [db]
+    (reaction (get-in @db [:activity-models]))))
+
+(re-frame/register-sub
+  :activities-by-track
+  (fn [db]
+    (reaction (get-in @db [:activities-by-track]))))
+
+(re-frame/register-sub
+  :activities-by-track-in-view
+  (fn [db]
+    (reaction (get-in @db [:activities-by-track-in-view]))))

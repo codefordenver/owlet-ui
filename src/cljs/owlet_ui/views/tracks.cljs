@@ -1,54 +1,24 @@
 (ns owlet-ui.views.tracks
-  (:require [re-frame.core :as re]))
-
+  (:require [re-frame.core :as re]
+            [reagent.core :as reagent :refer [atom]]
+            [owlet-ui.components.track :refer [track]]))
 
 (defn tracks-view []
-    (fn []
-      [:div.tracks
-        [:h1#title "Tracks:"]
-        [:div.trackwrapper.col-xs-12.col-sm-6.col-lg-4
-          [:div.trackwrap
-           [:a.track {:href "#"}
-            [:h2 "Graphic Design"]
-            [:p "Sample description"]]]]
-        [:div.trackwrapper.col-xs-12.col-sm-6.col-lg-4
-          [:div.trackwrap
-            [:a.track {:href "#"}
-              [:h2 "Graphic Design"]
-              [:p "Sample description"]]]]
-        [:div.trackwrapper.col-xs-12.col-sm-6.col-lg-4
-          [:div.trackwrap
-            [:a.track {:href "#"}
-              [:h2 "Graphic Design"]
-              [:p "Sample description"]]]]
-        [:div.trackwrapper.col-xs-12.col-sm-6.col-lg-4
-          [:div.trackwrap
-            [:a.track {:href "#"}
-              [:h2 "Graphic Design"]
-              [:p "Sample description"]]]]
-        [:div.trackwrapper.col-xs-12.col-sm-6.col-lg-4
-          [:div.trackwrap
-            [:a.track {:href "#"}
-              [:h2 "Graphic Design"]
-              [:p "Sample description"]]]]
-        [:div.trackwrapper.col-xs-12.col-sm-6.col-lg-4
-          [:div.trackwrap
-            [:a.track {:href "#"}
-              [:h2 "Graphic Design"]
-              [:p "Sample description"]]]]
-        [:div.trackwrapper.col-xs-12.col-sm-6.col-lg-4
-          [:div.trackwrap
-            [:a.track {:href "#"}
-              [:h2 "Graphic Design"]
-              [:p "Sample description"]]]]
-        [:div.trackwrapper.col-xs-12.col-sm-6.col-lg-4
-          [:div.trackwrap
-            [:a.track {:href "#"}
-              [:h2 "Graphic Design"]
-              [:p "Sample description"]]]]
-          ;;TODO make uneven track automatically centered
-        [:div.trackwrapper.col-xs-12.col-sm-6.col-lg-4.col-sm-offset-3.col-lg-offset-0
-          [:div.trackwrap
-            [:a.track {:href "#"}
-              [:h2 "Graphic Design"]
-              [:p "Sample description"]]]]]))
+  (let [activities (re/subscribe [:library-activity-models])]
+    (reagent/create-class
+      {:component-will-mount
+       #(when (empty? @activities)
+         (re/dispatch [:get-activity-models]))
+       :reagent-render
+       (fn []
+         [:div
+           [:div.tracks
+            [:h1#title "Tracks:"]
+            [:br]
+            (for [model (:models @activities)]
+              ^{:key (gensym "model-")}
+              [track model])]
+           [:div.funfact "༼ つ ◕_◕ ༽つ" [:b " fun fact: "] [:i "Seeing gray dots?"]
+            [:br] "Those gray dots you see don't really exist... when you try to look at one directly, it disappears."
+            [:br] "This is called a "
+              [:a {:href "http://www.newworldencyclopedia.org/entry/Grid_illusion"} "grid illusion"] "!"]])})))

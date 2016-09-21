@@ -13,7 +13,9 @@
 
 (re/register-handler
   :set-active-view
-  (fn [db [_ active-view]]
+  (fn [db [_ active-view route-parameter]]
+    (when (= :track-activities-view active-view)
+      (re/dispatch [:get-library-content route-parameter]))
     (assoc db :active-view active-view)))
 
 
@@ -136,31 +138,63 @@
 
 (re/register-handler
   :get-library-content
-  (fn [db [_ _]]
+  (fn [db [_ track-id]]
     (GET (str config/server-url "/api/content/entries?library-view=true&space-id=" config/library-space-id)
          {:response-format :json
           :keywords?       true
-          :handler         #(re/dispatch [:activities-get-successful %])
+          :handler         #(re/dispatch [:activities-get-successful % track-id])
           :error-handler   #(prn %)})
     db))
 
 (re/register-handler
   :activities-get-successful
-  (fn [db [_ res]]
+  (fn [db [_ res track-id]]
+
     ; Obtains the URL for each preview image, and adds a :url field next to
-    ; its :id field in [:activities  :fields :preview :sys] map.
+    ; its :id field in [:activities :fields :preview :sys] map.
 
-    (let [url-for-id  ; Maps preview image IDs to associated URLs.
-                      (->> (get-in res [:includes :Asset])
-                           (map (juxt (comp :id :sys)
-                                      (comp :url :file :fields)))
-                           (into {}))]
+    (let [url-for-id                                        ; Maps preview image IDs to associated URLs.
+          (->> (get-in res [:includes :Asset])
+               (map (juxt (comp :id :sys)
+                          (comp :url :file :fields)))
+               (into {}))
+          _db_ (assoc db                              ; Return new db, adding :url field to its [... :sys] map.
+                       :activities
+                       (for [item (:items res)]
+                         (update-in item
+                                    [:fields :preview :sys]
+                                    (fn [{id :id :as sys}]
+                                      (assoc sys :url (url-for-id id))))))]
+      (when track-id
+        (do
+          (re/dispatch [:set-activities-by-track-in-view :track-id track-id])
+          (re/dispatch [:activities-by-track (:activities _db_) track-id])))
+      _db_)))
 
-      (assoc db       ; Return new db, adding :url field to its [... :sys] map.
-             :activities
-             (for [item (:items res)]
-               (update-in item
-                          [:fields :preview :sys]
-                          (fn [{id :id :as sys}]
-                            (assoc sys :url (url-for-id id)))))))))
+(re/register-handler
+  :set-activities-by-track-in-view
+  (fn [db [_ prop arg]]
+    (if (= prop :display-name)
+      (assoc-in db [:activities-by-track-in-view :display-name] arg)
+      (assoc-in db [:activities-by-track-in-view :track-id] (keyword arg)))))
 
+(re/register-handler
+  :activities-by-track
+  (fn [db [_ activities track-id]]
+    (let [filtered-activities (filterv #(= (get-in % [:sys :contentType :sys :id]) track-id) activities)]
+      (assoc-in db [:activities-by-track (keyword track-id)] filtered-activities))))
+
+(re/register-handler
+  :get-activity-models
+  (fn [db [_ _]]
+    (GET (str config/server-url "/api/content/models/" config/library-space-id)
+         {:response-format :json
+          :keywords?       true
+          :handler         #(re/dispatch [:get-activity-models-successful %])
+          :error-handler   #(prn %)})
+    db))
+
+(re/register-handler
+  :get-activity-models-successful
+  (fn [db [_ res]]
+    (assoc db :activity-models (:models res))))

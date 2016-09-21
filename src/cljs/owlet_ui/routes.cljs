@@ -39,13 +39,16 @@
   (defroute "/about" []
             (re/dispatch [:set-active-view :about-view]))
 
-  (defroute "/library" []
+  (defroute "/tracks" []
             ; Before dispatching to the view, ensure we have current activity library.
             (get-then-dispatch library-url #(vector :activities-get-successful %))
             (re/dispatch [:set-active-view :tracks-view]))
 
   (defroute "/settings" []
             (re/dispatch [:set-active-view :settings-view]))
+
+  (defroute "/track/:id" {:as params}
+    (re/dispatch [:set-active-view :track-activities-view (:id params)]))
 
   ; Ensure browser history uses Secretary to dispatch.
   (doto (History.)
