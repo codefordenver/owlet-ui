@@ -11,8 +11,14 @@
          (re/dispatch [:get-activity-models]))
        :reagent-render
        (fn []
-         [:div.tracks
-          [:h1#title "Tracks:"]
-          (for [model (:models @activities)]
-            ^{:key (gensym "model-")}
-            [track model])])})))
+         [:div
+           [:div.tracks
+            [:h1#title "Tracks:"]
+            [:br]
+            (for [model (:models @activities)]
+              ^{:key (gensym "model-")}
+              [track model])]
+           [:div.funfact "༼ つ ◕_◕ ༽つ" [:b " fun fact: "] [:i "Seeing gray dots?"]
+            [:br] "Those gray dots you see don't really exist... when you try to look at one directly, it disappears."
+            [:br] "This is called a "
+              [:a {:href "http://www.newworldencyclopedia.org/entry/Grid_illusion"} "grid illusion"] "!"]])})))

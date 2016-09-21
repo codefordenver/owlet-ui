@@ -12,7 +12,8 @@
          [:div.container-fluid
           [:div.row
            [:div.col-lg-12
-            [:h1 display-name]]]
+            [:h1 display-name]
+            [:br]]]
           (if (empty? activity-items)
             [:p "No activities in this track yet. Check back soon."]
             (for [activity activity-items

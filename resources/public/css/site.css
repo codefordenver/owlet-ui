@@ -74,6 +74,9 @@ button {
   padding-right: inherit;
   padding-left: inherit;
 }
+.tracks {
+  margin: 1.5em 1.5em 2em 1.5em;
+}
 .tracks .trackwrap {
   margin: 5px;
   text-align: center;
@@ -124,4 +127,8 @@ button {
 .no-gutter [class*='col-']:not(:last-child) {
   padding-right: 0;
   padding-left: 0;
+}
+.funfact {
+  float: left;
+  margin: 3em 2em 2em 2em;
 }
