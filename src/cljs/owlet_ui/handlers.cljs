@@ -14,7 +14,7 @@
 (re/register-handler
   :set-active-view
   (fn [db [_ active-view route-parameter]]
-    (when (= :track-activities-view active-view)
+    (when (or (= :track-activities-view active-view) (= :activity-view active-view))
       (re/dispatch [:get-library-content route-parameter]))
     (assoc db :active-view active-view)))
 
@@ -138,17 +138,17 @@
 
 (re/register-handler
   :get-library-content
-  (fn [db [_ track-id]]
+  (fn [db [_ route-params]]
     (GET (str config/server-url "/api/content/entries?library-view=true&space-id=" config/library-space-id)
          {:response-format :json
           :keywords?       true
-          :handler         #(re/dispatch [:activities-get-successful % track-id])
+          :handler         #(re/dispatch [:activities-get-successful % route-params])
           :error-handler   #(prn %)})
     db))
 
 (re/register-handler
   :activities-get-successful
-  (fn [db [_ res track-id]]
+  (fn [db [_ res route-params]]
 
     ; Obtains the URL for each preview image, and adds a :url field next to
     ; its :id field in [:activities :fields :preview :sys] map.
@@ -158,17 +158,19 @@
                (map (juxt (comp :id :sys)
                           (comp :url :file :fields)))
                (into {}))
-          _db_ (assoc db                              ; Return new db, adding :url field to its [... :sys] map.
-                       :activities
-                       (for [item (:items res)]
-                         (update-in item
-                                    [:fields :preview :sys]
-                                    (fn [{id :id :as sys}]
-                                      (assoc sys :url (url-for-id id))))))]
-      (when track-id
-        (do
-          (re/dispatch [:set-activities-by-track-in-view :track-id track-id])
-          (re/dispatch [:activities-by-track (:activities _db_) track-id])))
+          _db_ (assoc db                                    ; Return new db, adding :url field to its [... :sys] map.
+                 :activities
+                 (for [item (:items res)]
+                   (update-in item
+                              [:fields :preview :sys]
+                              (fn [{id :id :as sys}]
+                                (assoc sys :url (url-for-id id))))))]
+      (when route-params
+        (let [{:keys [track activity]} route-params]
+          (re/dispatch [:set-activities-by-track-in-view :track-id track])
+          (re/dispatch [:activities-by-track (:activities _db_) track])
+          (when activity
+            (re/dispatch [:set-activity-in-view activity]))))
       _db_)))
 
 (re/register-handler
@@ -177,6 +179,13 @@
     (if (= prop :display-name)
       (assoc-in db [:activities-by-track-in-view :display-name] arg)
       (assoc-in db [:activities-by-track-in-view :track-id] (keyword arg)))))
+
+(re/register-handler
+  :set-activity-in-view
+  (re/path [:activity-in-view])
+  (fn [db [_ activity-id]]
+      (prn (:activities db))
+      activity-id))
 
 (re/register-handler
   :activities-by-track

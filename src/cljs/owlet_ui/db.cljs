@@ -12,4 +12,5 @@
    :activities []
    :activity-models nil
    :activities-by-track-in-view {}
-   :activities-by-track {}})
+   :activities-by-track {}
+   :activity-in-view nil})

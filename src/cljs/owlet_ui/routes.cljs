@@ -1,6 +1,6 @@
 (ns owlet-ui.routes
-    (:require-macros [secretary.core :refer [defroute]])
-    (:import goog.History)
+  (:require-macros [secretary.core :refer [defroute]])
+  (:import goog.History)
   (:require [secretary.core :as secretary]
             [goog.events :as events]
             [goog.history.EventType :as EventType]
@@ -47,8 +47,11 @@
   (defroute "/settings" []
             (re/dispatch [:set-active-view :settings-view]))
 
-  (defroute "/track/:id" {:as params}
-    (re/dispatch [:set-active-view :track-activities-view (:id params)]))
+  (defroute "/track/:track" {:as params}
+            (re/dispatch [:set-active-view :track-activities-view params]))
+
+  (defroute "/track/:track/:activity" {:as params}
+            (re/dispatch [:set-active-view :activity-view params]))
 
   ; Ensure browser history uses Secretary to dispatch.
   (doto (History.)
