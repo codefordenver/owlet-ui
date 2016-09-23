@@ -4,10 +4,10 @@
             [owlet-ui.components.track :refer [track]]))
 
 (defn tracks-view []
-  (let [activities (re/subscribe [:library-activity-models])]
+  (let [activity-models (re/subscribe [:library-activity-models])]
     (reagent/create-class
       {:component-will-mount
-       #(when (empty? @activities)
+       #(when (empty? @activity-models)
          (re/dispatch [:get-activity-models]))
        :reagent-render
        (fn []
@@ -15,10 +15,10 @@
            [:div.tracks
             [:h1#title "Tracks:"]
             [:br]
-            (for [model (:models @activities)]
+            (for [model (:models @activity-models)]
               ^{:key (gensym "model-")}
               [track model])]
            [:div.funfact "༼ つ ◕_◕ ༽つ" [:b " fun fact: "] [:i "Seeing gray dots?"]
             [:br] "Those gray dots you see don't really exist... when you try to look at one directly, it disappears."
             [:br] "This is called a "
-              [:a {:href "http://www.newworldencyclopedia.org/entry/Grid_illusion"} "grid illusion"] "!"]])})))
+              [:a {:href "http://www.newworldencyclopedia.org/entry/Grid_illusion"} "grid illusion"] "."]])})))

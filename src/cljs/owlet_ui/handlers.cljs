@@ -152,7 +152,7 @@
 
     ; Obtains the URL for each preview image, and adds a :url field next to
     ; its :id field in [:activities :fields :preview :sys] map.
-
+    (prn res)
     (let [url-for-id                                        ; Maps preview image IDs to associated URLs.
           (->> (get-in res [:includes :Asset])
                (map (juxt (comp :id :sys)
@@ -165,24 +165,28 @@
                               [:fields :preview :sys]
                               (fn [{id :id :as sys}]
                                 (assoc sys :url (url-for-id id))))))]
+              ; TODO: add 3rd argument -> [track activities activity]
+              ; destructure that from route-params
       (when route-params
-        (let [{:keys [track activity]} route-params]
+        (let [{:keys [track activities]} route-params]
           (re/dispatch [:set-activities-by-track-in-view :track-id track])
           (re/dispatch [:activities-by-track (:activities _db_) track])
-          (when activity
-            (re/dispatch [:set-activity-in-view activity]))))
+          (when activities
+            (re/dispatch [:set-activities-in-view activities]))))
       _db_)))
 
 (re/register-handler
   :set-activities-by-track-in-view
   (fn [db [_ prop arg]]
+    (prn prop)
+    (prn arg)
     (if (= prop :display-name)
       (assoc-in db [:activities-by-track-in-view :display-name] arg)
       (assoc-in db [:activities-by-track-in-view :track-id] (keyword arg)))))
 
 (re/register-handler
-  :set-activity-in-view
-  (re/path [:activity-in-view])
+  :set-activities-in-view
+  (re/path [:activities-in-view])
   (fn [db [_ activity-id]]
       (prn (:activities db))
       activity-id))
@@ -191,6 +195,7 @@
   :activities-by-track
   (fn [db [_ activities track-id]]
     (let [filtered-activities (filterv #(= (get-in % [:sys :contentType :sys :id]) track-id) activities)]
+      (prn activities)
       (assoc-in db [:activities-by-track (keyword track-id)] filtered-activities))))
 
 (re/register-handler

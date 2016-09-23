@@ -47,10 +47,10 @@
   (defroute "/settings" []
             (re/dispatch [:set-active-view :settings-view]))
 
-  (defroute "/track/:track" {:as params}
+  (defroute "/tracks/:track" {:as params}
             (re/dispatch [:set-active-view :track-activities-view params]))
 
-  (defroute "/track/:track/:activity" {:as params}
+  (defroute "/tracks/:track/:activity" {:as params}
             (re/dispatch [:set-active-view :activity-view params]))
 
   ; Ensure browser history uses Secretary to dispatch.
