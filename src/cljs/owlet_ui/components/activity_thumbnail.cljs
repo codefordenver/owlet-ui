@@ -5,6 +5,6 @@
         {:keys [title track-id]} fields]
     (fn []
       [:div
-       [:a {:href (str "#/track/" track-id "/" title)}
+       [:a {:href (str "#/tracks/" track-id "/" title)}
         [:h3 title]
         [:img {:src image :width "40%"}]]])))
