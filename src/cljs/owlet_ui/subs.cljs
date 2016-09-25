@@ -1,26 +1,26 @@
 (ns owlet-ui.subs
-    (:require-macros [reagent.ratom :refer [reaction]])
-    (:require [re-frame.core :as re-frame]))
+  (:require-macros [reagent.ratom :refer [reaction]])
+  (:require [re-frame.core :as re-frame]))
 
 (re-frame/register-sub
- :active-view
- (fn [db _]
-   (reaction (:active-view @db))))
+  :active-view
+  (fn [db _]
+    (reaction (:active-view @db))))
 
 (re-frame/register-sub
- :is-user-logged-in?
- (fn [db]
-   (reaction (get-in @db [:user :logged-in?]))))
+  :is-user-logged-in?
+  (fn [db]
+    (reaction (get-in @db [:user :logged-in?]))))
 
 (re-frame/register-sub
- :social-id-subscription
- (fn [db]
-   (reaction (get-in @db [:user :social-id]))))
+  :social-id-subscription
+  (fn [db]
+    (reaction (get-in @db [:user :social-id]))))
 
 (re-frame/register-sub
- :user-has-background-image?
- (fn [db]
-     (reaction (get-in @db [:user :background-image]))))
+  :user-has-background-image?
+  (fn [db]
+    (reaction (get-in @db [:user :background-image]))))
 
 (re-frame/register-sub
   :library-activities
@@ -41,3 +41,8 @@
   :activities-by-track-in-view
   (fn [db]
     (reaction (get-in @db [:activities-by-track-in-view]))))
+
+(re-frame/register-sub
+  :activity-in-view
+  (fn [db]
+    (reaction (get-in @db [:activity-in-view]))))
