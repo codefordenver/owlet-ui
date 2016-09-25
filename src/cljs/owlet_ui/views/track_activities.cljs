@@ -19,9 +19,9 @@
        (fn []
          (let [{:keys [display-name track-id]} @active-view
                activity-items (get @activities track-id)]
-           (if (empty? @activity-models)
+           (if (or (empty? @activity-models) (nil? display-name))
              (re/dispatch [:get-activity-models])
-             (let [{:keys [models]} @activity-models
+             (let [models (:models @activity-models)
                    _display-name_ (get-display-name models track-id)]
                (re/dispatch [:set-activities-by-track-in-view :display-name _display-name_])))
            [:div.jumbotron

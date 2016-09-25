@@ -165,13 +165,14 @@
                               [:fields :preview :sys]
                               (fn [{id :id :as sys}]
                                 (assoc sys :url (url-for-id id))))))]
-      ; TODO: add 3rd argument -> [track activities activity]
-      ; destructure that from route-params
       (when route-params
         ;; i.e. when we are navigating to /tracks/:track/:activity
-        (let [{:keys [track activities]} route-params]
+        (let [{:keys [track activities activity]} route-params]
           (re/dispatch [:set-activities-by-track-in-view :track-id track])
-          (re/dispatch [:activities-by-track (:activities _db_) track])
+          ;; i.e. when we request data for single activity view
+          (if activity
+            (re/dispatch [:activities-by-track (:activities _db_) track activity])
+            (re/dispatch [:activities-by-track (:activities _db_) track]))
           (when activities
             (re/dispatch [:set-activities-in-view activities]))))
       _db_)))
@@ -191,8 +192,10 @@
 
 (re/register-handler
   :activities-by-track
-  (fn [db [_ activities track-id]]
+  (fn [db [_ activities track-id activity]]
     (let [filtered-activities (filterv #(= (get-in % [:sys :contentType :sys :id]) track-id) activities)]
+      (when activity
+        (re/dispatch [:set-activity-in-view filtered-activities activity]))
       (assoc-in db [:activities-by-track (keyword track-id)] filtered-activities))))
 
 (re/register-handler
@@ -209,3 +212,10 @@
   :get-activity-models-successful
   (fn [db [_ res]]
     (assoc db :activity-models (:models res))))
+
+(re/register-handler
+  :set-activity-in-view
+  (re/path [:activity-in-view])
+  (fn [_ [_ activities activity]]
+    (some #(when (= (get-in % [:fields :title]) activity) %)
+          activities)))
