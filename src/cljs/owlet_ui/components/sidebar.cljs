@@ -21,7 +21,8 @@
         [:img.owlet {:src "img/owlet-logo.png"}]]
       [:div.menu
         [:span
-          [:h1 "owlet"]
+          [:a {:href "#/"}
+           [:h1 "owlet"]]
           [:ul.nav.nav-pills.nav-stacked
             [:li.nav-item
               [:a.nav-link {:href "#/tracks"}
