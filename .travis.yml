@@ -1,0 +1,12 @@
+language: clojure
+lein: 2.5.3
+sudo: true
+script: "lein cljsbuild once min"
+before_deploy: "cd resources/public"
+
+deploy:
+  provider: s3
+  access_key_id: ${CFD_OWLET_AWS_ACCESS_KEY_ID}
+  secret_access_key: ${CFD_OWLET_AWS_SECRET_ACCESS_KEY}
+  bucket: "owlet"
+  skip_cleanup: true
