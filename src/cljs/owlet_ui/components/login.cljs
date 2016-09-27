@@ -10,7 +10,7 @@
         :on-click #(.show config/lock #js {:popup true}
                           (fn [err profile token]
                               (if (not (nil? err))
-                                (prn err)
+                                (.log js/console err)
                                 (do
                                   (re-frame/dispatch [:user-has-logged-in-out! true])
                                   (re-frame/dispatch [:update-social-id! (.-user_id profile)])

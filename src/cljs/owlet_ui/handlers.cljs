@@ -130,7 +130,7 @@
       (.getProfile config/lock user-token
                    (fn [err profile]
                      (if (not (nil? err))
-                       (prn err)
+                       (.log js/console err)
                        (do
                          (re/dispatch [:user-has-logged-in-out! true])
                          (re/dispatch [:update-social-id! (.-user_id profile)])))))
