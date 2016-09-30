@@ -1,6 +1,6 @@
 (ns owlet-ui.routes
-    (:require-macros [secretary.core :refer [defroute]])
-    (:import goog.History)
+  (:require-macros [secretary.core :refer [defroute]])
+  (:import goog.History)
   (:require [secretary.core :as secretary]
             [goog.events :as events]
             [goog.history.EventType :as EventType]
@@ -39,13 +39,19 @@
   (defroute "/about" []
             (re/dispatch [:set-active-view :about-view]))
 
-  (defroute "/library" []
+  (defroute "/tracks" []
             ; Before dispatching to the view, ensure we have current activity library.
             (get-then-dispatch library-url #(vector :activities-get-successful %))
-            (re/dispatch [:set-active-view :library-view]))
+            (re/dispatch [:set-active-view :tracks-view]))
 
   (defroute "/settings" []
             (re/dispatch [:set-active-view :settings-view]))
+
+  (defroute "/tracks/:track" {:as params}
+            (re/dispatch [:set-active-view :track-activities-view params]))
+
+  (defroute "/tracks/:track/:activity" {:as params}
+            (re/dispatch [:set-active-view :activity-view params]))
 
   ; Ensure browser history uses Secretary to dispatch.
   (doto (History.)
@@ -54,4 +60,3 @@
       (fn [event]
         (secretary/dispatch! (.-token event))))
     (.setEnabled true)))
-

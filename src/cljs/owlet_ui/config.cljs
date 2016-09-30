@@ -1,5 +1,6 @@
 (ns owlet-ui.config
-  (:require [cljsjs.auth0-lock :as Auth0Lock]))
+  (:require [cljsjs.auth0-lock :as Auth0Lock]
+            [re-frame.core :as re-frame]))
 
 (def debug?
   ^boolean js/goog.DEBUG)
@@ -17,6 +18,14 @@
 (def lock (new js/Auth0Lock
                "aCHybcxZ3qE6nWta60psS0An1jHUlgMm"
                "codefordenver.auth0.com"))
+
+(.on lock "authenticated"
+     (fn [auth-res]
+       (let [token (.-idToken auth-res)
+             social-id (-> auth-res .-idTokenPayload .-sub)]
+         (re-frame/dispatch [:user-has-logged-in-out! true])
+         (re-frame/dispatch [:update-social-id! social-id])
+         (.setItem js/localStorage "userToken" token))))
 
 (def default-header-bg-image
   "http://apod.nasa.gov/apod/image/1607/OrionNebula_ESO_4000.jpg")

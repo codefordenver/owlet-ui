@@ -45,7 +45,9 @@
 
 (re/register-handler
   :set-active-view
-  (fn [db [_ active-view]]
+  (fn [db [_ active-view route-parameter]]
+    (when (or (= :track-activities-view active-view) (= :activity-view active-view))
+      (re/dispatch [:get-library-content route-parameter]))
     (assoc db :active-view active-view)))
 
 
@@ -160,30 +162,92 @@
       (.getProfile config/lock user-token
                    (fn [err profile]
                      (if (not (nil? err))
-                       (prn err)
+                       (.log js/console err)
                        (do
                          (re/dispatch [:user-has-logged-in-out! true])
                          (re/dispatch [:update-social-id! (.-user_id profile)])))))
       db)))
 
+(re/register-handler
+  :get-library-content
+  (fn [db [_ route-params]]
+    (GET (str config/server-url "/api/content/entries?library-view=true&space-id=" config/library-space-id)
+         {:response-format :json
+          :keywords?       true
+          :handler         #(re/dispatch [:activities-get-successful % route-params])
+          :error-handler   #(prn %)})
+    db))
 
 (re/register-handler
   :activities-get-successful
-  (fn [db [_ res]]
+  (fn [db [_ res route-params]]
+
     ; Obtains the URL for each preview image, and adds a :url field next to
-    ; its :id field in [:activities  :fields :preview :sys] map.
+    ; its :id field in [:activities :fields :preview :sys] map.
 
-    (let [url-for-id  ; Maps preview image IDs to associated URLs.
-                      (->> (get-in res [:includes :Asset])
-                           (map (juxt (comp :id :sys)
-                                      (comp :url :file :fields)))
-                           (into {}))]
+    (let [url-for-id                                        ; Maps preview image IDs to associated URLs.
+          (->> (get-in res [:includes :Asset])
+               (map (juxt (comp :id :sys)
+                          (comp :url :file :fields)))
+               (into {}))
+          _db_ (assoc db                                    ; Return new db, adding :url field to its [... :sys] map.
+                 :activities
+                 (for [item (:items res)]
+                   (update-in item
+                              [:fields :preview :sys]
+                              (fn [{id :id :as sys}]
+                                (assoc sys :url (url-for-id id))))))]
+      (when route-params
+        ;; i.e. when we are navigating to /tracks/:track/:activity
+        (let [{:keys [track activities activity]} route-params]
+          (re/dispatch [:set-activities-by-track-in-view :track-id track])
+          ;; i.e. when we request data for single activity view
+          (if activity
+            (re/dispatch [:activities-by-track (:activities _db_) track activity])
+            (re/dispatch [:activities-by-track (:activities _db_) track]))
+          (when activities
+            (re/dispatch [:set-activities-in-view activities]))))
+      _db_)))
 
-      (assoc db       ; Return new db, adding :url field to its [... :sys] map.
-             :activities
-             (for [item (:items res)]
-               (update-in item
-                          [:fields :preview :sys]
-                          (fn [{id :id :as sys}]
-                            (assoc sys :url (url-for-id id)))))))))
+(re/register-handler
+  :set-activities-by-track-in-view
+  (fn [db [_ prop arg]]
+    (if (= prop :display-name)
+      (assoc-in db [:activities-by-track-in-view :display-name] arg)
+      (assoc-in db [:activities-by-track-in-view :track-id] (keyword arg)))))
 
+(re/register-handler
+  :set-activities-in-view
+  (re/path [:activities-in-view])
+  (fn [_ [_ activity-id]]
+    activity-id))
+
+(re/register-handler
+  :activities-by-track
+  (fn [db [_ activities track-id activity]]
+    (let [filtered-activities (filterv #(= (get-in % [:sys :contentType :sys :id]) track-id) activities)]
+      (when activity
+        (re/dispatch [:set-activity-in-view filtered-activities activity]))
+      (assoc-in db [:activities-by-track (keyword track-id)] filtered-activities))))
+
+(re/register-handler
+  :get-activity-models
+  (fn [db [_ _]]
+    (GET (str config/server-url "/api/content/models/" config/library-space-id)
+         {:response-format :json
+          :keywords?       true
+          :handler         #(re/dispatch [:get-activity-models-successful %])
+          :error-handler   #(prn %)})
+    db))
+
+(re/register-handler
+  :get-activity-models-successful
+  (fn [db [_ res]]
+    (assoc db :activity-models (:models res))))
+
+(re/register-handler
+  :set-activity-in-view
+  (re/path [:activity-in-view])
+  (fn [_ [_ activities activity]]
+    (some #(when (= (get-in % [:fields :title]) activity) %)
+          activities)))

@@ -1,7 +1,7 @@
 (defproject owlet-ui "0.1.0-SNAPSHOT"
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.clojure/clojurescript "1.8.51"]
-                 [reagent "0.5.1"]
+                 [reagent "0.6.0"]
                  [binaryage/devtools "0.6.1"]
                  [re-frame "0.7.0"]
                  [secretary "1.2.3"]
@@ -10,12 +10,11 @@
                  [ring "1.4.0"]
                  [cljsjs/jquery "2.2.2-0"]
                  [cljs-ajax "0.5.4"]
-                 [cljsjs/auth0-lock "8.1.5-1"]
+                 [cljsjs/auth0-lock "10.2.1-0"]
                  [reagent-utils "0.1.7"]
-                 [devcards "0.2.1-7"]
-                 [figwheel-sidecar "0.5.8"]
+                 [figwheel-sidecar "0.5.4-7"]
+                 [cljsjs/bootstrap "3.3.6-1"]
                  [cljsjs/firebase "3.2.1-0"]
-                 [cljs-react-test "0.1.3-SNAPSHOT"]
                  [org.clojure/core.async "0.2.385"]]
 
   :plugins [[lein-cljsbuild "1.1.3"]
@@ -23,7 +22,7 @@
 
   :min-lein-version "2.5.3"
 
-  :source-paths ["src/clj" "script"]
+  :source-paths ["src/clj"]
 
   :clean-targets ^{:protect false} ["resources/public/js/compiled" "target"
                                     "test/js"]
