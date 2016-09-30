@@ -9,7 +9,6 @@ body {
 }
 
 #sidebar {
-  padding-left: 0;
   text-align: center;
   background-color: @primary-color;
   color: #cffffd;
@@ -17,10 +16,12 @@ body {
   bottom: 0;
   height: 100%;
   width: 180px;
+  @media (max-width: 543px) {
+    display: none;
+  }
 }
 
 #lpsidebar {
-  padding-left: 0;
   text-align: center;
   background-color: @primary-color;
   color: #cffffd;
@@ -37,6 +38,9 @@ body {
   }
   img.owlet {
     margin-top: 0;
+  }
+  @media (min-width: 544px) {
+    display: none;
   }
 }
 
