@@ -13,7 +13,7 @@
                  [cljsjs/auth0-lock "8.1.5-1"]
                  [reagent-utils "0.1.7"]
                  [devcards "0.2.1-7"]
-                 [figwheel-sidecar "0.5.4-7"]
+                 [figwheel-sidecar "0.5.8"]
                  [cljsjs/firebase "3.2.1-0"]
                  [cljs-react-test "0.1.3-SNAPSHOT"]
                  [org.clojure/core.async "0.2.385"]]
@@ -45,7 +45,7 @@
   :cljsbuild
   {:builds
    [{:id           "dev"
-     :source-paths ["src/cljs"]
+     :source-paths ["src/cljs" "test/cljs"]
      :figwheel     {:on-jsload "owlet-ui.core/mount-root"}
      :compiler     {:main                 owlet-ui.core
                     :output-to            "resources/public/js/compiled/app.js"
@@ -65,6 +65,7 @@
     {:id           "test"
      :source-paths ["src/cljs" "test/cljs"]
      :compiler     {:output-to     "resources/public/js/compiled/test.js"
+                    :output-dir    "resources/public/js/compiled/test-out"
                     :main          owlet-ui.runner
                     :optimizations :none}}]}
 

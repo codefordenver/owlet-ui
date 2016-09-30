@@ -1,23 +1,38 @@
 (ns owlet-ui.firebase
+  "Utilities for working with the Firebase backend-as-a-service platform.
+  See https://firebase.google.com"
   (:require [owlet-ui.config :refer [firebase-app-init]]
+            [owlet-ui.async :refer [repeatedly-running]]
             [reagent.ratom :refer-macros [reaction]]
             [re-frame.core :as re]
+
+            ; Add <script src="https://www.gstatic.com/firebasejs/3.4.0/firebase.js"></script>
+            ; to index.html . This is required for def. of js/firebase, etc.
             [cljsjs.firebase]))
 
 
-(defonce firebase-app
+(def firebase-app
+  "The global firebase.app.App instance for use by this application.
+  See https://firebase.google.com/docs/reference/js/firebase.app.App.html .
+  "
   (.initializeApp js/firebase (clj->js firebase-app-init)))
 
 
-(defonce firebase-storage-ref
-  (-> firebase-app .storage .ref))
+(def timestamp-placeholder
+  "A value you can provide that the firebase server will automatically replace
+  with the date/time when the assignment took place there.
+  "
+  (-> js/firebase .-database .-ServerValue .-TIMESTAMP))
 
 
-(defonce firebase-db-ref
+;  ;  ;  ;  ;  ;  ;  ;  ;   Defining Firebase refs   ;  ;  ;  ;  ;  ;  ;  ;  ;
+
+
+(def firebase-db-ref
   (-> firebase-app .database .ref))
 
 
-(defn ref-for-path
+(defn db-ref-for-path
   "Returns a Firebase ref for the node at the given path string relative to
   firebase-db-ref.
   "
@@ -25,35 +40,84 @@
   (.child firebase-db-ref rel-path))
 
 
+(def firebase-storage-ref
+  (-> firebase-app .storage .ref))
+
+
 (defn storage-ref-for-url
   [url]
   (-> firebase-app .storage (.refFromURL url)))
 
 
-(defn upload-at-ref
-  [map-or-list a-ref]
-  (.set a-ref (clj->js map-or-list)))
+;  ;  ;  ;  ;  ;  ;  ;  Communicating with Firebase DB  ;  ;  ;  ;  ;  ;  ;  ;
 
 
-(defn link-with-atom!
-  [db-ref an-atom]
+(def legal-db-value?
+  "Returns true iff the given Clojure value can be stored as a value in the
+  Firebase database, say using set-ref or change-on. Most Clojure values could
+  be \"converted\" to JSON just using clj->js, but important meaning could be
+  lost. So, to enforce explicitness, we require that only \"stringish\" values
+  (strings, symbols, or keywords) be used as keys in the case of a map
+  argument. The other argument values resulting in a true result are numbers,
+  the timestamp-placeholder, and maps or sequential collections with legal
+  values as defined here.
+  "
+  (let [stringish? (some-fn string? symbol? keyword?)]
+    (comp boolean (some-fn number?
+                           stringish?
+                           nil?
+                           (partial = timestamp-placeholder)
+                           (every-pred
+                             (some-fn sequential? set?)
+                             not-empty
+                             #(every? legal-db-value? %))
+                           (every-pred
+                             map?
+                             not-empty
+                             (comp (partial every? stringish?) keys)
+                             #(every? legal-db-value? (vals %)))))))
 
-  ; Side effect! Assign event callback to db-ref:
-  ; First clean out previous callback definitions during development. See
-  ; http://grokbase.com/t/gg/firebase-talk/14bnqq68g0/firebase-do-i-need-to-call-off-when-a-reference-is-removed
-  (.off db-ref)
-  ; Define callback that just copies all data to the given atom.
-  (.on db-ref "value" (fn [snapshot]
-                        (let [snap-as-clj (-> snapshot
-                                              .val
-                                              (js->clj :keywordize-keys true))]
-                          (reset! an-atom snap-as-clj))))
 
-  ; For convenience, return a 0-arg function to upload the contents of an-atom.
-  #(upload-at-ref @an-atom db-ref))
+(defn set-ref
+  "Assigns the given clojure value v at Firebase reference a-ref. If a no-arg
+  callback function is given as third argument, it is called upon completion.
+
+  Note that v must pass precondition legal-db-value?, and if v is nil, the
+  location corresponding to a-ref will be deleted. The same applies to empty
+  collections as values, like [], {}, or #{}. (The Firebase databse does not
+  store null values or empty collections.)
+
+  Returns a js/Promise, which will perform (or has performed) the .set method
+  call.
+  "
+  ([a-ref v]
+   (set-ref a-ref v #(do)))
+
+  ([a-ref v callback]
+   {:pre [(or (legal-db-value? v)
+              (println "Illegal Firebase value:" (pr-str v)))
+          (fn? callback)]}
+   (let [value (clj->js v)]
+     (.set a-ref value callback))))
 
 
 (defn on-change
+  "This is the preferred way to keep your re-frame app continuously updated
+  to changes occurring in the Firebase node indicated by the given ref.
+  Argument db-ref is the ref of the node to be observed. When a change happens
+  there, a re-frame event will be dispatched. It will be a vector whose first
+  element is event-id, second element is the new data from the Firebase node,
+  and remaining elements are the remaining arguments. Note that the event will
+  fire right away with initial data.
+
+  The Firebase database is part of the outside world, like the end user is.
+  To receive data from the user, we set up components to receive data from the
+  user and dispatch it to handlers we specify. So just think of this function
+  as a way to set up a sort of VIRTUAL component to receive data from a
+  Firebase database ref and dispatch to a handler we specify.
+
+  Returns the callback function used by the ref's .on method.
+  "
   [db-ref event-id & args]
   (.on db-ref
        "value"
@@ -63,9 +127,38 @@
 
 
 (defn change-on
+  "This is the preferred way to keep the Firebase node indicated by a given ref
+  continuously updated to changes in your re-frame app. Argument db-ref is the
+  ref of the node to be updated. It is essentially \"subscribed\" to the
+  registered subscription defined by a vector of the subscription-args. The
+  resulting reaction will be polled as if it were dereferrenced in the hiccup
+  code of a component definition. Whenever it changes, its new value will be
+  uploaded to the Firebase node. Note that the upload happens immediately with
+  initial data.
+
+  Important: For this function to work, you need to make sure that function
+  owlet-ui.async/repeatedly-run has been called with no arguments and is
+  running. This is the polling mechanism.
+
+  This function is the inverse of on-change, sending data to the outside world.
+  To send data to the user, we set up components that receive data from
+  subscriptions we specify and display it to the user. So just think of this
+  function as a way to set up a sort of VIRTUAL component to receive data from
+  a subscription we specify and send it to a Firebase database ref.
+
+  Returns the no-arg function that is polled: It does the actual upload when
+  the subscription notices a change (and returns the firebase.Promise resulting
+  from ref's .set method). To halt the polling of the-returned-fn, execute the
+  following:
+
+      (swap! owlet-ui.async/repeatedly-running disj the-returned-fn)
+  "
   [db-ref & subscription-args]
-  (let [react (re/subscribe (vec subscription-args))]
-    (reaction (.set db-ref (clj->js @react)))))
+  (let [sub-reaction     (re/subscribe (vec subscription-args))
+        sending-reaction (reaction (set-ref db-ref @sub-reaction))
+        repeated-fn      (fn [] @sending-reaction)]
+    (swap! repeatedly-running conj repeated-fn)
+    repeated-fn))
 
 
 (defn promise-for-path
@@ -75,9 +168,12 @@
   This is handy for ad-hoc queries at the REPL.
   "
   [rel-path callback]
-  (.once (ref-for-path rel-path)
+  (.once (db-ref-for-path rel-path)
          "value"
          #(-> % .val js->clj callback)))
+
+
+;  ;  ;  ;  ;  ;  ;  Communicating with Firebase Storage   ;  ;  ;  ;  ;  ;  ;
 
 
 (defn upload-file
@@ -97,7 +193,7 @@
   [js-file & {:keys [into-dir next error complete-with-snapshot] :as options}]
 
   (.log js/console
-    "todomvc.firebase/upload-file:"
+    "upload-file:"
     (str "Uploading '" (.-name js-file) "' into directory '" into-dir "'"))
 
   (let [dir           (or into-dir "")
@@ -108,7 +204,7 @@
                       [:error
                        (fn [js-error]
                          (.log js/console
-                               "todomvc.firebase/upload-file:"
+                               "upload-file:"
                                (str "Could not upload file '"
                                     (.-name js-file)
                                     "'.")
@@ -132,14 +228,10 @@
              clj->js))))
 
 
-(defn delete-url
+(defn delete-file-at-url
   "Returns a Promise containing void, which deletes the file at the given URL.
   The promise resolves if the deletion succeeded and rejects if it failed,
   including if the file refered-to by the URL didn't exist.
   "
   [url]
   (-> url storage-ref-for-url .delete))
-
-
-(def timestamp-placeholder
-  (-> js/firebase .-database .-ServerValue .-TIMESTAMP))
