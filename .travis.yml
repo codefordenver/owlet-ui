@@ -8,5 +8,5 @@ deploy:
   provider: s3
   access_key_id: ${CFD_OWLET_AWS_ACCESS_KEY_ID}
   secret_access_key: ${CFD_OWLET_AWS_SECRET_ACCESS_KEY}
-  bucket: "owlet"
+  bucket: "owlet.codefordenver.org"
   skip_cleanup: true
