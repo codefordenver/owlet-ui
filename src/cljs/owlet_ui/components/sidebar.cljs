@@ -5,7 +5,7 @@
 
 (defn sidebar-component []
   [:div
-    [:div#lpsidebar.hidden-sm-up
+    [:div#lpsidebar
       [:a#logo {:href "#/"}
         [:img.owlet {:src "img/owlet-logo.png"}]]
       [:div.menu
@@ -16,7 +16,7 @@
         [:a {:href "#/settings"}
           [:img {:src "img/icon3.png"}]]]]
 
-    [:div#sidebar.hidden-xs-down
+    [:div#sidebar
       [:a {:href "#/"}
         [:img.owlet {:src "img/owlet-logo.png"}]]
       [:div.menu
