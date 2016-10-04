@@ -24,7 +24,7 @@
        (let [token (.-idToken auth-res)
              social-id (-> auth-res .-idTokenPayload .-sub)]
          (re-frame/dispatch [:user-has-logged-in-out! true])
-         (re-frame/dispatch [:update-social-id! social-id])
+         (re-frame/dispatch [:update-sid-and-get-cms-entries-for social-id])
          (.setItem js/localStorage "userToken" token))))
 
 (def default-header-bg-image

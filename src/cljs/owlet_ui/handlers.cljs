@@ -70,14 +70,13 @@
 
 
 (re/register-handler
-  :update-social-id!
+  :update-sid-and-get-cms-entries-for
   (re/path [:user])
   (fn [db [_ sid]]
     (GET (str config/server-url "/api/content/entries?social-id=" sid)
          {:response-format :json
           :keywords?       true
-          :handler         #(re/dispatch [:process-fetch-entries-success! %1])
-          :error-handler   #(prn %)})
+          :handler         #(re/dispatch [:process-fetch-entries-success! %1])})
     (assoc db :social-id sid)))
 
 
@@ -158,15 +157,17 @@
 (re/register-handler
   :get-auth0-profile
   (fn [db [_ _]]
-    (let [user-token (.getItem js/localStorage "userToken")]
+    (when-let [user-token (.getItem js/localStorage "userToken")]
       (.getProfile config/lock user-token
                    (fn [err profile]
                      (if (not (nil? err))
-                       (.log js/console err)
+                       ;; delete expired token
+                       (when user-token
+                         (.removeItem js/localStorage "userToken"))
                        (do
                          (re/dispatch [:user-has-logged-in-out! true])
-                         (re/dispatch [:update-social-id! (.-user_id profile)])))))
-      db)))
+                         (re/dispatch [:update-sid-and-get-cms-entries-for (.-user_id profile)]))))))
+    db))
 
 (re/register-handler
   :get-library-content
