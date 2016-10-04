@@ -21,8 +21,9 @@
 
 (.on lock "authenticated"
      (fn [auth-res]
-       (let [token (.-idToken auth-res)
-             social-id (-> auth-res .-idTokenPayload .-sub)]
+       (let [_auth-res_ (js->clj auth-res :keywordize-keys true)
+             token (:idToken _auth-res_)
+             social-id (-> _auth-res_ :idTokenPayload :sub)]
          (re-frame/dispatch [:user-has-logged-in-out! true])
          (re-frame/dispatch [:update-sid-and-get-cms-entries-for social-id])
          (.setItem js/localStorage "userToken" token))))
@@ -33,8 +34,8 @@
 (defonce library-space-id "c7i369745nqp")
 
 (defonce firebase-app-init
-  {:apiKey        "AIzaSyD96QBAD_PtvTDrlhOYomxHW5mAvViluIQ"
-   :authDomain    "popping-inferno-468.firebaseapp.com"
-   :databaseURL   "https://popping-inferno-468.firebaseio.com"
-   :storageBucket "popping-inferno-468.appspot.com"})
+         {:apiKey        "AIzaSyD96QBAD_PtvTDrlhOYomxHW5mAvViluIQ"
+          :authDomain    "popping-inferno-468.firebaseapp.com"
+          :databaseURL   "https://popping-inferno-468.firebaseio.com"
+          :storageBucket "popping-inferno-468.appspot.com"})
 
