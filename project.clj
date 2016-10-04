@@ -14,7 +14,8 @@
                  [reagent-utils "0.1.7"]
                  [figwheel-sidecar "0.5.4-7"]
                  [cljsjs/bootstrap "3.3.6-1"]
-                 [cljsjs/firebase "3.2.1-0"]]
+                 [cljsjs/firebase "3.2.1-0"]
+                 [org.clojure/core.async "0.2.385"]]
 
   :plugins [[lein-cljsbuild "1.1.3"]
             [lein-less "1.7.5"]]
@@ -43,7 +44,7 @@
   :cljsbuild
   {:builds
    [{:id           "dev"
-     :source-paths ["src/cljs"]
+     :source-paths ["src/cljs" "test/cljs"]
      :figwheel     {:on-jsload "owlet-ui.core/mount-root"}
      :compiler     {:main                 owlet-ui.core
                     :output-to            "resources/public/js/compiled/app.js"
@@ -63,6 +64,7 @@
     {:id           "test"
      :source-paths ["src/cljs" "test/cljs"]
      :compiler     {:output-to     "resources/public/js/compiled/test.js"
+                    :output-dir    "resources/public/js/compiled/test-out"
                     :main          owlet-ui.runner
                     :optimizations :none}}]}
 

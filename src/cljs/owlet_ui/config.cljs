@@ -31,3 +31,10 @@
   "http://apod.nasa.gov/apod/image/1607/OrionNebula_ESO_4000.jpg")
 
 (defonce library-space-id "c7i369745nqp")
+
+(defonce firebase-app-init
+  {:apiKey        "AIzaSyD96QBAD_PtvTDrlhOYomxHW5mAvViluIQ"
+   :authDomain    "popping-inferno-468.firebaseapp.com"
+   :databaseURL   "https://popping-inferno-468.firebaseio.com"
+   :storageBucket "popping-inferno-468.appspot.com"})
+
