@@ -116,7 +116,10 @@
   as a way to set up a sort of VIRTUAL component to receive data from a
   Firebase database ref and dispatch to a handler we specify.
 
-  Returns the callback function used by the ref's .on method.
+  Returns the callback function passed to the ref's .on method. It can be used
+  to turn off observation as follows:
+  (.off \"value\" db-ref the-returned-function). See
+  https://firebase.google.com/docs/reference/js/firebase.database.Reference#off
   "
   [db-ref event-id & args]
   (.on db-ref
@@ -124,6 +127,54 @@
        (fn [snapshot]
          (let [snap-as-clj (-> snapshot .val (js->clj :keywordize-keys true))]
            (re/dispatch (apply vector event-id snap-as-clj args))))))
+
+
+(defn on-presence-change
+  "Exactly like on-change, this listens to the given Firebase database ref and
+  dispatches an event of the given id. In addition, a function is registered
+  to listen to any change in node /.info/connected, which tracks the client's
+  connection to Firebase. The function updates the given ref with a boolean at
+  key \"online\" and the number of milliseconds since the epoch at key
+  \"online-change-time\". Note that the contents of the ref are not replaced;
+  only values for these keys are updated.
+
+  Note also that, when disconnected, the \"online-change-time\" integer
+  recorded locally must be from the time known by the LOCAL system. The value
+  recorded on the Firebase server, however, will be from the SERVER'S time.
+  Once the connection is reestablished, however, the server's value will be
+  recorded locally, and an event will be dispatched as usual.
+
+  Returns a vector containing two functions. The first is the function
+  listening to node /.info/connected, and the second is listening to db-ref,
+  as in on-change. You can use these with the firebase.database.Reference
+  method off(). See the on-change doc.
+  "
+  [db-ref event-id & args]
+
+  (letfn [(update-presence-info [db-obj snap]
+            ; Note that db-obj may be a firebase.database.Reference object,
+            ; OR a firebase.database.OnDisconnect object.
+            (.update db-obj
+                     (clj->js {:online             (.val snap)
+                               :online-change-time timestamp-placeholder})))]
+
+    [(.on (db-ref-for-path ".info/connected")
+          "value"
+          (fn [snapshot]
+            ; Update db-ref with connection status, incl. time connected.
+            (update-presence-info db-ref snapshot)
+            (when (.val snapshot)
+              ; Tell db-ref to do update on the server only if connection is
+              ; lost. This happens at most once.
+              (-> db-ref
+                  .onDisconnect
+                  (update-presence-info snapshot)))))
+
+     ; When a connection or disconnection occurs, dispatch an event vector
+     ; with the new contents of db-ref,
+     ; map { ... :online true, :online-change-time <server-or-local-time> ...}
+     ; as its second element.
+     (apply on-change db-ref event-id args)]))
 
 
 (defn change-on
