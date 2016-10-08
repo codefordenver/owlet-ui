@@ -11,7 +11,7 @@
    :app  {:initialized? false}
    :activities []
    :activity-models nil
-   :activities-by-track-in-view {}
+   :activities-by-track-in-view {:track-id nil :display-name nil}
    :activities-by-track {}
    :activities-in-view nil
    :activity-in-view nil})

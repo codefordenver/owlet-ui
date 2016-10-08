@@ -10,7 +10,7 @@
          (js/zadenMagic))
        :reagent-render
        (fn []
-         (let [name (.replace (:name data) " Activity" "")]
+         (let [name (:name data)]
            [:div.trackwrapper.col-xs-12.col-md-6.col-lg-4
             [:div.trackwrap
              [:a.track {:on-click #(re/dispatch [:set-activities-by-track-in-view :display-name name])
