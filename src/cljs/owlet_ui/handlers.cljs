@@ -172,6 +172,8 @@
 (re/register-handler
   :get-library-content
   (fn [db [_ route-params]]
+    (when (empty? (:activity-models db))
+      (re/dispatch [:get-activity-models]))
     (GET (str config/server-url "/api/content/entries?library-view=true&space-id=" config/library-space-id)
          {:response-format :json
           :keywords?       true
@@ -213,9 +215,9 @@
 (re/register-handler
   :set-activities-by-track-in-view
   (fn [db [_ prop arg]]
-    (if (= prop :display-name)
-      (assoc-in db [:activities-by-track-in-view :display-name] arg)
-      (assoc-in db [:activities-by-track-in-view :track-id] (keyword arg)))))
+    (case prop
+      :display-name (assoc-in db [:activities-by-track-in-view :display-name] arg)
+      :track-id (assoc-in db [:activities-by-track-in-view :track-id] (keyword arg)))))
 
 (re/register-handler
   :set-activities-in-view
@@ -244,7 +246,18 @@
 (re/register-handler
   :get-activity-models-successful
   (fn [db [_ res]]
-    (assoc db :activity-models (:models res))))
+      (re/dispatch [:set-track-display-name (:models (:models res))])
+      (assoc db :activity-models (:models res))))
+
+(re/register-handler
+  :set-track-display-name
+  (fn [db [_ models]]
+    (let [track-id (get-in db [:activities-by-track-in-view :track-id])
+          display-name (:name
+                        (first
+                         (filter #(if (= track-id (keyword (:model-id %))) %) models)))]
+      (assoc-in db
+            [:activities-by-track-in-view :display-name] display-name))))
 
 (re/register-handler
   :set-activity-in-view

@@ -8,22 +8,20 @@
   [models k]
   (let [match (some #(when (= (keyword (:model-id %)) k)
                       (:name %)) models)]
-    (.replace match "Activity" "")))
+      match))
 
 (defn track-activities-view []
-  (let [activity-models (re/subscribe [:library-activity-models])
-        active-view (re/subscribe [:activities-by-track-in-view])
+  (let [active-view (re/subscribe [:activities-by-track-in-view])
         activities (re/subscribe [:activities-by-track])]
     (reagent/create-class
-      {:reagent-render
+      {:component-will-mount
+       (fn []
+         (when (empty? @active-view)
+            (re/dispatch [:get-library-content])))
+       :reagent-render
        (fn []
          (let [{:keys [display-name track-id]} @active-view
                activity-items (get @activities track-id)]
-           (if (or (empty? @activity-models) (nil? display-name))
-             (re/dispatch [:get-activity-models])
-             (let [models (:models @activity-models)
-                   _display-name_ (get-display-name models track-id)]
-               (re/dispatch [:set-activities-by-track-in-view :display-name _display-name_])))
            [:div.jumbotron
             [:div.container-fluid
              [:div.row
