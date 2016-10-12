@@ -6,6 +6,6 @@
     (fn []
       (let [title (get-in @activity-data [:fields :title])
             author (get-in @activity-data [:fields :author])]
-        [:div.title-wrap
+        [:div.activity-title-wrap
          [:h1 title]
          [:h5 "by: " author]]))))

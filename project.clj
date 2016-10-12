@@ -15,6 +15,7 @@
                  [figwheel-sidecar "0.5.4-7"]
                  [cljsjs/bootstrap "3.3.6-1"]
                  [cljsjs/firebase "3.2.1-0"]
+                 [cljsjs/marked "0.3.5-0"]
                  [org.clojure/core.async "0.2.385"]]
 
   :plugins [[lein-cljsbuild "1.1.3"]
