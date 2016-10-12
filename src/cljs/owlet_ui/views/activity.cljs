@@ -1,10 +1,15 @@
 (ns owlet-ui.views.activity
-  (:require [re-frame.core :as re]))
+  (:require [owlet-ui.components.activity.title :refer [activity-title]]
+            [owlet-ui.components.activity.embed :refer [activity-embed]]
+            [owlet-ui.components.activity.info :refer [activity-info]]
+            [owlet-ui.components.activity.inspiration :refer [activity-inspiration]]
+            [owlet-ui.components.activity.reflection :refer [activity-reflection]]))
 
 (defn activity-view []
-  (let [activity-data (re/subscribe [:activity-in-view])]
-    (fn []
-      (let [title (get-in @activity-data [:fields :title])]
-        [:div
-         [:h1 title]
-         [:code (str @activity-data)]]))))
+  (fn []
+    [:div.activity-wrap
+      [activity-title]
+      [activity-embed]
+      [activity-info]
+      [activity-inspiration]
+      [activity-reflection]]))
