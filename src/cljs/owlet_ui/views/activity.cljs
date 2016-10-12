@@ -1,9 +1,11 @@
 (ns owlet-ui.views.activity
-  (:require [re-frame.core :as re]
-            [reagent.core :as reagent :refer [atom]]
-            [owlet-ui.components.activity.title :refer [activity-title]]))
+  (:require [owlet-ui.components.activity.title :refer [activity-title]]
+            [owlet-ui.components.activity.embed :refer [activity-embed]]
+            [owlet-ui.components.activity.info :refer [activity-info]]))
 
 (defn activity-view []
   (fn []
-    [:div
-      [activity-title]]))
+    [:div.activity-wrap
+      [activity-title]
+      [activity-embed]
+      [activity-info]]))
