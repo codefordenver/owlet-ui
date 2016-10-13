@@ -1,6 +1,11 @@
 (ns owlet-ui.components.activity.embed
   (:require [re-frame.core :as re]))
 
+(defn generic-responsive-iframe
+  "returns an responsive iframe"
+  [iframe-code]
+  (.replace iframe-code (js/RegExp. "/\\\"/g,'\\''")))
+
 (defn activity-embed []
   (let [activity-data (re/subscribe [:activity-in-view])]
     (fn []
@@ -11,8 +16,9 @@
           (if (nil? embed)
             [:div.activity-preview
               [:img {:src preview}]]
-            [:div.activity-embed {"dangerouslySetInnerHTML"
-                                    #js{:__html embed}}])
+            [:div.embed-container
+             {"dangerouslySetInnerHTML"
+                                    #js{:__html (generic-responsive-iframe embed)}}])
          [:div.activity-concept-wrap
           (for [c concepts]
                ^{:key (gensym "concept-")}
