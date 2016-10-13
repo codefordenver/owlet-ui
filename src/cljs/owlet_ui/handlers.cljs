@@ -2,6 +2,7 @@
   (:require [re-frame.core :as re]
             [owlet-ui.db :as db]
             [owlet-ui.config :as config]
+            [owlet-ui.firebase :as fb]
             [ajax.core :refer [GET POST PUT]]))
 
 
@@ -158,15 +159,23 @@
   :get-auth0-profile
   (fn [db [_ _]]
     (when-let [user-token (.getItem js/localStorage "userToken")]
-      (.getProfile config/lock user-token
-                   (fn [err profile]
-                     (if (not (nil? err))
-                       ;; delete expired token
-                       (when user-token
-                         (.removeItem js/localStorage "userToken"))
-                       (do
-                         (re/dispatch [:user-has-logged-in-out! true])
-                         (re/dispatch [:update-sid-and-get-cms-entries-for (.-user_id profile)]))))))
+      (.getProfile
+        config/lock
+        user-token
+        (fn [err profile]
+          (if (some? err)
+            ;; delete expired token
+            (when user-token
+              (.removeItem js/localStorage "userToken"))
+            (let [user-id (.-user_id profile)]
+              (re/dispatch [:user-has-logged-in-out! true])
+              (re/dispatch [:update-sid-and-get-cms-entries-for user-id])
+              (fb/on-presence-change
+                (fb/db-ref-for-path (str "users/" user-id))
+                :user-presence-changed)
+              (register-setter-handler
+                :user-presence-changed
+                [:users (keyword user-id)]))))))
     db))
 
 (re/register-handler

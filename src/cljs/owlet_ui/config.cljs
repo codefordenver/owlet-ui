@@ -34,8 +34,8 @@
 (defonce library-space-id "c7i369745nqp")
 
 (defonce firebase-app-init
-         {:apiKey        "AIzaSyD96QBAD_PtvTDrlhOYomxHW5mAvViluIQ"
-          :authDomain    "popping-inferno-468.firebaseapp.com"
-          :databaseURL   "https://popping-inferno-468.firebaseio.com"
-          :storageBucket "popping-inferno-468.appspot.com"})
+         {:apiKey        "AIzaSyAbs6wXxPGX-8XEWR6nyj7iCETOL6dZjzY"
+          :authDomain    "owlet-users.firebaseapp.com"
+          :databaseURL   "https://owlet-users.firebaseio.com"
+          :storageBucket "owlet-users.appspot.com"})
 

@@ -1,12 +1,21 @@
 (ns owlet-ui.firebase
+  ;           (                           )
+  ;           )\ )   (    (       (    ( /(      )          (
+  ;          (()/(   )\   )(     ))\   )\())  ( /(   (     ))\
+  ;           /(_)) ((_) (()\   /((_) ((_)\   )(_))  )\   /((_)
+  ;          (_) _|  (_)  ((_) (_))   | |(_) ((_)_  ((_) (_))
+  ;           |  _|  | | | '_| / -_)  | '_ \ / _` | (_-< / -_)
+  ;           |_|    |_| |_|   \___|  |_.__/ \__,_| /__/ \___|
+  ;
   "Utilities for working with the Firebase backend-as-a-service platform.
-  See https://firebase.google.com"
+  See https://firebase.google.com
+  "
   (:require [owlet-ui.config :refer [firebase-app-init]]
             [owlet-ui.async :refer [repeatedly-running]]
             [reagent.ratom :refer-macros [reaction]]
             [re-frame.core :as re]
 
-            ; Add <script src="https://www.gstatic.com/firebasejs/3.4.0/firebase.js"></script>
+            ; Adds <script src="https://www.gstatic.com/firebasejs/3.4.0/firebase.js"></script>
             ; to index.html . This is required for def. of js/firebase, etc.
             [cljsjs.firebase]))
 
