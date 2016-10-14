@@ -1,21 +1,33 @@
 (ns owlet-ui.firebase
+  ;           (                           )
+  ;           )\ )   (    (       (    ( /(      )          (
+  ;          (()/(   )\   )(     ))\   )\())  ( /(   (     ))\
+  ;           /(_)) ((_) (()\   /((_) ((_)\   )(_))  )\   /((_)
+  ;          (_) _|  (_)  ((_) (_))   | |(_) ((_)_  ((_) (_))
+  ;           |  _|  | | | '_| / -_)  | '_ \ / _` | (_-< / -_)
+  ;           |_|    |_| |_|   \___|  |_.__/ \__,_| /__/ \___|
+  ;
   "Utilities for working with the Firebase backend-as-a-service platform.
-  See https://firebase.google.com"
+  See https://firebase.google.com
+  "
   (:require [owlet-ui.config :refer [firebase-app-init]]
             [owlet-ui.async :refer [repeatedly-running]]
             [reagent.ratom :refer-macros [reaction]]
             [re-frame.core :as re]
 
-            ; Add <script src="https://www.gstatic.com/firebasejs/3.4.0/firebase.js"></script>
+            ; Adds <script src="https://www.gstatic.com/firebasejs/3.4.0/firebase.js"></script>
             ; to index.html . This is required for def. of js/firebase, etc.
             [cljsjs.firebase]))
 
 
 (def firebase-app
   "The global firebase.app.App instance for use by this application.
+  There must be only one with a particular name.
   See https://firebase.google.com/docs/reference/js/firebase.app.App.html .
   "
-  (.initializeApp js/firebase (clj->js firebase-app-init)))
+  (.initializeApp js/firebase
+                  (clj->js firebase-app-init)         ; Options.
+                  "owlet-ui.firebase/firebase-app"))  ; Just a name.
 
 
 (def timestamp-placeholder
@@ -79,8 +91,9 @@
 
 
 (defn set-ref
-  "Assigns the given clojure value v at Firebase reference a-ref. If a no-arg
-  callback function is given as third argument, it is called upon completion.
+  "Asynchronously assigns the given clojure value v at Firebase reference
+  a-ref. If a no-arg callback function is given as third argument, it is
+  called upon completion.
 
   Note that v must pass precondition legal-db-value?, and if v is nil, the
   location corresponding to a-ref will be deleted. The same applies to empty
@@ -116,14 +129,75 @@
   as a way to set up a sort of VIRTUAL component to receive data from a
   Firebase database ref and dispatch to a handler we specify.
 
-  Returns the callback function used by the ref's .on method.
+  Returns the callback function passed to the ref's .on method. It can be used
+  to turn off observation as follows:
+  (.off \"value\" db-ref the-returned-function). See
+  https://firebase.google.com/docs/reference/js/firebase.database.Reference#off
   "
   [db-ref event-id & args]
   (.on db-ref
        "value"
        (fn [snapshot]
          (let [snap-as-clj (-> snapshot .val (js->clj :keywordize-keys true))]
-           (re/dispatch (apply vector event-id snap-as-clj args))))))
+           (re/dispatch (apply vector event-id snap-as-clj args))))
+       #(println "owlet-ui.firebase/on-change"
+                 "calling firebase.database.Reference's .on():\n"
+                 (.toString %))))
+
+
+(defn on-presence-change
+  "Exactly like on-change, this listens to the given Firebase database ref and
+  dispatches an event of the given id. In addition, a function is registered
+  to listen to any change in node /.info/connected, which tracks the client's
+  connection to Firebase. The function updates the given ref with a boolean at
+  key \"online\" and the number of milliseconds since the epoch at key
+  \"online-change-time\". Note that the contents of the ref are not replaced;
+  only values for these keys are updated.
+
+  Note also that, when disconnected, the \"online-change-time\" integer
+  recorded locally must be from the time known by the LOCAL system. The value
+  recorded on the Firebase server, however, will be from the SERVER'S time.
+  Once the connection is reestablished, however, the server's value will be
+  recorded locally, and an event will be dispatched as usual.
+
+  Returns a vector containing two functions. The first is the function
+  listening to node /.info/connected, and the second is listening to db-ref,
+  as in on-change. You can use these with the firebase.database.Reference
+  method off(). See the on-change doc.
+  "
+  [db-ref event-id & args]
+
+  (letfn [(update-presence-info [db-obj connected?]
+            ; Note that db-obj may be just db-ref (a firebase.database.Reference
+            ; object), OR its associated firebase.database.OnDisconnect object.
+            ; Notice that timestamp-placeholder works locally too!
+            (.update db-obj
+                     (clj->js {:online             connected?
+                               :online-change-time timestamp-placeholder})
+                     #(when %
+                       (println "owlet-ui.firebase/on-presence-change"
+                                "calling firebase.database.OnDisconnect's"
+                                ".uppdate():\n"
+                                (.toString %)))))]
+
+    [(.on (db-ref-for-path ".info/connected")
+          "value"
+          (fn [snapshot]
+            ; Update db-ref with connection status, incl. time connected.
+            (update-presence-info db-ref (.val snapshot))
+            (when (.val snapshot)
+              ; Tell db-ref to do update on the server only if connection is
+              ; lost. This happens at most once.
+              (update-presence-info (.onDisconnect db-ref) false)))
+          #(println "owlet-ui.firebase/on-presence-change"
+                    "calling firebase.database.Reference's .on():\n"
+                    (.toString %)))
+
+     ; When a connection or disconnection occurs, dispatch an event vector
+     ; with the new contents of db-ref,
+     ; map { ... :online true, :online-change-time <server-or-local-time> ...}
+     ; as its second element.
+     (apply on-change db-ref event-id args)]))
 
 
 (defn change-on
@@ -170,7 +244,10 @@
   [rel-path callback]
   (.once (db-ref-for-path rel-path)
          "value"
-         #(-> % .val js->clj callback)))
+         #(-> % .val js->clj callback)
+         #(println "owlet-ui.firebase/promise-for-path"
+                   "calling firebase.database.Reference's .once():\n"
+                   (.toString %))))
 
 
 ;  ;  ;  ;  ;  ;  ;  Communicating with Firebase Storage   ;  ;  ;  ;  ;  ;  ;
@@ -192,7 +269,7 @@
   "
   [js-file & {:keys [into-dir next error complete-with-snapshot] :as options}]
 
-  (.log js/console
+  (println
     "upload-file:"
     (str "Uploading '" (.-name js-file) "' into directory '" into-dir "'"))
 
@@ -225,7 +302,10 @@
              (dissoc :into-dir :complete-with-snapshot)   ; Keys not expected by .on.
              (conj (when (not error) default-error))
              (conj (when complete-with-snapshot snap-complete))
-             clj->js))))
+             clj->js)
+         #(println "owlet-ui.firebase/upload-file"
+                   "calling firebase.storage.UploadTask's .on():\n"
+                   (.toString %)))))
 
 
 (defn delete-file-at-url
