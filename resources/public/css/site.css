@@ -12,6 +12,7 @@ body {
   bottom: 0;
   height: 100%;
   width: 180px;
+  display: none;
 }
 @media (max-width: 543px) {
   #sidebar {
@@ -40,6 +41,7 @@ body {
 @media (min-width: 544px) {
   #lpsidebar {
     display: none;
+    display: block;
   }
 }
 img.owlet {
