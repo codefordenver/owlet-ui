@@ -245,6 +245,7 @@
 (re/register-handler
   :get-activity-models
   (fn [db [_ _]]
+    (re/dispatch [:set-loading-state! true])
     (GET (str config/server-url "/api/content/models/" config/library-space-id)
          {:response-format :json
           :keywords?       true
@@ -270,7 +271,14 @@
 
 (re/register-handler
   :set-activity-in-view
-  (re/path [:activity-in-view])
+    (re/path [:activity-in-view])
   (fn [_ [_ activities activity]]
     (some #(when (= (get-in % [:fields :title]) activity) %)
           activities)))
+
+(re/register-handler
+  :set-loading-state!
+  (re/path [:app :loading])
+  (fn [_ [_ state]]
+      (prn state)
+      state))
