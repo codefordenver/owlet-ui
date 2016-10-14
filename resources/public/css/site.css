@@ -95,8 +95,9 @@ button {
 }
 .tracks .trackwrap {
   margin: 15px 0;
-  padding: 15px;
+  padding: 25px 15px;
   background-color: #ff563e;
+  height: 99px;
 }
 .tracks .trackwrap h2 {
   font-weight: 300;

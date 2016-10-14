@@ -11,14 +11,16 @@
          (js/zadenMagic))
        :reagent-render
        (fn []
-         (let [name (str/upper-case (:name data))]
+         (let [name (str/upper-case (:name data))
+               name-line1 (first (str/split name " "))
+               name-line2 (rest (str/split name " "))]
            [:div.trackwrapper.col-xs-12.col-md-6.col-lg-4
             [:div.trackwrap
              [:a.track {:on-click #(re/dispatch [:set-activities-by-track-in-view :display-name name])
                         :href     (str "#/tracks/" (:model-id data))}
-              [:h2 [:mark (first (str/split name " "))]
-                (when (<= 1 (count (rest (str/split name " "))))
-                   [:span
+              [:h2 [:mark name-line1]
+                (when (<= 1 (count name-line2))
+                  [:span
                     [:br]
-                    [:mark (str/join " " (rest (str/split name " ")))]])]]]]))})))
+                    [:mark (str/join " " name-line2)]])]]]]))})))
               ; [:p (:description data)]]]]))})))
