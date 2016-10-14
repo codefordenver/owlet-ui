@@ -1,11 +1,14 @@
-@font-stack: "century gothic", sans-serif;
+@import url('https://fonts.googleapis.com/css?family=Rubik:300,400,700');
+@font-stack: "Rubik", sans-serif;
 @primary-color: #0c171b;
 
 body {
   font: 100% @font-stack;
+  font-weight: 300;
   color: @primary-color;
   font-size: 1.2rem;
-  background-color: #e6e7e8;
+  // background-color: #e6e7e8;
+  background-color: white;
 }
 
 #sidebar {
@@ -102,21 +105,32 @@ button {
 .tracks {
   margin: 1.5em 1.5em 2em 1.5em;
   .trackwrap {
-    margin: 5px;
-    text-align: center;
-    background-color: @primary-color;
-    border: 2px solid @primary-color;
-    border-radius: 10px;
+    margin: 15px 0;
+    padding: 15px;
+    background-color: #ff563e;
+    // border: 2px solid @primary-color;
+    h2 {
+      font-weight: 300;
+      font-size: 1.1em;
+      line-height: 1.2em;
+    }
+    mark {
+      color: white;
+      background-color: black;
+    }
     .track {
       color: #cffffd;
       text-decoration: none;
     }
-    :hover {
-      color: #abfffb;
-    }
+    // :hover {
+    //   color: #abfffb;
+    // }
   }
   #title {
-    margin-left: 1em;
+    color: #750569;
+    font-size: 1.6em;
+    font-weight: 300;
+    margin-left: 15px;
     margin-top: 0.5em;
   }
 }
@@ -160,11 +174,6 @@ button {
 .no-gutter [class*='col-']:not(:last-child) {
   padding-right: 0;
   padding-left: 0;
-}
-
-.funfact {
-  float: left;
-  margin: 3em 2em 2em 2em;
 }
 
 .embed-container {
