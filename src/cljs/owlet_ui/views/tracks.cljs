@@ -13,11 +13,8 @@
        (fn []
          [:div
            [:div.tracks
-            [:h1#title "Tracks:"]
+            [:h1#title "Get started by choosing a track below"]
             [:br]
             (for [model (:models @activity-models)]
               ^{:key (gensym "model-")}
-              [track model])]
-           [:div.funfact "༼ つ ◕_◕ ༽つ" [:b " fun fact: "] [:i "Seeing gray dots?"]
-            [:br] "Those gray dots don't really exist.. when you try to look at one directly, it disappears. This is a "
-              [:a {:href "http://www.newworldencyclopedia.org/entry/Grid_illusion"} "grid illusion"] "."]])})))
+              [track model])]])})))
