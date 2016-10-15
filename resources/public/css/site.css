@@ -1,8 +1,10 @@
+@import url('https://fonts.googleapis.com/css?family=Rubik:300,400,700');
 body {
-  font: 100% "century gothic", sans-serif;
+  font: 100% "Rubik", sans-serif;
+  font-weight: 300;
   color: #0c171b;
   font-size: 1.2rem;
-  background-color: #e6e7e8;
+  background-color: white;
 }
 #sidebar {
   text-align: center;
@@ -92,21 +94,30 @@ button {
   margin: 1.5em 1.5em 2em 1.5em;
 }
 .tracks .trackwrap {
-  margin: 5px;
-  text-align: center;
-  background-color: #0c171b;
-  border: 2px solid #0c171b;
-  border-radius: 10px;
+  margin: 15px 0;
+}
+.tracks .trackwrap .track-bg {
+  padding: 25px 15px;
+  height: 99px;
+}
+.tracks .trackwrap h2 {
+  font-weight: 300;
+  font-size: 1.1em;
+  line-height: 1.2em;
+}
+.tracks .trackwrap mark {
+  color: white;
+  background-color: black;
 }
 .tracks .trackwrap .track {
   color: #cffffd;
   text-decoration: none;
 }
-.tracks .trackwrap :hover {
-  color: #abfffb;
-}
 .tracks #title {
-  margin-left: 1em;
+  color: #750569;
+  font-size: 1.6em;
+  font-weight: 300;
+  margin-left: 15px;
   margin-top: 0.5em;
 }
 .login {
@@ -141,10 +152,6 @@ button {
 .no-gutter [class*='col-']:not(:last-child) {
   padding-right: 0;
   padding-left: 0;
-}
-.funfact {
-  float: left;
-  margin: 3em 2em 2em 2em;
 }
 .embed-container {
   position: relative;
