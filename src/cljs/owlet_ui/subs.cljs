@@ -88,8 +88,3 @@
   :activity-in-view
   (fn [db]
     (reaction (get-in @db [:activity-in-view]))))
-
-(re/register-sub
-  :set-loading-state?
-  (fn [db]
-    (reaction (get-in @db [:app :loading?]))))

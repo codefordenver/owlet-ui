@@ -8,8 +8,7 @@
           :content-entries  []
           :background-image config/default-header-bg-image
           :background-image-entry-id nil}
-   :app  {:initialized? false
-          :loading? nil}
+   :app  {:initialized? false}
    :activities []
    :activity-models nil
    :activities-by-track-in-view {:track-id nil :display-name nil}
