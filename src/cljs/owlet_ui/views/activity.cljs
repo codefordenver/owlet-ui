@@ -10,12 +10,12 @@
     [:div.activity-wrap
       [:div.activity-header.col-xs-12
         [activity-title]]
-      [:div.activity-content.col-xs-12.col-lg-6
+      [:div.activity-content.col-xs-12.col-lg-8
         [activity-embed]
-        [:div.hidden-md-down
+        [:div.hidden-sm-down
           [activity-reflection]]]
-      [:div.activity-content.col-xs-12.col-lg-6
+      [:div.activity-content.col-xs-12.col-lg-4
         [activity-info]
-        [:div.hidden-lg-up
+        [:div.hidden-md-up
           [activity-reflection]]
         [activity-inspiration]]]))

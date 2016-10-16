@@ -5,6 +5,7 @@ body {
   color: #0c171b;
   font-size: 1.2rem;
   background-color: white;
+  overflow-x: hidden;
 }
 #sidebar {
   text-align: center;
@@ -48,6 +49,15 @@ body {
 }
 img.owlet {
   width: 87%;
+}
+.author {
+  color: #ADADAD;
+}
+.tag {
+  border-radius: 25px;
+  margin: 5px;
+  padding: 8px;
+  font-weight: normal;
 }
 .menu {
   padding-top: 10px;
