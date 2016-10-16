@@ -9,7 +9,7 @@
           :background-image config/default-header-bg-image
           :background-image-entry-id nil}
    :app  {:initialized? false
-          :loading true}
+          :loading? nil}
    :activities []
    :activity-models nil
    :activities-by-track-in-view {:track-id nil :display-name nil}

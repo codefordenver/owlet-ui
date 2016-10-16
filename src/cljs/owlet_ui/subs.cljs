@@ -92,4 +92,4 @@
 (re/register-sub
   :set-loading-state?
   (fn [db]
-    (reaction (get-in @db [:app :loading]))))
+    (reaction (get-in @db [:app :loading?]))))

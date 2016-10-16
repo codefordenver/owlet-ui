@@ -256,6 +256,7 @@
 (re/register-handler
   :get-activity-models-successful
   (fn [db [_ res]]
+      (re/dispatch [:set-loading-state! false])
       (re/dispatch [:set-track-display-name (:models (:models res))])
       (assoc db :activity-models (:models res))))
 
@@ -278,7 +279,6 @@
 
 (re/register-handler
   :set-loading-state!
-  (re/path [:app :loading])
+  (re/path [:app :loading?])
   (fn [_ [_ state]]
-      (prn state)
       state))

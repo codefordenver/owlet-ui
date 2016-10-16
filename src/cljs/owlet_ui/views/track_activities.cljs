@@ -3,13 +3,6 @@
             [reagent.core :as reagent :refer [atom]]
             [owlet-ui.components.activity-thumbnail :refer [activity-thumbnail]]))
 
-(defn- get-display-name
-  "find the matching display name for activity in activity model data"
-  [models k]
-  (let [match (some #(when (= (keyword (:model-id %)) k)
-                      (:name %)) models)]
-      match))
-
 (defn track-activities-view []
   (let [active-view (re/subscribe [:activities-by-track-in-view])
         activities (re/subscribe [:activities-by-track])]

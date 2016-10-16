@@ -1,5 +1,5 @@
 (ns owlet-ui.app
-  (:require [re-frame.core :as re-frame]
+  (:require [re-frame.core :as re]
             [reagent.core :as reagent]
             [owlet-ui.components.sidebar :refer [sidebar-component]]
             [owlet-ui.components.header :refer [header-component]]
@@ -23,17 +23,17 @@
   [views view-name])
 
 (defn main-view []
-  (let [active-view (re-frame/subscribe [:active-view])
-        loading? (re-frame/subscribe [:set-loading-state?])]
+  (let [active-view (re/subscribe [:active-view])
+        loading? (re/subscribe [:set-loading-state?])]
     (reagent/create-class
       {:component-will-mount
-       #(re-frame/dispatch [:get-auth0-profile])
+       #(re/dispatch [:get-auth0-profile])
        :reagent-render
        (fn []
          [:div#main
           [sidebar-component]
           [:div.content
            [header-component]
-           (if @loading?
-             [loading-component]
-             [show-view @active-view])]])})))
+           (when @loading?
+             [loading-component])
+           [show-view @active-view]]])})))
