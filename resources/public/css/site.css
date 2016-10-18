@@ -103,11 +103,17 @@ button {
 .tracks {
   margin: 1.5em 1.5em 2em 1.5em;
 }
+.tracks a {
+  display: block;
+  height: 100%;
+  padding: 15px 12px;
+}
 .tracks .trackwrap {
-  margin: 15px 0;
-  padding: 25px 15px;
-  background-color: #ff563e;
+  margin: 15px 0px;
   height: 99px;
+}
+.tracks .trackwrap .track-bg {
+  height: 100%;
 }
 .tracks .trackwrap h2 {
   font-weight: 300;
@@ -176,4 +182,45 @@ button {
   left: 0;
   width: 100%;
   height: 100%;
+}
+/* Animation */
+@-webkit-keyframes rotate {
+  to {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+@keyframes rotate {
+  to {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+/* Variables */
+/* Loading Icon */
+.loading {
+  width: 100px;
+  height: 100px;
+}
+.loading__ring {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+}
+.loading__ring:first-child {
+  -webkit-transform: skew(30deg, 20deg);
+  transform: skew(30deg, 20deg);
+}
+.loading__ring:last-child {
+  -webkit-transform: skew(-30deg, -20deg) scale(-1, 1);
+  transform: skew(-30deg, -20deg) scale(-1, 1);
+}
+.loading__ring:last-child svg {
+  -webkit-animation-delay: -0.5s;
+  animation-delay: -0.5s;
+}
+.loading__ring svg {
+  -webkit-animation: rotate 1s linear infinite;
+  animation: rotate 1s linear infinite;
+  fill: rgba(0, 0, 0, 0.2);
 }

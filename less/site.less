@@ -12,7 +12,6 @@ body {
   font-size: 1.2rem;
   // background-color: #e6e7e8;
   background-color: white;
-  overflow-x: hidden;
 }
 
 #sidebar {
@@ -55,6 +54,23 @@ body {
 
 img.owlet {
   width: 87%
+}
+
+.back-track-wrap {
+  height: 50px;
+  text-decoration: none;
+  text-align: left;
+  line-height: 44px;
+  background-color: #6F2663;
+  padding-left: 8px;
+  a {
+    text-decoration: none;
+    color: white;
+    display: inline;
+  }
+  h1 {
+    line-height: 50px;
+  }
 }
 
 .author {
@@ -215,3 +231,51 @@ button {
   width: 100%;
   height: 100%;
 }
+<<<<<<< HEAD
+=======
+
+// loading css
+// https://codepen.io/jonmilner/pen/hDHuo
+
+/* Animation */
+@-webkit-keyframes rotate {
+  to {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+@keyframes rotate {
+  to {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+/* Variables */
+/* Loading Icon */
+.loading {
+  width: 100px;
+  height: 100px;
+}
+.loading__ring {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+}
+.loading__ring:first-child {
+  -webkit-transform: skew(30deg, 20deg);
+  transform: skew(30deg, 20deg);
+}
+.loading__ring:last-child {
+  -webkit-transform: skew(-30deg, -20deg) scale(-1, 1);
+  transform: skew(-30deg, -20deg) scale(-1, 1);
+}
+.loading__ring:last-child svg {
+  -webkit-animation-delay: -0.5s;
+  animation-delay: -0.5s;
+}
+.loading__ring svg {
+  -webkit-animation: rotate 1s linear infinite;
+  animation: rotate 1s linear infinite;
+  fill: rgba(0, 0, 0, 0.2);
+}
+>>>>>>> f5473d4cce60868472d30d8149ca2ebe2c3dd7df

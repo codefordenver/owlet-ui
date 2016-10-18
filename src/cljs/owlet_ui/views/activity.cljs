@@ -1,5 +1,6 @@
 (ns owlet-ui.views.activity
-  (:require [owlet-ui.components.activity.title :refer [activity-title]]
+  (:require [owlet-ui.components.activity.back_track :refer [back-track]]
+            [owlet-ui.components.activity.title :refer [activity-title]]
             [owlet-ui.components.activity.embed :refer [activity-embed]]
             [owlet-ui.components.activity.info :refer [activity-info]]
             [owlet-ui.components.activity.inspiration :refer [activity-inspiration]]
@@ -7,7 +8,14 @@
 
 (defn activity-view []
   (fn []
+<<<<<<< HEAD
     [:div.activity-wrap
+      [:div.back-track-wrap
+        [back-track]]
+=======
+    [:div.activity-wrap 
+      [back-track]
+>>>>>>> 760ee9123108ef3fbe9fec37e2395bb4187dc1d1
       [:div.activity-header.col-xs-12
         [activity-title]]
       [:div.activity-content.col-xs-12.col-lg-8
