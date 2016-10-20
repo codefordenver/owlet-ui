@@ -5,7 +5,6 @@ body {
   color: #0c171b;
   font-size: 1.2rem;
   background-color: white;
-  overflow-x: hidden;
 }
 #sidebar {
   text-align: center;
@@ -49,6 +48,22 @@ body {
 }
 img.owlet {
   width: 87%;
+}
+.back-track-wrap {
+  height: 50px;
+  text-decoration: none;
+  text-align: left;
+  line-height: 44px;
+  background-color: #6F2663;
+  padding-left: 8px;
+}
+.back-track-wrap a {
+  text-decoration: none;
+  color: white;
+  display: inline;
+}
+.back-track-wrap h1 {
+  line-height: 50px;
 }
 .author {
   color: #ADADAD;

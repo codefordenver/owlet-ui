@@ -22,12 +22,6 @@
          (let [models (get-in @activity-models [:models])
                model-id (get-in @activity-data [:sys :contentType :sys :id])
                track-name (get-track-name models model-id)]
-           (prn track-name)
-<<<<<<< HEAD
            [:div.back-track-wrap
             [:h1
               [:a {:href (str "#/tracks/" model-id)} track-name]]]))})))
-=======
-           [:div.back-track
-             [:a {:href (str "#/tracks/" model-id)} track-name]]))})))
->>>>>>> 760ee9123108ef3fbe9fec37e2395bb4187dc1d1

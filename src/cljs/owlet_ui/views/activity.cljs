@@ -8,14 +8,9 @@
 
 (defn activity-view []
   (fn []
-<<<<<<< HEAD
     [:div.activity-wrap
       [:div.back-track-wrap
         [back-track]]
-=======
-    [:div.activity-wrap 
-      [back-track]
->>>>>>> 760ee9123108ef3fbe9fec37e2395bb4187dc1d1
       [:div.activity-header.col-xs-12
         [activity-title]]
       [:div.activity-content.col-xs-12.col-lg-8
