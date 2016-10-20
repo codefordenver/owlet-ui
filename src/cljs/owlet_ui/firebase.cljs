@@ -65,7 +65,7 @@
 
 
 (def legal-db-value?
-  "Returns true iff the given Clojure value can be stored as a value in the
+  "Returns true if the given Clojure value can be stored as a value in the
   Firebase database, say using set-ref or change-on. Most Clojure values could
   be \"converted\" to JSON just using clj->js, but important meaning could be
   lost. So, to enforce explicitness, we require that only \"stringish\" values
