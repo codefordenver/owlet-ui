@@ -22,6 +22,10 @@
          (let [models (get-in @activity-models [:models])
                model-id (get-in @activity-data [:sys :contentType :sys :id])
                track-name (get-track-name models model-id)]
-           [:div.back-track-wrap
-            [:h1
-              [:a {:href (str "#/tracks/" model-id)} track-name]]]))})))
+          [:div.back-track-wrap
+            [:div
+              [:a {:href (str "#/tracks/" model-id)}
+                [:img {:src "img/backtrack.png"}]]]
+            [:div
+              [:a {:href (str "#/tracks/" model-id)}
+                [:p track-name]]]]))})))

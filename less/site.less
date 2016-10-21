@@ -56,20 +56,32 @@ img.owlet {
   width: 87%
 }
 
+.activity-content {
+  word-wrap: break-word;
+}
+
 .back-track-wrap {
   height: 50px;
   text-decoration: none;
   text-align: left;
-  line-height: 44px;
   background-color: #6F2663;
   padding-left: 8px;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-flow: row nowrap;
+  flex-flow: row nowrap;
+  -webkit-align-items: center;
+  align-items: center;
   a {
     text-decoration: none;
     color: white;
-    display: inline;
   }
-  h1 {
-    line-height: 50px;
+  p {
+    font-size: 2em;
+    line-height: 2em;
+    margin-left: 5px;
+    margin-bottom: 0;
+    display: inline-block;
   }
 }
 
@@ -138,20 +150,25 @@ button {
   a {
     display: block;
     height: 100%;
-    padding: 15px 12px;
+    padding: 25px 15px;
   }
   .trackwrap {
-    margin: 15px 0px;
-    height: 99px;
+    margin: 15px 0;
+    height: 117px;
     .track-bg {
       height: 100%;
+    }
+    a:hover {
+      mark {
+        background-color: rgba(0,0,0,0);
+      }
     }
 
     // border: 2px solid @primary-color;
     h2 {
       font-weight: 300;
-      font-size: 1.1em;
-      line-height: 1.2em;
+      font-size: 1.3em;
+      line-height: 1.4em;
     }
     mark {
       color: white;
