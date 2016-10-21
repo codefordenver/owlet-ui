@@ -3,7 +3,16 @@
             [owlet-ui.db :as db]
             [owlet-ui.config :as config]
             [owlet-ui.firebase :as fb]
-            [ajax.core :refer [GET POST PUT]]))
+            [ajax.core :refer [GET POST PUT]]
+            [camel-snake-kebab.core :refer [->camelCase]]))
+
+
+(defn add-url-safe-name-to-activities-collection
+  "assocs :url-safe-name into activities collection"
+  [activities]
+  (for [activity activities
+        :let [pluck-name (get-in activity [:fields :title])]]
+       (assoc activity :url-safe-name (->camelCase pluck-name))))
 
 
 (defn register-setter-handler
@@ -92,7 +101,7 @@
 (re/register-handler
   :set-user-background-image!
   (re/path [:user :background-image])
-  (fn [db [_ coll]]
+  (fn [_ [_ coll]]
     (let [filter-user-bg-image (fn [c]
                                  (filterv #(= (get-in % [:sys :contentType :sys :id])
                                               "userBgImage") c))
@@ -237,10 +246,11 @@
 (re/register-handler
   :activities-by-track
   (fn [db [_ activities track-id activity]]
-    (let [filtered-activities (filterv #(= (get-in % [:sys :contentType :sys :id]) track-id) activities)]
+    (let [filtered-activities (filterv #(= (get-in % [:sys :contentType :sys :id]) track-id) activities)
+          processed-activities (add-url-safe-name-to-activities-collection filtered-activities)]
       (when activity
-        (re/dispatch [:set-activity-in-view filtered-activities activity]))
-      (assoc-in db [:activities-by-track (keyword track-id)] filtered-activities))))
+        (re/dispatch [:set-activity-in-view processed-activities activity]))
+      (assoc-in db [:activities-by-track (keyword track-id)] processed-activities))))
 
 (re/register-handler
   :get-activity-models
@@ -274,10 +284,8 @@
   :set-activity-in-view
     (re/path [:activity-in-view])
   (fn [_ [_ activities activity]]
-    (let [activity-match (some #(when (= (get-in % [:fields :title]) activity) %)
-                            activities)]
-      (prn activity-match)
-      activity-match)))
+    (some #(when (= (:url-safe-name %) activity) %)
+          activities)))
 
 (re/register-handler
   :set-loading-state!
