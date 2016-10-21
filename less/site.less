@@ -1,11 +1,17 @@
-@font-stack: "century gothic", sans-serif;
+@import url('https://fonts.googleapis.com/css?family=Rubik:300,400,700');
+@font-stack: "Rubik", sans-serif;
 @primary-color: #0c171b;
+@purple: #750569;
+@orange: #ff563e;
+
 
 body {
   font: 100% @font-stack;
+  font-weight: 300;
   color: @primary-color;
   font-size: 1.2rem;
-  background-color: #e6e7e8;
+  // background-color: #e6e7e8;
+  background-color: white;
 }
 
 #sidebar {
@@ -16,6 +22,7 @@ body {
   bottom: 0;
   height: 100%;
   width: 180px;
+  display: none;
   @media (max-width: 543px) {
     display: none;
   }
@@ -41,11 +48,52 @@ body {
   }
   @media (min-width: 544px) {
     display: none;
+    display: block;
   }
 }
 
 img.owlet {
   width: 87%
+}
+
+.activity-content {
+  word-wrap: break-word;
+}
+
+.back-track-wrap {
+  height: 50px;
+  text-decoration: none;
+  text-align: left;
+  background-color: #6F2663;
+  padding-left: 8px;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-flow: row nowrap;
+  flex-flow: row nowrap;
+  -webkit-align-items: center;
+  align-items: center;
+  a {
+    text-decoration: none;
+    color: white;
+  }
+  p {
+    font-size: 2em;
+    line-height: 2em;
+    margin-left: 5px;
+    margin-bottom: 0;
+    display: inline-block;
+  }
+}
+
+.author {
+  color: #ADADAD;
+}
+
+.tag {
+  border-radius: 25px;
+  margin: 5px;
+  padding: 8px;
+  font-weight: normal;
 }
 
 .menu {
@@ -99,22 +147,46 @@ button {
 
 .tracks {
   margin: 1.5em 1.5em 2em 1.5em;
+  a {
+    display: block;
+    height: 100%;
+    padding: 25px 15px;
+  }
   .trackwrap {
-    margin: 5px;
-    text-align: center;
-    background-color: @primary-color;
-    border: 2px solid @primary-color;
-    border-radius: 10px;
+    margin: 15px 0;
+    height: 117px;
+    .track-bg {
+      height: 100%;
+    }
+    a:hover {
+      mark {
+        background-color: rgba(0,0,0,0);
+      }
+    }
+
+    // border: 2px solid @primary-color;
+    h2 {
+      font-weight: 300;
+      font-size: 1.3em;
+      line-height: 1.4em;
+    }
+    mark {
+      color: white;
+      background-color: black;
+    }
     .track {
       color: #cffffd;
       text-decoration: none;
     }
-    :hover {
-      color: #abfffb;
-    }
+    // :hover {
+    //   color: #abfffb;
+    // }
   }
   #title {
-    margin-left: 1em;
+    color: @purple;
+    font-size: 1.6em;
+    font-weight: 300;
+    margin-left: 15px;
     margin-top: 0.5em;
   }
 }
@@ -158,11 +230,6 @@ button {
 .no-gutter [class*='col-']:not(:last-child) {
   padding-right: 0;
   padding-left: 0;
-}
-
-.funfact {
-  float: left;
-  margin: 3em 2em 2em 2em;
 }
 
 .embed-container {

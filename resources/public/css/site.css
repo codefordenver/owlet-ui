@@ -1,8 +1,10 @@
+@import url('https://fonts.googleapis.com/css?family=Rubik:300,400,700');
 body {
-  font: 100% "century gothic", sans-serif;
+  font: 100% "Rubik", sans-serif;
+  font-weight: 300;
   color: #0c171b;
   font-size: 1.2rem;
-  background-color: #e6e7e8;
+  background-color: white;
 }
 #sidebar {
   text-align: center;
@@ -12,6 +14,7 @@ body {
   bottom: 0;
   height: 100%;
   width: 180px;
+  display: none;
 }
 @media (max-width: 543px) {
   #sidebar {
@@ -40,10 +43,47 @@ body {
 @media (min-width: 544px) {
   #lpsidebar {
     display: none;
+    display: block;
   }
 }
 img.owlet {
   width: 87%;
+}
+.activity-content {
+  word-wrap: break-word;
+}
+.back-track-wrap {
+  height: 50px;
+  text-decoration: none;
+  text-align: left;
+  background-color: #6F2663;
+  padding-left: 8px;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-flow: row nowrap;
+  flex-flow: row nowrap;
+  -webkit-align-items: center;
+  align-items: center;
+}
+.back-track-wrap a {
+  text-decoration: none;
+  color: white;
+}
+.back-track-wrap p {
+  font-size: 2em;
+  line-height: 2em;
+  margin-left: 5px;
+  margin-bottom: 0;
+  display: inline-block;
+}
+.author {
+  color: #ADADAD;
+}
+.tag {
+  border-radius: 25px;
+  margin: 5px;
+  padding: 8px;
+  font-weight: normal;
 }
 .menu {
   padding-top: 10px;
@@ -89,22 +129,39 @@ button {
 .tracks {
   margin: 1.5em 1.5em 2em 1.5em;
 }
+.tracks a {
+  display: block;
+  height: 100%;
+  padding: 25px 15px;
+}
 .tracks .trackwrap {
-  margin: 5px;
-  text-align: center;
-  background-color: #0c171b;
-  border: 2px solid #0c171b;
-  border-radius: 10px;
+  margin: 15px 0;
+  height: 117px;
+}
+.tracks .trackwrap .track-bg {
+  height: 100%;
+}
+.tracks .trackwrap a:hover mark {
+  background-color: rgba(0, 0, 0, 0);
+}
+.tracks .trackwrap h2 {
+  font-weight: 300;
+  font-size: 1.3em;
+  line-height: 1.4em;
+}
+.tracks .trackwrap mark {
+  color: white;
+  background-color: black;
 }
 .tracks .trackwrap .track {
   color: #cffffd;
   text-decoration: none;
 }
-.tracks .trackwrap :hover {
-  color: #abfffb;
-}
 .tracks #title {
-  margin-left: 1em;
+  color: #750569;
+  font-size: 1.6em;
+  font-weight: 300;
+  margin-left: 15px;
   margin-top: 0.5em;
 }
 .login {
@@ -139,10 +196,6 @@ button {
 .no-gutter [class*='col-']:not(:last-child) {
   padding-right: 0;
   padding-left: 0;
-}
-.funfact {
-  float: left;
-  margin: 3em 2em 2em 2em;
 }
 .embed-container {
   position: relative;

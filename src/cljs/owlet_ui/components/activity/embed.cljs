@@ -23,4 +23,3 @@
           (for [c concepts]
                ^{:key (gensym "concept-")}
                [:span.tag.tag-default c])]]))))
-

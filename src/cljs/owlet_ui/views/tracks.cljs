@@ -3,6 +3,10 @@
             [reagent.core :as reagent :refer [atom]]
             [owlet-ui.components.track :refer [track]]))
 
+(defn pair-color [activity-models]
+  (let [colors ["#750569" "#00cbb2" "#3d8142" "#41bba2" "#e1bb00" "#254e68" "#dd0067" "#d37fe6" "#e00000"]]
+    (map vector colors activity-models)))
+
 (defn tracks-view []
   (let [activity-models (re/subscribe [:library-activity-models])]
     (reagent/create-class
@@ -13,11 +17,9 @@
        (fn []
          [:div
            [:div.tracks
-            [:h1#title "Tracks:"]
+            [:h1#title "Get started by choosing a track below"]
             [:br]
-            (for [model (:models @activity-models)]
-              ^{:key (gensym "model-")}
-              [track model])]
-           [:div.funfact "༼ つ ◕_◕ ༽つ" [:b " fun fact: "] [:i "Seeing gray dots?"]
-            [:br] "Those gray dots don't really exist.. when you try to look at one directly, it disappears. This is a "
-              [:a {:href "http://www.newworldencyclopedia.org/entry/Grid_illusion"} "grid illusion"] "."]])})))
+            (let [color-pairs (pair-color (:models @activity-models))]
+              (for [pair color-pairs]
+                ^{:key (gensym "model-")}
+                [track pair]))]])})))
