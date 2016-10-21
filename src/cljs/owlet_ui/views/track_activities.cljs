@@ -26,5 +26,6 @@
                (for [activity activity-items
                      :let [fields (:fields activity)
                            id (get-in fields [:preview :sys :id])
-                           _fields_ (assoc fields :track-id (name track-id))]]
-                 ^{:key id} [activity-thumbnail _fields_]))]]))})))
+                           _fields_ (assoc fields :track-id (name track-id))
+                           url (:url-safe-name activity)]]
+                 ^{:key id} [activity-thumbnail _fields_ url]))]]))})))
