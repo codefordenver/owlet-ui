@@ -274,8 +274,10 @@
   :set-activity-in-view
     (re/path [:activity-in-view])
   (fn [_ [_ activities activity]]
-    (some #(when (= (get-in % [:fields :title]) activity) %)
-          activities)))
+    (let [activity-match (some #(when (= (get-in % [:fields :title]) activity) %)
+                            activities)]
+      (prn activity-match)
+      activity-match)))
 
 (re/register-handler
   :set-loading-state!
