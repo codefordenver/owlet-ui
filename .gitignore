@@ -4,3 +4,5 @@
 /resources/public/js/compiled
 out
 *.DS_Store
+/resources/public/css
+.idea/
