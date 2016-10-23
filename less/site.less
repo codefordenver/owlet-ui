@@ -56,12 +56,44 @@ img.owlet {
   width: 87%
 }
 
-.activity-content {
+.activity-wrap {
+  width: 98%;
+  margin: 0 auto;
+  font-size: 0.85em;
+  b {
+    font-weight: 700;
+    text-transform: uppercase;
+    line-height: 2em;
+  }
+  .list-title p {
+    margin-bottom: 0;
+  }
+}
+
+.activity-content, .activity-header {
   word-wrap: break-word;
+  padding: 0 23px;
+}
+
+.activity-title-wrap {
+  h1 {
+    font-weight: 700;
+    font-size: 1.7em;
+    margin-bottom: 5px;
+  }
+  .author {
+    color: #ADADAD;
+  }
+  margin-top: 18px;
+  margin-bottom: 15px;
+}
+
+.activity-concept-wrap {
+  margin: 7px 0 30px 0;
 }
 
 .back-track-wrap {
-  height: 50px;
+  height: 65px;
   text-decoration: none;
   text-align: left;
   text-transform: uppercase;
@@ -78,19 +110,15 @@ img.owlet {
     color: white;
   }
   p {
-    font-size: 2em;
-    line-height: 2em;
+    font-size: 1.6em;
     margin-left: 5px;
     margin-bottom: 0;
     display: inline-block;
   }
   img {
     margin-left: 9px;
+    height: 25px;
   }
-}
-
-.author {
-  color: #ADADAD;
 }
 
 .tag {
@@ -113,6 +141,9 @@ img.owlet {
   }
   a.nav-link {
     margin: 30px;
+  }
+  img {
+    width: 50%;
   }
   h1 {
     margin-top: 10px;

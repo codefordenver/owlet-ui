@@ -8,16 +8,17 @@
 
 (defn activity-view []
   (fn []
-    [:div.activity-wrap
-        [back-track]
-      [:div.activity-header.col-xs-12
-        [activity-title]]
-      [:div.activity-content.col-xs-12.col-lg-8
-        [activity-embed]
-        [:div.hidden-sm-down
-          [activity-reflection]]]
-      [:div.activity-content.col-xs-12.col-lg-4
-        [activity-info]
-        [:div.hidden-md-up
-          [activity-reflection]]
-        [activity-inspiration]]]))
+    [:div
+      [back-track]
+      [:div.activity-wrap
+        [:div.activity-header.col-xs-12
+          [activity-title]]
+        [:div.activity-content.col-xs-12.col-lg-8
+          [activity-embed]
+          [:div.hidden-sm-down
+            [activity-reflection]]]
+        [:div.activity-content.col-xs-12.col-lg-4
+          [activity-info]
+          [:div.hidden-md-up
+            [activity-reflection]]
+          [activity-inspiration]]]]))
