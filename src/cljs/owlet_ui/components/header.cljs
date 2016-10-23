@@ -10,7 +10,7 @@
       [:div#header
        [:div.login
         [login-component]]
-       [:button#change-header-btn.btn-primary-outline.btn-sm
+       [:button#change-header-btn.btn.btn-outline-secondary.btn-sm
         {:type     "button"
          :style    {:display (if @is-user-logged-in?
                                "block"

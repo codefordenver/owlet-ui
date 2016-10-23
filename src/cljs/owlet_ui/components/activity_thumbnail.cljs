@@ -4,7 +4,7 @@
   (let [image (get-in fields [:preview :sys :url])
         {:keys [title track-id]} fields]
     (fn []
-      [:div
+      [:div.activity-thumbnail
        [:a {:href (str "#/tracks/" track-id "/" url)}
         [:h3 title]
-        [:img {:src image :width "40%"}]]])))
+        [:img {:src image :width "100%"}]]])))
