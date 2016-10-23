@@ -13,7 +13,6 @@
                  [cljsjs/auth0-lock "10.2.1-0"]
                  [reagent-utils "0.1.7"]
                  [figwheel-sidecar "0.5.4-7"]
-                 [cljsjs/tether "1.1.1-0"]
                  [cljsjs/bootstrap "3.3.6-1"]
                  [cljsjs/firebase "3.2.1-0"]
                  [cljsjs/marked "0.3.5-0"]
