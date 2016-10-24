@@ -1,7 +1,7 @@
 language: clojure
 lein: 2.5.3
 sudo: true
-script: "lein cljsbuild once min"
+script: "lein cljsbuild once min && lein less once"
 before_deploy: "cd resources/public"
 
 deploy:
