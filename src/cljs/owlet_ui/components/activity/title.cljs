@@ -8,4 +8,4 @@
             author (get-in @activity-data [:fields :author])]
         [:div.activity-title-wrap
          [:h1 title]
-         [:h5.author author]]))))
+         [:h5.author "by " author]]))))

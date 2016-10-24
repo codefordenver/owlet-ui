@@ -10,16 +10,14 @@
       [:div#header
        [:div.login
         [login-component]]
-       [:button#change-header-btn.btn-primary-outline.btn-sm
+       [:button#change-header-btn.btn.btn-outline-secondary.btn-sm
         {:type     "button"
          :style    {:display (if @is-user-logged-in?
                                "block"
                                "none")}
          :on-click (fn [_]
-                     (let [url (js/prompt "i need a url")]
+                     (let [url (js/prompt "enter image url")]
                        (when url
                          (re-frame/dispatch [:update-user-background! url]))))}
-
-
-        "change me!"]
+        "change header"]
        [:img {:src @src}]])))
