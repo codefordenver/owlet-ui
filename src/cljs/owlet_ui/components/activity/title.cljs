@@ -7,5 +7,5 @@
       (let [title (get-in @activity-data [:fields :title])
             author (get-in @activity-data [:fields :author])]
         [:div.activity-title-wrap
-         [:h1 title]
-         [:h5.author "by " author]]))))
+         [:h1 title]]))))
+         ; [:h5.author "by " author]]))))
