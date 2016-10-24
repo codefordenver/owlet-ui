@@ -2,9 +2,12 @@
 
 (defn activity-thumbnail [fields url]
   (let [image (get-in fields [:preview :sys :url])
-        {:keys [title track-id]} fields]
+        {:keys [title track-id summary]} fields]
     (fn []
-      [:div.activity-thumbnail
-       [:a {:href (str "#/tracks/" track-id "/" url)}
-        [:h3 title]
-        [:img {:src image :width "100%"}]]])))
+      [:div.col-lg-4.col-sm-6.col-xs-12
+        [:div.activity-thumbnail-wrap
+          [:a {:href (str "#/tracks/" track-id "/" url)}
+            [:div.activity-thumbnail {:style {:background-image (str "url('" image "')")
+                                              :background-size "cover"}}
+              [:mark.title title]]]
+          [:div.summary summary]]])))

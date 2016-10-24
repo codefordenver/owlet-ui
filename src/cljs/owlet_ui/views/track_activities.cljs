@@ -18,16 +18,16 @@
             [:div
               [:div.back-track-wrap
                 [:div
-                  [:a {:href "#/tracks/"}
+                  [:a {:href "#/tracks"}
                     [:img {:src "img/backtrack.png"}]]]
                 [:div
-                  [:a {:href "#/tracks/"}
+                  [:a {:href "#/tracks"}
                     [:p "ALL TRACKS"]]]]
               [:div.container-fluid.track-activities-wrap
-                [:h1 display-name]
+                [:h2 [:b display-name]]
                 [:div.flexcontainer-wrap
                   (if (empty? activity-items)
-                   [:p "No activities in this track yet. Check back soon."]
+                   [:p.no-activities "No activities in this track yet. Check back soon."]
                    (for [activity activity-items
                          :let [fields (:fields activity)
                                id (get-in fields [:preview :sys :id])

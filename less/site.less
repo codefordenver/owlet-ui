@@ -56,6 +56,11 @@ img.owlet {
   width: 87%
 }
 
+mark {
+  color: white;
+  background-color: black;
+}
+
 .flexcontainer-wrap {
   display: -webkit-flex;
   display: flex;
@@ -65,15 +70,40 @@ img.owlet {
   align-items: center;
 }
 
-.track-activities-wrap {
-  margin-top: 18px;
+.track-activities-wrap, .no-activities {
+  margin-top: 28px;
+  h2, .no-activities {
+    margin-left: 30px;
+  }
 }
 
-.activity-thumbnail {
-  width: 30%;
-  height: 300px;
-  margin: 1%;
-  overflow: hidden;
+.activity-thumbnail-wrap {
+  padding: 10px;
+  margin: 22px 6px 22px 6px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  height: 330px;
+  @media only screen and (max-width: 768px) {
+    height: 280px;
+  }
+  .activity-thumbnail {
+    position: relative;
+    overflow: hidden;
+    height: 250px;
+    @media only screen and (max-width: 768px) {
+      height: 200px;
+    }
+    .title {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      text-transform: uppercase;
+      font-size: 1.3em;
+    }
+  }
+  .summary {
+    margin-top: 10px;
+    font-size: 0.9em;
+  }
 }
 
 .activity-wrap {
@@ -224,10 +254,6 @@ button {
       font-weight: 300;
       font-size: 1.3em;
       line-height: 1.4em;
-    }
-    mark {
-      color: white;
-      background-color: black;
     }
     .track {
       color: #cffffd;
