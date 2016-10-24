@@ -15,7 +15,7 @@
         [:div.activity-embed-wrap
           (if (nil? embed)
             [:div.activity-preview
-              [:img {:src preview}]]
+              [:img {:src preview :width "100%"}]]
             [:div.embed-container
              {"dangerouslySetInnerHTML"
                                     #js{:__html (generic-responsive-iframe embed)}}])
