@@ -23,7 +23,6 @@
          [:div.container
           [:div.row
            [:div.col-lg-12
-            [:div.jumbotron
              [:h1 "My Settings"]
              [:div.search
               [:label "District ID:"
@@ -40,4 +39,4 @@
                                          {:params  {:district-id @district-id
                                                     :user-id     (session/get :user-id)}
                                           :handler (fn [res]
-                                                     (js/alert res))}))}]]]]]]])})))
+                                                     (js/alert res))}))}]]]]]])})))

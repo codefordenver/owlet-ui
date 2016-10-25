@@ -19,7 +19,7 @@
               [:div.back-track-wrap
                 [:div
                   [:a {:href "#/tracks"}
-                    [:img {:src "img/backtrack.png"}]]]
+                    [:img {:src "img/back.png"}]]]
                 [:div
                   [:a {:href "#/tracks"}
                     [:p "ALL TRACKS"]]]]

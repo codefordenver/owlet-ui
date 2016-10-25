@@ -30,10 +30,12 @@
        #(re/dispatch [:get-auth0-profile])
        :reagent-render
        (fn []
-         [:div#main
-          [sidebar-component]
-          [:div.content
-           [header-component]
-           (when @loading?
-             [loading-component])
-           [show-view @active-view]]])})))
+         (if (= @active-view :welcome-view)
+           [show-view @active-view]
+           [:div#main
+            [sidebar-component]
+            [:div.content
+             [header-component]
+             (when @loading?
+               [loading-component])
+             [show-view @active-view]]]))})))

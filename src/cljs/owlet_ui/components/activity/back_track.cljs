@@ -1,4 +1,4 @@
-(ns owlet-ui.components.activity.back_track
+(ns owlet-ui.components.activity.back-track
   (:require [re-frame.core :as re]
             [reagent.core :as reagent :refer [atom]]
             [clojure.string :as str]))
@@ -25,7 +25,7 @@
           [:div.back-track-wrap
             [:div
               [:a {:href (str "#/tracks/" model-id)}
-                [:img {:src "img/backtrack.png"}]]]
+                [:img {:src "img/back.png"}]]]
             [:div
               [:a {:href (str "#/tracks/" model-id)}
                 [:p track-name]]]]))})))
