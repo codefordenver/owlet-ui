@@ -7,7 +7,9 @@
 (defn handle-firebase-upload [element-id]
   (let [el (.getElementById js/document element-id)
         file (aget (.-files el) 0)]
-    (firebase/upload-file file)))
+    (firebase/upload-file file
+                          :into-dir "user-background-images")))
+
 
 (defn updload-button []
   [:button {:class    "btn btn-primary" :type "button"
