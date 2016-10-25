@@ -8,6 +8,7 @@
   (let [el (.getElementById js/document element-id)
         file (aget (.-files el) 0)]
     (firebase/upload-file file
+                          :next #(.log js/console %)
                           :into-dir "user-background-images")))
 
 
