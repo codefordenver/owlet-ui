@@ -302,10 +302,7 @@
              (dissoc :into-dir :complete-with-snapshot)   ; Keys not expected by .on.
              (conj (when (not error) default-error))
              (conj (when complete-with-snapshot snap-complete))
-             clj->js)
-         #(println "owlet-ui.firebase/upload-file"
-                   "calling firebase.storage.UploadTask's .on():\n"
-                   (.toString %)))))
+             clj->js))))
 
 
 (defn delete-file-at-url
