@@ -33,9 +33,8 @@
      :name "upload-file"}]
    [upload-button]])
 
-(defn upload-image-component []
-  (let [_ (.filestyle (js/$ ":file"))
-        show? (reagent/atom true)]
+(defn upload-image-component [show?]
+  (let [_ (.filestyle (js/$ ":file"))]
     (fn []
       (when @show?
         [v-box
