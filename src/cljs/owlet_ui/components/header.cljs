@@ -19,11 +19,6 @@
          :style    {:display (if @is-user-logged-in?
                                "block"
                                "none")}
-         :on-click (fn [_]
-                     ;(let [url (js/prompt "enter image url")]
-                     ;  (when url
-                     ;    (re-frame/dispatch [:update-user-background! url]))))}
-                     (do
-                       (reset! show-upload? true)))}
+         :on-click #(reset! show-upload? true)}
         "change header"]
        [:img {:src @src}]])))

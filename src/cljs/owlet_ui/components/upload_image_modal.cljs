@@ -1,6 +1,6 @@
 (ns owlet-ui.components.upload-image-modal
   (:require
-    [reagent.core :as reagent]
+    [re-frame.core :as re-frame]
     [owlet-ui.firebase :as firebase]
     [cljsjs.jquery]
     [re-com.core :refer [v-box h-box modal-panel button]]))
@@ -9,25 +9,23 @@
   [element-id]
   (let [el (.getElementById js/document element-id)
         file (aget (.-files el) 0)]
-    (firebase/upload-file file
-                          :into-dir "user-background-images"
-                          :next #(println "Uploaded"
-                                          (.-bytesTransferred %)
-                                          "of"
-                                          (.-totalBytes %)
-                                          "bytes.")
-                          :complete-with-snapshot #(println
-                                                    "URL:"
-                                                    (.-downloadURL %)))))
+    (firebase/upload-file
+      file
+      :into-dir "user-background-images"
+      :next #(println "Uploaded" (.-bytesTransferred %)
+                      "of" (.-totalBytes %) "bytes.")
+      :complete-with-snapshot #(let [url (.-downloadURL %)]
+                                (re-frame/dispatch [:update-user-background! url])
+                                (println "URL:" url)))))
 
 (defn upload-button []
   [:button {:class    "btn btn-primary" :type "button"
             :on-click #(handle-firebase-upload "upload-file")}
-   "upload" [:span {:class "fa fa-upload"}]])
+   "UPLOAD " [:span.fa.fa-upload]])
 
 (defn upload-form []
   [:form
-   [:label "Upload Filename: "]
+   [:label "Select Image: "]
    [:input#upload-file
     {:type "file"
      :name "upload-file"}]
@@ -44,7 +42,7 @@
                      :child [h-box
                              :children [[upload-form]
                                         [button
-                                         :label    "x"
+                                         :label "x"
                                          :on-click #(reset! show? false)]]]]]]))))
 
 
