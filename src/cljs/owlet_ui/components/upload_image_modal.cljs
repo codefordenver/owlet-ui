@@ -4,8 +4,7 @@
     [re-frame.core :as re-frame]
     [owlet-ui.firebase :as firebase]
     [cljsjs.jquery]
-    [re-com.core :refer [v-box h-box modal-panel button alert-box
-                         progress-bar]]))
+    [re-com.core :refer [v-box h-box modal-panel button alert-box progress-bar]]))
 
 (def show-upload-error (reagent/atom false))
 
@@ -17,18 +16,15 @@
       (firebase/upload-file
         file
         :into-dir "user-background-images"
-
         :next (fn [p]
                 (let [total (.-totalBytes p)
                       transfered (.-bytesTransferred p)
                       percentage (js/Math.round (* (/ transfered total) 100))]
-                     (reset! progress percentage)
-                     (prn (* (/ transfered total) 100))))
-
+                     (reset! progress percentage)))
         :complete-with-snapshot #(let [url (.-downloadURL %)]
                                   (close-modal)
                                   (re-frame/dispatch [:update-user-background! url])))
-      (catch js/Object e
+      (catch js/Object _
         (reset! show-upload-error true)))))
 
 
@@ -49,10 +45,12 @@
                :on-click #(handle-firebase-upload "upload-file" close-modal progress)}
       "UPLOAD " [:span.fa.fa-upload]]
      (when @show-upload-error
-       [alert-box
-        :alert-type :warning
-        :body       error-msg
-        :padding    "6px"])
+       [:div
+        [:br]
+        [alert-box
+         :alert-type :warning
+         :body       error-msg
+         :padding    "6px"]])
      [:br]
      [:br]
      [progress-bar

@@ -26,6 +26,5 @@
                                "block"
                                "none")}
          :on-click open-modal}
-        ;<i class="fa fa-pencil-square-o" aria-hidden="true"></i>
         [:i.fa.fa-pencil-square-o]]
        [:img {:src @src}]])))
