@@ -20,7 +20,9 @@
        [:button#change-header-btn
         {:type     "button"
          :class    "btn btn-secondary"
-         :style    {:display (if @is-user-logged-in?
+         :style    {:font-size "1em"
+                    :padding "6px"
+                    :display (if @is-user-logged-in?
                                "block"
                                "none")}
          :on-click open-modal}

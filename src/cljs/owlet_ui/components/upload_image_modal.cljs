@@ -21,7 +21,7 @@
         :next (fn [p]
                 (let [total (.-totalBytes p)
                       transfered (.-bytesTransferred p)
-                      percentage (* (/ transfered total) 100)]
+                      percentage (js/Math.round (* (/ transfered total) 100))]
                      (reset! progress percentage)
                      (prn (* (/ transfered total) 100))))
 
@@ -74,6 +74,3 @@
                                        :class "btn-secondary"
                                        :label "x"
                                        :on-click close-modal]]]]]])))
-
-
-
