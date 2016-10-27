@@ -17,7 +17,8 @@
                  [cljsjs/firebase "3.2.1-0"]
                  [cljsjs/marked "0.3.5-0"]
                  [org.clojure/core.async "0.2.385"]
-                 [camel-snake-kebab "0.4.0"]]
+                 [camel-snake-kebab "0.4.0"]
+                 [re-com "0.9.0"]]
 
   :plugins [[lein-cljsbuild "1.1.3"]
             [lein-less "1.7.5"]]
