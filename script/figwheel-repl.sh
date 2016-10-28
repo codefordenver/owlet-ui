@@ -13,5 +13,4 @@
 
 here="${0%/*}"
 
-rlwrap lein run -m clojure.main "$here/repl.clj"
-
+lein clean && rlwrap lein run -m clojure.main "$here/repl.clj"
