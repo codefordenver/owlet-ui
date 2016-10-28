@@ -80,12 +80,19 @@ mark {
   align-items: center;
   -webkit-flex-flow: column nowrap;
   flex-flow: column nowrap;
+  background: -webkit-linear-gradient(to bottom, #1a0f2e, #493b68);
+  background: -o-linear-gradient(to bottom, #1a0f2e, #493b68);
+  background: -moz-linear-gradient(to bottom, #1a0f2e, #493b68);
+  background: linear-gradient(to bottom, #1a0f2e, #493b68);
+  position: relative;
 }
 
 .flex-item {
   -webkit-flex-grow: 1;
   flex-grow: 1;
   width: 100%;
+  flex-basis: 100%;
+  position: relative;
 }
 
 #top {

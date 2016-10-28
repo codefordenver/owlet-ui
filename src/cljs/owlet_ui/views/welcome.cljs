@@ -1,12 +1,15 @@
-(ns owlet-ui.views.welcome)
+(ns owlet-ui.views.welcome
+  (:require
+    [owlet-ui.components.login :refer [login-component]]))
 
 (defn welcome-view []
       [:div.flexcontainer {:style {:height "100vh"}}
-        [:div#top.flex-item]
-        [:a#bottom {:href "#/tracks"}
-          [:img {:src "img/landing.png"
-                 :width "100%"}]]
-        [:div#bottom.flex-item]])
+        [:div.flex-item]
+        [:div.flex-item
+          [:a {:href "#/tracks"}
+            [:img {:src "img/landing.png"
+                   :width "100%"}]]]
+        [:div.flex-item]])
 
         ;;[:div.search.pull-right]
         ;;[:input {:type "search"
