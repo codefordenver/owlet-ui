@@ -84,7 +84,6 @@ mark {
   background: -o-linear-gradient(to bottom, #1a0f2e, #493b68);
   background: -moz-linear-gradient(to bottom, #1a0f2e, #493b68);
   background: linear-gradient(to bottom, #1a0f2e, #493b68);
-  position: relative;
 }
 
 .flex-item {
@@ -92,7 +91,56 @@ mark {
   flex-grow: 1;
   width: 100%;
   flex-basis: 100%;
-  position: relative;
+}
+
+.column-left {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+}
+
+.column-right {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50%;
+  height: 100%;
+}
+
+.user-type {
+  margin-top: 40vh;
+  margin-left: 10%;
+  z-index: 1;
+}
+
+// landing page media queries
+
+@media (max-width: 620px) {
+  .flex-item {
+    display: none;
+  }
+  .column-left {
+    display: none;
+  }
+  .column-right {
+    width: 100%;
+  }
+  .user-type {
+    margin-top: 50vh;
+    margin-left: 25%;
+  }
+
+  .landing {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    margin: 0 auto;
+    background: url('../img/landing.png');
+    background-size: auto 100%;
+    background-position: center;
+  }
 }
 
 #top {
@@ -313,6 +361,22 @@ button {
   position: absolute;
   top: 13px;
   right: 10px;
+  z-index: 1;
+}
+
+input[type="radio"] {
+  display: none;
+}
+label {
+  background-color: white;
+  color: #f6b010;
+  padding: 10px;
+  width: 30%;
+  text-align: center;
+}
+input[type="radio"]:checked + label{
+  background-color: #f6b010;
+  color: white;
 }
 
 .search {
@@ -525,21 +589,4 @@ progress {
   background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
   background-image:      -o-linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
   background-image:         linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
-}
-
-// landing page media queries
-
-@media (max-width: 620px) {
-  .flex-item {
-    display: none;
-  }
-  .landing {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    margin: 0 auto;
-    background: url('../img/landing.png');
-    background-size: auto 100%;
-    background-position: center;
-  }
 }
