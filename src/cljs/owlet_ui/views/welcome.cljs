@@ -9,7 +9,8 @@
           [:a {:href "#/tracks"}
             [:img {:src "img/landing.png"
                    :width "100%"}]]]
-        [:div.flex-item]])
+        [:div.flex-item]
+        [:div.landing]])
 
         ;;[:div.search.pull-right]
         ;;[:input {:type "search"
