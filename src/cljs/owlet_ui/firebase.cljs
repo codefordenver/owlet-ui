@@ -269,10 +269,6 @@
   "
   [js-file & {:keys [into-dir next error complete-with-snapshot] :as options}]
 
-  (println
-    "upload-file:"
-    (str "Uploading '" (.-name js-file) "' into directory '" into-dir "'"))
-
   (let [dir           (or into-dir "")
         path          (str dir "/" (.-name js-file))
         ref           (.child firebase-storage-ref path)
