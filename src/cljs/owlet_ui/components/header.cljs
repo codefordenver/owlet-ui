@@ -1,7 +1,6 @@
 (ns owlet-ui.components.header
   (:require
     [reagent.core :as reagent]
-    [owlet-ui.components.login :refer [login-component]]
     [owlet-ui.components.upload-image-modal :refer [upload-image-component]]
     [re-frame.core :as re-frame]))
 
@@ -13,18 +12,21 @@
         open-modal (fn [_] (reset! show? true))
         close-modal (fn [_] (reset! show? false))]
     (fn []
-      [:div#header
-       [:div.login
-        [login-component]]
+      [:div#header {:style {:position "fixed"
+                            :width "100%"
+                            :height "100%"
+                            :background-image (str "url(" @src ")")
+                            :background-size "cover"
+                            :z-index "-1"}}
        [upload-image-component show? close-modal]
        [:button#change-header-btn
         {:type     "button"
          :class    "btn btn-secondary"
          :style    {:font-size "1em"
                     :padding "6px"
+                    :z-index "10 !important"
                     :display (if @is-user-logged-in?
                                "block"
                                "none")}
          :on-click open-modal}
-        [:i.fa.fa-pencil-square-o]]
-       [:img {:src @src}]])))
+        [:i.fa.fa-pencil-square-o]]])))
