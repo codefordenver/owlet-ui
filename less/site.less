@@ -13,10 +13,6 @@ body {
   // background-color: #e6e7e8;
 }
 
-h1 {
-  margin-top: 10px;
-}
-
 #sidebar {
   text-align: center;
   background-color: @primary-color;
@@ -110,9 +106,20 @@ mark {
 }
 
 .user-type {
-  margin-top: 40vh;
-  margin-left: 10%;
+  margin-top: 28vh;
   z-index: 1;
+  text-align: center;
+}
+
+#largetext {
+  color: white;
+  font-size: 5vw;
+  margin: 0;
+}
+
+#smalltext {
+  font-size: 20px;
+  color: white;
 }
 
 // landing page media queries
@@ -129,7 +136,15 @@ mark {
   }
   .user-type {
     margin-top: 50vh;
-    margin-left: 25%;
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+  }
+  #largetext {
+    font-size: 10vw;
+  }
+  #smalltext {
+    font-size: 4vw;
   }
 
   .landing {
@@ -369,13 +384,13 @@ input[type="radio"] {
 }
 label {
   background-color: white;
-  color: #f6b010;
+  color: #00A79D;
   padding: 10px;
   width: 30%;
   text-align: center;
 }
 input[type="radio"]:checked + label{
-  background-color: #f6b010;
+  background-color: #00A79D;
   color: white;
 }
 
