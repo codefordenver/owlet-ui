@@ -7,11 +7,11 @@
     [:div.landing]
     [:div.column-left]
     [:div.column-right
-      [:form.user-type
-        [:div.welcome
-          [:p#largetext "Welcome to Owlet"]
-          [:div.to-tracks-div
-            [:a.to-tracks {:href "#/tracks"} "Go to Tracks"]]]]]
+;;      [:form.user-type
+          [:div.user-type
+            [:p#largetext "Welcome to Owlet"]
+            [:a {:href "#/tracks"}
+              [:button.btn.btn-tracks "Go to Tracks"]]]]
 ;;          [:p#smalltext "To get started, select what type of user you are"]]
 ;;        [:input.user-type {:type "radio"
 ;;                           :name "userType"
