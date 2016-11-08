@@ -10,20 +10,22 @@
       [:form.user-type
         [:div.welcome
           [:p#largetext "Welcome to Owlet"]
-          [:p#smalltext "To get started, select what type of user you are"]]
-        [:input.user-type {:type "radio"
-                           :name "userType"
-                           :value "student"
-                           :id "student"
-                           :defaultChecked true}]
-        [:label {:for "student"}
-          "Student"]
-        [:input.user-type {:type "radio"
-                           :name "userType"
-                           :value "teacher"
-                           :id "teacher"}]
-        [:label {:for "teacher"}
-          "Teacher"]]]
+          [:div.to-tracks-div
+            [:a.to-tracks {:href "#/tracks"} "Go to Tracks"]]]]]
+;;          [:p#smalltext "To get started, select what type of user you are"]]
+;;        [:input.user-type {:type "radio"
+;;                           :name "userType"
+;;                           :value "student"
+;;                           :id "student"
+;;                           :defaultChecked true]]
+;;        [:label {:for "student"}
+;;          "Student"]
+;;        [:input.user-type {:type "radio"
+;;                           :name "userType"
+;;                           :value "teacher"
+;;                           :id "teacher"]]
+;;        [:label {:for "teacher"}
+;;          "Teacher"]]]
     [:div.login
       [login-component]]
     [:div.flex-item]
