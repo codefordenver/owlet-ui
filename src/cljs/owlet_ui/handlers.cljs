@@ -75,8 +75,9 @@
 
 (re/register-handler
   :reset-user-db!
+  (re/path [:user])
   (fn [_ [_ _]]
-    db/default-db))
+    db/default-user-db))
 
 
 (re/register-handler

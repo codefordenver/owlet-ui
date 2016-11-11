@@ -15,8 +15,7 @@
        {:type     "button"
         :on-click #(do
                     (re-frame/dispatch [:user-has-logged-in-out! false])
-                    (.removeItem js/localStorage "userToken")
-                    (secretary/dispatch! "/"))}
+                    (.removeItem js/localStorage "userToken"))}
        "Log out"])
 
 (defn login-component []
