@@ -26,7 +26,7 @@
 ;;                           :id "teacher"]]
 ;;        [:label {:for "teacher"}
 ;;          "Teacher"]]]
-    [:div.login
+    [:div.login-landing
       [login-component]]
     [:div.flex-item]
     [:div.flex-item
