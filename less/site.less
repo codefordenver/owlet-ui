@@ -17,6 +17,10 @@ h1 {
   margin-top: 10px;
 }
 
+#app {
+  height: 100%;
+}
+
 #sidebar {
   text-align: center;
   background-color: @primary-color;
@@ -33,7 +37,7 @@ h1 {
 
 #lpsidebar {
   text-align: center;
-  background-color: @primary-color;
+  background-color: #6A2569;
   color: #cffffd;
   top: 0;
   bottom: 0;
@@ -49,9 +53,8 @@ h1 {
   img.owlet {
     margin-top: 0;
   }
-  @media (min-width: 544px) {
+  @media (max-width: 744px) {
     display: none;
-    display: block;
   }
 }
 
@@ -62,6 +65,7 @@ img.owlet {
 mark {
   color: white;
   background-color: black;
+  padding: .1em .3em;
 }
 
 .flexcontainer-wrap {
@@ -96,22 +100,32 @@ mark {
   background-color: #493b68;
 }
 
+mark.white {
+  background-color: white;
+  color: black;
+}
+
 .track-activities-wrap, .no-activities {
   margin-top: 28px;
   h2, .no-activities {
-    margin-left: 30px;
+    margin-left: 21px;
   }
-  h2 mark {
-    background-color: white;
-    color: black;
-  }
+}
+
+.activity-info-wrap, .activity-inspiration-wrap, .activity-reflection-wrap {
+  background-color: white;
+  padding: 10px 12px;
+}
+
+.activity-inspiration-wrap {
+  border-top: 2px dashed black;
 }
 
 .activity-thumbnail-wrap {
   background-color: white;
   padding: 10px;
   margin: 22px 6px 22px 6px;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.5), 0 6px 20px 0 rgba(0, 0, 0, 0.3);
   height: 330px;
   @media only screen and (max-width: 768px) {
     height: 280px;
@@ -139,49 +153,65 @@ mark {
     font-size: 0.9em;
   }
 }
-
-.activity-wrap {
-  width: 98%;
-  margin: 0 auto;
-  font-size: 0.85em;
-  b {
-    font-weight: 700;
-    text-transform: uppercase;
-    line-height: 2em;
+.activity {
+  // height: 100%;
+  // background-color: white;
+  .activity-wrap {
+    width: 98%;
+    margin: 0 auto;
+    background-color: white;
+    height: 100%;
+    font-size: 0.85em;
+    b {
+      font-weight: 700;
+      text-transform: uppercase;
+      line-height: 2em;
+    }
+    .list-title p {
+      margin-bottom: 0;
+    }
   }
-  .list-title p {
-    margin-bottom: 0;
-  }
-}
 
-.activity-content, .activity-header {
-  word-wrap: break-word;
-  padding: 0 23px;
-}
-
-.activity-title-wrap {
-  h1 {
-    font-weight: 700;
-    font-size: 1.7em;
-    margin-bottom: 5px;
+  .activity-header {
+    margin: 10px 0;
   }
-  .author {
-    color: #ADADAD;
-  }
-  margin-top: 18px;
-  margin-bottom: 15px;
-}
 
-.activity-concept-wrap {
-  margin: 7px 0 30px 0;
+  .activity-content, .activity-header {
+    word-wrap: break-word;
+    padding: 0 23px;
+  }
+
+  .activity-title-wrap {
+    h1 {
+      font-weight: 700;
+      font-size: 1.7em;
+      margin-bottom: 5px;
+    }
+    .author {
+      color: #ADADAD;
+    }
+    margin-top: 18px;
+    margin-bottom: 15px;
+  }
+  .activity-concept-wrap {
+    margin: 0 0 30px 0;
+    // padding-top: 7px;
+    background-color: white;
+  }
+  .tag {
+    border-radius: 25px;
+    margin: 5px;
+    padding: 8px;
+    font-weight: normal;
+  }
 }
 
 .back-track-wrap {
-  height: 65px;
+  height: 50px;
   text-decoration: none;
   text-align: left;
   text-transform: uppercase;
-  background-color: black;
+  background-color: @primary-color;
   padding-left: 8px;
   display: -webkit-flex;
   display: flex;
@@ -195,21 +225,15 @@ mark {
     margin-left: 9px;
   }
   p {
-    font-size: 1.6em;
+    font-size: 1.4em;
     margin-left: 5px;
     margin-bottom: 0;
   }
   img {
     margin-left: 9px;
-    height: 25px;
+    height: 23px;
+    padding-bottom: 2px;
   }
-}
-
-.tag {
-  border-radius: 25px;
-  margin: 5px;
-  padding: 8px;
-  font-weight: normal;
 }
 
 .menu {
@@ -217,7 +241,7 @@ mark {
   margin-bottom: -9999px;
   padding-bottom: 9999px;
   overflow: hidden;
-  background-color: @primary-color;
+  background-color: #6A2569;
   // border-radius: 10px 10px 0px 0px;
   a {
     color: #cffffd;
@@ -226,21 +250,8 @@ mark {
   a.nav-link {
     margin: 30px;
   }
-  h1 {
-    margin-top: 10px;
-    margin-bottom: 25px;
-    font-size: 3em;
-    font-weight: 100;
-  }
-}
-
-// TODO: touch this class
-#header {
-  // height: 145px;
-  // overflow: hidden;
   img {
-    height: auto;
-    width: 100%;
+    width: 70%;
   }
 }
 
@@ -248,7 +259,7 @@ mark {
   // top: 110px;
   position: absolute;
   right: 0;
-  top: 65px;
+  top: 50px;
   opacity: 0.6;
   &:hover {
    opacity: 1;
@@ -262,13 +273,17 @@ button {
   font-size: 1rem;
 }
 
+.box-shadow {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.5), 0 6px 20px 0 rgba(0, 0, 0, 0.3);
+}
+
 .trackwrapper.col-xs-12.col-sm-6.col-lg-4 {
   padding-right: inherit;
   padding-left: inherit;
 }
 
 .tracks {
-  margin: 1.5em 1.5em 2em 1.5em;
+  margin: 2.5em 1.5em 2em 1.5em;
   a {
     display: block;
     height: 100%;
@@ -279,6 +294,7 @@ button {
     height: 117px;
     .track-bg {
       height: 100%;
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.5), 0 6px 20px 0 rgba(0, 0, 0, 0.3);
     }
     a:hover {
       mark {
@@ -301,10 +317,6 @@ button {
     // }
   }
   #title {
-    mark {
-      color: @purple;
-      background-color: white;
-    }
     font-size: 1.6em;
     font-weight: 300;
     margin-left: 15px;
@@ -312,11 +324,9 @@ button {
   }
 }
 
-// .login {
-//   position: absolute;
-//   top: 13px;
-//   right: 10px;
-// }
+.login {
+  margin-top: 10px;
+}
 
 .search {
   padding: 10px;
@@ -332,11 +342,12 @@ button {
 /* main content */
 #main {
   display: flex;
+  height: 100%;
   // background-color: white;
 }
 
 .content {
-  flex-direction: column;
+  // flex-direction: column;
   width: 100%;
 }
 

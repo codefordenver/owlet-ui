@@ -6,7 +6,7 @@
   (let [activity-data (re/subscribe [:activity-in-view])]
     (fn []
       (if-let [reflection (get-in @activity-data [:fields :reflectionQuestions])]
-        [:div.activity-reflection-wrap
+        [:div.activity-reflection-wrap.box-shadow
           [:div.list-title
             [:p [:b "Reflection"]]]
           [:div {"dangerouslySetInnerHTML"

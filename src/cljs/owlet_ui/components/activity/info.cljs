@@ -30,7 +30,7 @@
           why (get-in @activity-data [:fields :why])
           pre-reqs (get-in @activity-data [:fields :preRequisites])
           materials (get-in @activity-data [:fields :materials])]
-      [:div.activity-info-wrap
+      [:div.activity-info-wrap.box-shadow
        (if unplugged
          [:p [tooltip-component "UNPLUGGED"]]
          [set-as-marked "<b>Technology</b><br>" tech-requirements])

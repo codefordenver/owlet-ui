@@ -42,7 +42,6 @@
            [:div#main
             [sidebar-component]
             [:div.content {:style {:width "100%"
-                                   :height "100%"
                                    :background-image (str "url(" @src ")")
                                    :background-size "cover"}}
              [upload-image-component show? close-modal]
