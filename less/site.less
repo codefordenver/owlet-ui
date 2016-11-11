@@ -2,15 +2,13 @@
 
 @font-stack: "Rubik", sans-serif;
 @primary-color: #0c171b;
-@purple: #750569;
-@orange: #ff563e;
+@purple: #6A2569;
 
 body {
   font: 100% @font-stack;
   font-weight: 300;
   color: @primary-color;
   font-size: 1.2rem;
-  // background-color: #e6e7e8;
 }
 
 h1 {
@@ -21,23 +19,9 @@ h1 {
   height: 100%;
 }
 
-#sidebar {
-  text-align: center;
-  background-color: @primary-color;
-  color: #cffffd;
-  top: 0;
-  bottom: 0;
-  height: 100%;
-  width: 180px;
-  display: none;
-  @media (max-width: 543px) {
-    display: none;
-  }
-}
-
 #lpsidebar {
   text-align: center;
-  background-color: #6A2569;
+  background-color: @purple;
   color: #cffffd;
   top: 0;
   bottom: 0;
@@ -52,20 +36,43 @@ h1 {
   }
   img.owlet {
     margin-top: 0;
+    width: 100%;
   }
   @media (max-width: 744px) {
     display: none;
   }
-}
-
-img.owlet {
-  width: 100%;
+  .menu {
+    padding-top: 10px;
+    margin-bottom: -9999px;
+    padding-bottom: 9999px;
+    overflow: hidden;
+    background-color: @purple;
+    a {
+      color: #cffffd;
+      text-decoration: none;
+    }
+    a.nav-link {
+      margin: 30px;
+    }
+    img {
+      width: 70%;
+    }
+  }
 }
 
 mark {
   color: white;
   background-color: black;
   padding: .1em .3em;
+}
+
+mark.white {
+  background-color: white;
+  color: black;
+}
+
+.box-shadow {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.5), 0 6px 20px 0 rgba(0, 0, 0, 0.3);
 }
 
 .flexcontainer-wrap {
@@ -179,10 +186,62 @@ mark {
   background-color: #493b68;
 }
 
-mark.white {
-  background-color: white;
-  color: black;
+/* main content */
+
+#main {
+  display: flex;
+  height: 100%;
 }
+
+.content {
+  width: 100%;
+}
+
+/* tracks view */
+
+.trackwrapper.col-xs-12.col-sm-6.col-lg-4 {
+  padding-right: inherit;
+  padding-left: inherit;
+}
+
+.tracks {
+  margin: 2.5em 1.5em 2em 1.5em;
+  a {
+    display: block;
+    height: 100%;
+    padding: 25px 15px;
+  }
+  .trackwrap {
+    margin: 15px 0;
+    height: 117px;
+    .track-bg {
+      height: 100%;
+    }
+    a:hover {
+      mark {
+        background-color: rgba(0, 0, 0, 0);
+      }
+    }
+
+    h2 {
+      font-weight: 300;
+      font-size: 1.3em;
+      line-height: 1.4em;
+    }
+    .track {
+      color: #cffffd;
+      text-decoration: none;
+    }
+  }
+  #title {
+    font-size: 1.6em;
+    font-weight: 300;
+    margin-left: 15px;
+    margin-top: 0.5em;
+  }
+}
+
+/* track activities view */
 
 .track-activities-wrap, .no-activities {
   margin-top: 28px;
@@ -191,20 +250,10 @@ mark.white {
   }
 }
 
-.activity-info-wrap, .activity-inspiration-wrap, .activity-reflection-wrap {
-  background-color: white;
-  padding: 10px 12px;
-}
-
-.activity-inspiration-wrap {
-  border-top: 2px dashed black;
-}
-
 .activity-thumbnail-wrap {
   background-color: white;
   padding: 10px;
   margin: 22px 6px 22px 6px;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.5), 0 6px 20px 0 rgba(0, 0, 0, 0.3);
   height: 330px;
   @media only screen and (max-width: 768px) {
     height: 280px;
@@ -232,51 +281,59 @@ mark.white {
     font-size: 0.9em;
   }
 }
-.activity {
-  // height: 100%;
-  // background-color: white;
-  .activity-wrap {
-    width: 98%;
-    margin: 0 auto;
-    background-color: white;
-    height: 100%;
-    font-size: 0.85em;
-    b {
-      font-weight: 700;
-      text-transform: uppercase;
-      line-height: 2em;
-    }
-    .list-title p {
-      margin-bottom: 0;
-    }
-  }
 
-  .activity-header {
-    margin: 10px 0;
-  }
+/* activity view */
 
-  .activity-content, .activity-header {
-    word-wrap: break-word;
-    padding: 0 23px;
+.activity-wrap {
+  width: 98%;
+  margin: 0 auto;
+  background-color: white;
+  height: 100%;
+  font-size: 0.85em;
+  b {
+    font-weight: 700;
+    text-transform: uppercase;
+    line-height: 2em;
   }
+  .list-title p {
+    margin-bottom: 0;
+  }
+}
 
-  .activity-title-wrap {
-    h1 {
-      font-weight: 700;
-      font-size: 1.7em;
-      margin-bottom: 5px;
-    }
-    .author {
-      color: #ADADAD;
-    }
-    margin-top: 18px;
-    margin-bottom: 15px;
+.activity-header {
+  margin: 10px 0;
+}
+
+.activity-content, .activity-header {
+  word-wrap: break-word;
+  padding: 0 23px;
+}
+
+.activity-title-wrap {
+  h1 {
+    font-weight: 700;
+    font-size: 1.7em;
+    margin-bottom: 5px;
   }
-  .activity-concept-wrap {
-    margin: 0 0 30px 0;
-    // padding-top: 7px;
-    background-color: white;
+  .author {
+    color: #ADADAD;
   }
+  margin-top: 18px;
+  margin-bottom: 15px;
+}
+
+.activity-info-wrap, .activity-inspiration-wrap, .activity-reflection-wrap {
+  background-color: white;
+  padding: 10px 12px;
+}
+
+.activity-inspiration-wrap {
+  border-top: 2px dashed black;
+}
+
+.activity-concept-wrap {
+  margin: 0 0 30px 0;
+  background-color: white;
   .tag {
     border-radius: 25px;
     margin: 5px;
@@ -315,24 +372,7 @@ mark.white {
   }
 }
 
-.menu {
-  padding-top: 10px;
-  margin-bottom: -9999px;
-  padding-bottom: 9999px;
-  overflow: hidden;
-  background-color: #6A2569;
-  // border-radius: 10px 10px 0px 0px;
-  a {
-    color: #cffffd;
-    text-decoration: none;
-  }
-  a.nav-link {
-    margin: 30px;
-  }
-  img {
-    width: 70%;
-  }
-}
+/* buttons and inputs */
 
 #change-header-btn {
   top: 110px;
@@ -346,61 +386,8 @@ mark.white {
  transition: all 0.2s;
 }
 
-/* buttons and inputs */
-
 button {
   font-size: 1rem;
-}
-
-.box-shadow {
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.5), 0 6px 20px 0 rgba(0, 0, 0, 0.3);
-}
-
-.trackwrapper.col-xs-12.col-sm-6.col-lg-4 {
-  padding-right: inherit;
-  padding-left: inherit;
-}
-
-.tracks {
-  margin: 2.5em 1.5em 2em 1.5em;
-  a {
-    display: block;
-    height: 100%;
-    padding: 25px 15px;
-  }
-  .trackwrap {
-    margin: 15px 0;
-    height: 117px;
-    .track-bg {
-      height: 100%;
-      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.5), 0 6px 20px 0 rgba(0, 0, 0, 0.3);
-    }
-    a:hover {
-      mark {
-        background-color: rgba(0, 0, 0, 0);
-      }
-    }
-
-    // border: 2px solid @primary-color;
-    h2 {
-      font-weight: 300;
-      font-size: 1.3em;
-      line-height: 1.4em;
-    }
-    .track {
-      color: #cffffd;
-      text-decoration: none;
-    }
-    // :hover {
-    //   color: #abfffb;
-    // }
-  }
-  #title {
-    font-size: 1.6em;
-    font-weight: 300;
-    margin-left: 15px;
-    margin-top: 0.5em;
-  }
 }
 
 .login {
@@ -435,18 +422,6 @@ input[type="radio"]:checked + label{
     border: 1px solid #2a2b31;
     background-color: white;
   }
-}
-
-/* main content */
-#main {
-  display: flex;
-  height: 100%;
-  // background-color: white;
-}
-
-.content {
-  // flex-direction: column;
-  width: 100%;
 }
 
 /* no gutters! */
