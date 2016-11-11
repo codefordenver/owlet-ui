@@ -84,12 +84,91 @@ mark {
   align-items: center;
   -webkit-flex-flow: column nowrap;
   flex-flow: column nowrap;
+  background: -webkit-linear-gradient(to bottom, #1a0f2e, #493b68);
+  background: -o-linear-gradient(to bottom, #1a0f2e, #493b68);
+  background: -moz-linear-gradient(to bottom, #1a0f2e, #493b68);
+  background: linear-gradient(to bottom, #1a0f2e, #493b68);
 }
 
 .flex-item {
   -webkit-flex-grow: 1;
   flex-grow: 1;
   width: 100%;
+  flex-basis: 100%;
+}
+
+.column-left {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+}
+
+.column-right {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50%;
+  height: 100%;
+}
+
+.user-type {
+  margin-top: 28vh;
+  z-index: 1;
+  text-align: center;
+}
+
+#largetext {
+  color: white;
+  font-size: 5vw;
+  margin: 0;
+}
+
+#smalltext {
+  font-size: 20px;
+  color: white;
+}
+
+.btn-tracks {
+  background-color: #00A79D;
+  color: white;
+}
+
+// landing page media queries
+
+@media (max-width: 620px) {
+  .flex-item {
+    display: none;
+  }
+  .column-left {
+    display: none;
+  }
+  .column-right {
+    width: 100%;
+  }
+  .user-type {
+    margin-top: 50vh;
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+  }
+  #largetext {
+    font-size: 10vw;
+  }
+  #smalltext {
+    font-size: 4vw;
+  }
+
+  .landing {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    margin: 0 auto;
+    background: url('../img/landing.png');
+    background-size: auto 100%;
+    background-position: center;
+  }
 }
 
 #top {
@@ -256,7 +335,7 @@ mark.white {
 }
 
 #change-header-btn {
-  // top: 110px;
+  top: 110px;
   position: absolute;
   right: 0;
   top: 50px;
@@ -326,6 +405,25 @@ button {
 
 .login {
   margin-top: 10px;
+  position: absolute;
+  top: 13px;
+  right: 10px;
+  z-index: 1;
+}
+
+input[type="radio"] {
+  display: none;
+}
+label {
+  background-color: white;
+  color: #00A79D;
+  padding: 10px;
+  width: 30%;
+  text-align: center;
+}
+input[type="radio"]:checked + label{
+  background-color: #00A79D;
+  color: white;
 }
 
 .search {
