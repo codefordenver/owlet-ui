@@ -8,7 +8,7 @@
 
 (defn activity-view []
   (fn []
-    [:div
+    [:div.activity
       [back-track]
       [:div.activity-wrap
         [:div.activity-header.col-xs-12

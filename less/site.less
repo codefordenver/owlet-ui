@@ -2,34 +2,26 @@
 
 @font-stack: "Rubik", sans-serif;
 @primary-color: #0c171b;
-@purple: #750569;
-@orange: #ff563e;
+@purple: #6A2569;
 
 body {
   font: 100% @font-stack;
   font-weight: 300;
   color: @primary-color;
   font-size: 1.2rem;
-  // background-color: #e6e7e8;
 }
 
-#sidebar {
-  text-align: center;
-  background-color: @primary-color;
-  color: #cffffd;
-  top: 0;
-  bottom: 0;
+h1 {
+  margin-top: 10px;
+}
+
+#app {
   height: 100%;
-  width: 180px;
-  display: none;
-  @media (max-width: 543px) {
-    display: none;
-  }
 }
 
 #lpsidebar {
   text-align: center;
-  background-color: @primary-color;
+  background-color: @purple;
   color: #cffffd;
   top: 0;
   bottom: 0;
@@ -44,20 +36,43 @@ body {
   }
   img.owlet {
     margin-top: 0;
+    width: 100%;
   }
-  @media (min-width: 544px) {
+  @media (max-width: 744px) {
     display: none;
-    display: block;
   }
-}
-
-img.owlet {
-  width: 87%
+  .menu {
+    padding-top: 10px;
+    margin-bottom: -9999px;
+    padding-bottom: 9999px;
+    overflow: hidden;
+    background-color: @purple;
+    a {
+      color: #cffffd;
+      text-decoration: none;
+    }
+    a.nav-link {
+      margin: 30px;
+    }
+    img {
+      width: 70%;
+    }
+  }
 }
 
 mark {
   color: white;
   background-color: black;
+  padding: .1em .3em;
+}
+
+mark.white {
+  background-color: white;
+  color: black;
+}
+
+.box-shadow {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.5), 0 6px 20px 0 rgba(0, 0, 0, 0.3);
 }
 
 .flexcontainer-wrap {
@@ -171,17 +186,74 @@ mark {
   background-color: #493b68;
 }
 
+/* main content */
+
+#main {
+  display: flex;
+  height: 100%;
+}
+
+.content {
+  width: 100%;
+}
+
+/* tracks view */
+
+.trackwrapper.col-xs-12.col-sm-6.col-lg-4 {
+  padding-right: inherit;
+  padding-left: inherit;
+}
+
+.tracks {
+  margin: 2.5em 1.5em 2em 1.5em;
+  a {
+    display: block;
+    height: 100%;
+    padding: 25px 15px;
+  }
+  .trackwrap {
+    margin: 15px 0;
+    height: 117px;
+    .track-bg {
+      height: 100%;
+    }
+    a:hover {
+      mark {
+        background-color: rgba(0, 0, 0, 0);
+      }
+    }
+
+    h2 {
+      font-weight: 300;
+      font-size: 1.3em;
+      line-height: 1.4em;
+    }
+    .track {
+      color: #cffffd;
+      text-decoration: none;
+    }
+  }
+  #title {
+    font-size: 1.6em;
+    font-weight: 300;
+    margin-left: 15px;
+    margin-top: 0.5em;
+  }
+}
+
+/* track activities view */
+
 .track-activities-wrap, .no-activities {
   margin-top: 28px;
   h2, .no-activities {
-    margin-left: 30px;
+    margin-left: 21px;
   }
 }
 
 .activity-thumbnail-wrap {
+  background-color: white;
   padding: 10px;
   margin: 22px 6px 22px 6px;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   height: 330px;
   @media only screen and (max-width: 768px) {
     height: 280px;
@@ -210,9 +282,13 @@ mark {
   }
 }
 
+/* activity view */
+
 .activity-wrap {
   width: 98%;
   margin: 0 auto;
+  background-color: white;
+  height: 100%;
   font-size: 0.85em;
   b {
     font-weight: 700;
@@ -222,6 +298,10 @@ mark {
   .list-title p {
     margin-bottom: 0;
   }
+}
+
+.activity-header {
+  margin: 10px 0;
 }
 
 .activity-content, .activity-header {
@@ -242,16 +322,32 @@ mark {
   margin-bottom: 15px;
 }
 
+.activity-info-wrap, .activity-inspiration-wrap, .activity-reflection-wrap {
+  background-color: white;
+  padding: 10px 12px;
+}
+
+.activity-inspiration-wrap {
+  border-top: 2px dashed black;
+}
+
 .activity-concept-wrap {
-  margin: 7px 0 30px 0;
+  margin: 0 0 30px 0;
+  background-color: white;
+  .tag {
+    border-radius: 25px;
+    margin: 5px;
+    padding: 8px;
+    font-weight: normal;
+  }
 }
 
 .back-track-wrap {
-  height: 65px;
+  height: 50px;
   text-decoration: none;
   text-align: left;
   text-transform: uppercase;
-  background-color: #6F2663;
+  background-color: @primary-color;
   padding-left: 8px;
   display: -webkit-flex;
   display: flex;
@@ -265,58 +361,24 @@ mark {
     margin-left: 9px;
   }
   p {
-    font-size: 1.6em;
+    font-size: 1.4em;
     margin-left: 5px;
     margin-bottom: 0;
   }
   img {
     margin-left: 9px;
-    height: 25px;
+    height: 23px;
+    padding-bottom: 2px;
   }
 }
 
-.tag {
-  border-radius: 25px;
-  margin: 5px;
-  padding: 8px;
-  font-weight: normal;
-}
-
-.menu {
-  padding-top: 10px;
-  margin-bottom: -9999px;
-  padding-bottom: 9999px;
-  overflow: hidden;
-  background-color: #2a2b31;
-  border-radius: 10px 10px 0px 0px;
-  a {
-    color: #cffffd;
-    text-decoration: none;
-  }
-  a.nav-link {
-    margin: 30px;
-  }
-  h1 {
-    margin-top: 10px;
-    margin-bottom: 25px;
-    font-size: 3em;
-    font-weight: 100;
-  }
-}
-
-// TODO: touch this class
-#header {
-  height: 145px;
-  overflow: hidden;
-  img {
-    height: auto;
-    width: 100%;
-  }
-}
+/* buttons and inputs */
 
 #change-header-btn {
   top: 110px;
   position: absolute;
+  right: 0;
+  top: 50px;
   opacity: 0.6;
   &:hover {
    opacity: 1;
@@ -324,60 +386,12 @@ mark {
  transition: all 0.2s;
 }
 
-/* buttons and inputs */
-
 button {
   font-size: 1rem;
 }
 
-.trackwrapper.col-xs-12.col-sm-6.col-lg-4 {
-  padding-right: inherit;
-  padding-left: inherit;
-}
-
-.tracks {
-  margin: 1.5em 1.5em 2em 1.5em;
-  a {
-    display: block;
-    height: 100%;
-    padding: 25px 15px;
-  }
-  .trackwrap {
-    margin: 15px 0;
-    height: 117px;
-    .track-bg {
-      height: 100%;
-    }
-    a:hover {
-      mark {
-        background-color: rgba(0, 0, 0, 0);
-      }
-    }
-
-    // border: 2px solid @primary-color;
-    h2 {
-      font-weight: 300;
-      font-size: 1.3em;
-      line-height: 1.4em;
-    }
-    .track {
-      color: #cffffd;
-      text-decoration: none;
-    }
-    // :hover {
-    //   color: #abfffb;
-    // }
-  }
-  #title {
-    color: @purple;
-    font-size: 1.6em;
-    font-weight: 300;
-    margin-left: 15px;
-    margin-top: 0.5em;
-  }
-}
-
 .login {
+  margin-top: 10px;
   position: absolute;
   top: 13px;
   right: 10px;
@@ -408,17 +422,6 @@ input[type="radio"]:checked + label{
     border: 1px solid #2a2b31;
     background-color: white;
   }
-}
-
-/* main content */
-#main {
-  display: flex;
-  background-color: white;
-}
-
-.content {
-  flex-direction: column;
-  width: 100%;
 }
 
 /* no gutters! */

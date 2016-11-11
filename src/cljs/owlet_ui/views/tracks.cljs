@@ -4,7 +4,7 @@
             [owlet-ui.components.track :refer [track]]))
 
 (defn pair-color [activity-models]
-  (let [colors ["#750569" "#00cbb2" "#3d8142" "#41bba2" "#e1bb00" "#254e68" "#dd0067" "#d37fe6" "#e00000"]]
+  (let [colors ["#FF563E" "#00cbb2" "#3d8142" "#41bba2" "#e1bb00" "#254e68" "#dd0067" "#d37fe6" "#e00000"]]
     (map vector colors activity-models)))
 
 (defn tracks-view []
@@ -17,7 +17,7 @@
        (fn []
          [:div
            [:div.tracks
-            [:h1#title "Get started by choosing a track below"]
+            [:h1#title [:mark "Get started by choosing a track below"]]
             [:br]
             (let [color-pairs (pair-color (:models @activity-models))]
               (for [pair color-pairs]
