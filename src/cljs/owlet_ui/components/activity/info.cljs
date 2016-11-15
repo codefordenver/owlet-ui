@@ -1,5 +1,11 @@
 (ns owlet-ui.components.activity.info
   (:require [re-frame.core :as re]
+            [re-com.core                 :refer [h-box v-box box gap line scroller border label title input-text checkbox radio-button button]
+                                         hyperlink hyperlink-href p single-dropdown popover-content-wrapper popover-anchor-wrapper
+                                         popover-border popover-tooltip flex-child-style
+              :refer-macros [handler-fn]]
+            [re-com.popover              :refer [popover-content-wrapper-args-desc popover-anchor-wrapper-args-desc popover-border-args-desc
+                                                 popover-tooltip-args-desc]]
             [cljsjs.marked]
             [cljsjs.bootstrap]
             [cljsjs.jquery]
