@@ -15,7 +15,7 @@
        (fn []
          (let [{:keys [display-name track-id]} @active-view
                activity-items (get @activities track-id)]
-            [:div
+            [:div.height-wrap
               [:div.back-track-wrap
                 [:div
                   [:a {:href "#/tracks"}

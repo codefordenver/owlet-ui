@@ -25,6 +25,20 @@
       }
     }
   }
+  function zadenMagic2() {
+    var main = document.getElementById('main');
+    var body = document.body;
+    var heightClass = document.getElementsByClassName('height-wrap')[0];
+    if(heightClass) {
+      var height = heightClass.clientHeight;
+      body.setAttribute('style', 'height:' + height + 'px;');
+      main.setAttribute('style', 'height:' + height + 'px;');
+    }
+    else {
+      var height = body.clientHeight;
+      main.setAttribute('style', 'height:' + bodyHeight + 'px;');
+    }
+  }
 </script>
 </body>
 </html>
