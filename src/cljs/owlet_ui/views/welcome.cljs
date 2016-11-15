@@ -9,8 +9,8 @@
     [:div.column-right
 ;;      [:form.user-type
           [:div.user-type
-            [:p#largetext "Welcome to Owlet"]
-            [:div.welcome-text
+            [:p#largetext.text-shadow "Welcome to Owlet"]
+            [:div.welcome-text.text-shadow
               [:p "Explore some of the awesome things you can do with coding & multimedia, by yourself and with others. Enjoy!"]
               [:p "¡Bienvenidx a Owlet! Explora algunas de las cosas increíbles que puedes hacer con programación y con multimedios tú solx o en equipo. ¡Adelante!"]]
             [:a {:href "#/tracks"}
