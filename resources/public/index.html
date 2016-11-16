@@ -35,14 +35,14 @@
       var heightWrapHeight = heightClass.clientHeight;
       var heightWrapHeightWithPad = heightWrapHeight + 100;
       if(heightWrapHeight > elementHeight) {
-        main.setAttribute('style', 'height:' + heightWrapHeightWithPad + 'px !important;');
+        main.setAttribute('style', 'height:' + heightWrapHeightWithPad + 'px;');
         console.log(heightWrapHeight);
       } else {
-        main.setAttribute('style', 'height:' + elementHeight + 'px !important;');
+        main.setAttribute('style', 'height:' + elementHeight + 'px;');
         console.log(elementHeight);
       }
     } else {
-      main.setAttribute('style', 'height:' + elementHeight + 'px !important;');
+      main.setAttribute('style', 'height:' + elementHeight + 'px;');
       console.log(elementHeight);
     }
   }
