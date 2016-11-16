@@ -33,9 +33,8 @@
     var elementHeight = document.documentElement.clientHeight;
     if(heightClass) {
       var heightWrapHeight = heightClass.clientHeight;
-      var heightWrapHeightWithPad = heightWrapHeight + 100;
       if(heightWrapHeight > elementHeight) {
-        main.setAttribute('style', 'height:' + heightWrapHeightWithPad + 'px;');
+        main.setAttribute('style', 'height:' + heightWrapHeight + 'px;');
         console.log(heightWrapHeight);
       } else {
         main.setAttribute('style', 'height:' + elementHeight + 'px;');
