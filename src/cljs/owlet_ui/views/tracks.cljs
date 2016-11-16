@@ -15,7 +15,7 @@
          (re/dispatch [:get-activity-models]))
        :reagent-render
        (fn []
-         [:div
+         [:div.height-wrap.row
            [:div.tracks
             [:h1#title [:mark "Get started by choosing a track below"]]
             [:br]
