@@ -14,7 +14,7 @@
         (js/zadenMagic2))
      :reagent-render
       (fn []
-        [:div.height-wrap.activity.row
+        [:div.height-wrap.activity
           [back-track]
           [:div.activity-wrap
             [:div.activity-header.col-xs-12
