@@ -5,13 +5,13 @@
     [re-frame.core :as re-frame]))
 
 (defn login-button []
-      [:button.btn.btn-secondary.btn-sm
+      [:button.btn.btn-login.btn-sm
        {:type     "button"
         :on-click #(.show config/lock #js {:popup true})}
        "Log in"])
 
 (defn logout-button []
-      [:button.btn.btn-outline-secondary.btn-sm
+      [:button.btn.btn-logout.btn-sm
        {:type     "button"
         :on-click #(do
                     (re-frame/dispatch [:user-has-logged-in-out! false])

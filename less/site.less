@@ -15,10 +15,6 @@ h1 {
   margin-top: 10px;
 }
 
-#app {
-  height: 100%;
-}
-
 #lpsidebar {
   text-align: center;
   background-color: @purple;
@@ -38,9 +34,6 @@ h1 {
     margin-top: 0;
     width: 100%;
   }
-  @media (max-width: 744px) {
-    display: none;
-  }
   .menu {
     padding-top: 10px;
     margin-bottom: -9999px;
@@ -51,11 +44,8 @@ h1 {
       color: #cffffd;
       text-decoration: none;
     }
-    a.nav-link {
-      margin: 30px;
-    }
     img {
-      width: 70%;
+      width: 80px;
     }
   }
 }
@@ -202,11 +192,11 @@ mark.white {
 
 #main {
   display: flex;
-  height: 100%;
 }
 
 .content {
   width: 100%;
+  overflow-y: auto;
 }
 
 /* tracks view */
@@ -411,6 +401,26 @@ button {
   position: absolute;
   top: 13px;
   right: 10px;
+}
+
+.btn-login {
+  color: #fff;
+  background-color: #65D2C0;
+  border-color: #65D2C0;
+  &:hover {
+    color: ##0BFFE1;
+    background-color: transparent;
+  }
+}
+
+.btn-logout {
+  color: #0BFFE1;
+  background-color: transparent;
+  border-color: #65D2C0;
+  &:hover {
+    color: #fff;
+    background-color: #65D2C0;
+  }
 }
 
 input[type="radio"] {
