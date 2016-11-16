@@ -25,24 +25,12 @@
       }
     }
   }
-  function zadenMagic2() {
+  $( window ).load( function zadenMagic2() {
     var main = document.getElementById('main');
-    var heightClass = document.getElementsByClassName('height-wrap')[0];
     var elementHeight = document.documentElement.clientHeight;
-    if(heightClass) {
-      var heightWrapHeight = heightClass.clientHeight;
-      if(heightWrapHeight > elementHeight) {
-        main.setAttribute('style', 'height:' + heightWrapHeight + 'px;');
-        console.log(heightWrapHeight);
-      } else {
-        main.setAttribute('style', 'height:' + elementHeight + 'px;');
-        console.log(elementHeight);
-      }
-  } else {
     main.setAttribute('style', 'height:' + elementHeight + 'px;');
     console.log(elementHeight);
-  }
-}
+  });
 </script>
 </body>
 </html>
