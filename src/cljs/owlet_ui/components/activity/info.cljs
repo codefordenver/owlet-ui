@@ -16,15 +16,6 @@
            "dangerouslySetInnerHTML"
                   #js{:__html (js/marked (str title field))}}]))
 
-;; TODO: figure out how to make this a component function
-;; so we can pass tooltip :title as an argument
-
-; (def tooltip-component
-;   ^{:component-did-mount #(.tooltip (js/$ (reagent.core/dom-node %)) #js {:placement "right"
-;                                                                           :title     "Off-computer activity"})}
-;   (fn [text]
-;     [:button.btn.btn-warning text]))
-
 (defn activity-info []
   (let [activity-data (re/subscribe [:activity-in-view])]
     (let [showing? (reagent/atom false)
@@ -49,8 +40,6 @@
                         :close-button? false
                         :title    "What does this mean?"
                         :body     "UNPLUGGED activities do not require a computer or device"]]
-
-        ;  [:p [tooltip-component "UNPLUGGED"]]
          [set-as-marked "<b>Technology</b><br>" tech-requirements])
        [set-as-marked "<b>Summary</b><br>" summary]
        [set-as-marked "<b>Why?</b><br>" why]
