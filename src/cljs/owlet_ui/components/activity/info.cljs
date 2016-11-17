@@ -1,5 +1,8 @@
 (ns owlet-ui.components.activity.info
   (:require [re-frame.core :as re]
+            [re-com.core :as re-com
+              :refer-macros [handler-fn]]
+            [re-com.popover]
             [cljsjs.marked]
             [cljsjs.bootstrap]
             [cljsjs.jquery]
@@ -13,18 +16,10 @@
            "dangerouslySetInnerHTML"
                   #js{:__html (js/marked (str title field))}}]))
 
-;; TODO: figure out how to make this a component function
-;; so we can pass tooltip :title as an argument
-
-(def tooltip-component
-  ^{:component-did-mount #(.tooltip (js/$ (reagent.core/dom-node %)) #js {:placement "right"
-                                                                          :title     "Off-computer activity"})}
-  (fn [text]
-    [:button.btn.btn-warning text]))
-
 (defn activity-info []
   (let [activity-data (re/subscribe [:activity-in-view])]
-    (let [unplugged (get-in @activity-data [:fields :unplugged])
+    (let [showing? (reagent/atom false)
+          unplugged (get-in @activity-data [:fields :unplugged])
           tech-requirements (get-in @activity-data [:fields :techRequirements])
           summary (get-in @activity-data [:fields :summary])
           why (get-in @activity-data [:fields :why])
@@ -32,7 +27,19 @@
           materials (get-in @activity-data [:fields :materials])]
       [:div.activity-info-wrap.box-shadow
        (if unplugged
-         [:p [tooltip-component "UNPLUGGED"]]
+          [re-com/popover-anchor-wrapper
+             :showing? showing?
+             :position :right-below
+             :anchor   [:button
+                        {:class "btn btn-warning"
+                         :style {:margin-bottom "10px"}
+                         :on-mouse-over (handler-fn (reset! showing? true))
+                         :on-mouse-out  (handler-fn (reset! showing? false))}
+                        "UNPLUGGED"]
+             :popover  [re-com/popover-content-wrapper
+                        :close-button? false
+                        :title    "What does this mean?"
+                        :body     "UNPLUGGED activities do not require a computer or device"]]
          [set-as-marked "<b>Technology</b><br>" tech-requirements])
        [set-as-marked "<b>Summary</b><br>" summary]
        [set-as-marked "<b>Why?</b><br>" why]
