@@ -1,6 +1,7 @@
 (ns owlet-ui.components.activity.info
   (:require [re-frame.core :as re]
-            [re-com.core :as re-com]
+            [re-com.core :as re-com
+              :refer-macros [handler-fn]]
             [re-com.popover]
             [cljsjs.marked]
             [cljsjs.bootstrap]
@@ -38,12 +39,14 @@
           [re-com/popover-anchor-wrapper
              :showing? showing?
              :position :right-below
-             :anchor   [re-com/button
-                        :label    "UNPLUGGED"
-                        :class "btn btn-warning"
-                        :style {:margin-bottom "10px"}
-                        :on-click #(swap! showing? not)]
+             :anchor   [:button
+                        {:class "btn btn-warning"
+                         :style {:margin-bottom "10px"}
+                         :on-mouse-over (handler-fn (reset! showing? true))
+                         :on-mouse-out  (handler-fn (reset! showing? false))}
+                        "UNPLUGGED"]
              :popover  [re-com/popover-content-wrapper
+                        :close-button? false
                         :title    "What does this mean?"
                         :body     "UNPLUGGED activities do not require a computer or device"]]
 
