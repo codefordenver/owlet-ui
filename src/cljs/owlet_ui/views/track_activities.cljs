@@ -15,7 +15,7 @@
        (fn []
          (let [{:keys [display-name track-id]} @active-view
                activity-items (get @activities track-id)]
-            [:div
+            [:div.height-wrap
               [:div.back-track-wrap
                 [:div
                   [:a {:href "#/tracks"}
@@ -27,7 +27,7 @@
                 [:h2 [:mark.white.box-shadow [:b display-name]]]
                 [:div.flexcontainer-wrap
                   (if (empty? activity-items)
-                   [:p.no-activities "No activities in this track yet. Check back soon."]
+                   [:p.no-activities [:mark "No activities in this track yet. Check back soon."]]
                    (for [activity activity-items
                          :let [fields (:fields activity)
                                id (get-in fields [:preview :sys :id])
