@@ -8,7 +8,8 @@
     (reagent/create-class
       {:component-did-mount
        (fn []
-         (js/zadenMagic))
+         (js/zadenMagic)
+         (js/zadenMagic2))
        :reagent-render
        (fn []
          (let [name (str/upper-case (:name data))
