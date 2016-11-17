@@ -35,17 +35,17 @@
           materials (get-in @activity-data [:fields :materials])]
       [:div.activity-info-wrap.box-shadow
        (if unplugged
-         [re-com/h-box
-              :gap      "40px"
-              :children [[re-com/popover-anchor-wrapper
-                           :showing? showing?
-                           :position :right-below
-                           :anchor   [re-com/button
-                                      :label    "UNPLUGGED"
-                                      :on-click #(swap! showing? not)]
-                           :popover  [re-com/popover-content-wrapper
-                                      :title    "What does this mean?"
-                                      :body     "UNPLUGGED activities do not require a computer or device"]]]]
+          [re-com/popover-anchor-wrapper
+             :showing? showing?
+             :position :right-below
+             :anchor   [re-com/button
+                        :label    "UNPLUGGED"
+                        :class "btn btn-warning"
+                        :style {:margin-bottom "10px"}
+                        :on-click #(swap! showing? not)]
+             :popover  [re-com/popover-content-wrapper
+                        :title    "What does this mean?"
+                        :body     "UNPLUGGED activities do not require a computer or device"]]
 
         ;  [:p [tooltip-component "UNPLUGGED"]]
          [set-as-marked "<b>Technology</b><br>" tech-requirements])
