@@ -1,7 +1,7 @@
 (ns owlet-ui.handlers
   (:require [re-frame.core :as re]
-            [owlet-ui.db :as db]
             [owlet-ui.config :as config]
+            [owlet-ui.auth0 :as auth0]
             [owlet-ui.firebase :as fb]
             [ajax.core :refer [GET POST PUT]]
             [camel-snake-kebab.core :refer [->camelCase]]))
@@ -47,10 +47,29 @@
        (assoc-in db db-path (apply f new-data args))))))
 
 
+(defn my
+  "Applies the given \"-in\" function on the current user's data in the
+  given db map. So if db looks like
+
+    {... :my-user-id :xxx, :users {:yyy {}, ...}
+
+  then (my assoc-in db [:k1 :k2] \"new value\") will return the value
+
+    {... :my-user-id :xxx, :users {:yyy {},
+                                   :xxx {:k1 {:k2 \"new value\"}}
+                                   ...}
+
+  Of course, you can similarly call with get-in or update-in.
+  "
+  [f-in db ks & args]
+  (let [path (concat [:users (:my-user-id db)] ks)]
+    (apply f-in db path args)))
+
+
 (re/register-handler
   :initialize-db
   (fn [_ _]
-    db/default-db))
+    config/default-db))
 
 
 (re/register-handler
@@ -59,6 +78,32 @@
     (when (or (= :track-activities-view active-view) (= :activity-view active-view))
       (re/dispatch [:get-library-content route-parameter]))
     (assoc db :active-view active-view)))
+
+
+(re/register-handler
+  :authenticated
+  (fn [db [_ {token :id_token}]]
+    (fb/sign-in fb/firebase-auth-object token :firebase-auth-error)
+    db))
+
+
+(re/register-handler
+  :firebase-auth-error
+  (fn [db [_ error]]
+    (prn error)       ; TODO: Put up login-error GUI component.
+    db))
+
+
+(re/register-handler
+  :firebase-user
+  (fn [db [_ user]]
+    (if user
+      (do
+        (js/console.log "Firebase user is signed in. uid:" (.-uid user))
+        (assoc db :my-user-id (.-uid user)))
+      (do
+        (js/console.log "Firebase user is signed out.")
+        (dissoc db :my-user-id)))))
 
 
 (re/register-handler
@@ -77,7 +122,7 @@
   :reset-user-db!
   (re/path [:user])
   (fn [_ [_ _]]
-    db/default-user-db))
+    config/default-user-db))
 
 
 (re/register-handler
@@ -170,7 +215,7 @@
   (fn [db [_ _]]
     (when-let [user-token (.getItem js/localStorage "userToken")]
       (.getProfile
-        config/lock
+        auth0/lock
         user-token
         (fn [err profile]
           (if (some? err)

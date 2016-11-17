@@ -9,7 +9,9 @@
             [owlet-ui.views.activity :refer [activity-view]]
             [owlet-ui.views.tracks :refer [tracks-view]]
             [owlet-ui.views.settings :refer [settings-view]]
-            [owlet-ui.views.track-activities :refer [track-activities-view]]))
+            [owlet-ui.views.track-activities :refer [track-activities-view]]
+            [owlet-ui.auth0 :as auth0]
+            [owlet-ui.firebase :as fb]))
 
 (defmulti views identity)
 (defmethod views :welcome-view [] [welcome-view])
@@ -26,10 +28,13 @@
 (def show? (reagent/atom false))
 
 (defn main-view []
+  (auth0/on-authenticated auth0/lock :authenticated)
+  (fb/on-auth-change fb/firebase-auth-object :firebase-user)
+
   (let [active-view (re/subscribe [:active-view])
         loading? (re/subscribe [:set-loading-state?])
         src (re/subscribe [:user-has-background-image?])
-        is-user-logged-in? (re/subscribe [:is-user-logged-in?])
+        is-user-logged-in? (re/subscribe [:my-user-id])
         open-modal (fn [_] (reset! show? true))
         close-modal (fn [_] (reset! show? false))]
     (reagent/create-class

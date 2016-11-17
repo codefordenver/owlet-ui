@@ -40,6 +40,10 @@
 ;  ;  ;  ;  ;  ;  ;  ;  ;   Defining Firebase refs   ;  ;  ;  ;  ;  ;  ;  ;  ;
 
 
+(def firebase-auth-object
+  (.auth firebase-app))
+
+
 (def firebase-db-ref
   (-> firebase-app .database .ref))
 
@@ -59,6 +63,47 @@
 (defn storage-ref-for-url
   [url]
   (-> firebase-app .storage (.refFromURL url)))
+
+
+;  ;  ;  ;  ;  ;  ;  ;  ;   Firebase authorization   ;  ;  ;  ;  ;  ;  ;  ;  ;
+
+
+(defn sign-in
+  "Signs in to the given firebase.auth.Auth instance using the given custom
+  token, e.g. a Google or Facebook token provided by Auth0 at login. If the
+  token is invalid or expired, a re-frame event is dispatched with first
+  element the given event id (typically a keyword), second element the
+  resulting firebase.auth.Error object as a ClojureScript map with keyword keys,
+  and the remaining elements the given arguments, if any. For error keys and
+  codes, see
+  https://firebase.google.com/docs/reference/js/firebase.auth.Auth#signInWithCustomToken
+  and
+  https://firebase.google.com/docs/reference/js/firebase.auth.Error
+  Returns a firebase.Promise containing the signed-in Firebase user object.
+  To obtain the user object, it is preferable to define a handler and use
+  function on-auth-change to set up an event that triggers it.
+  "
+  [auth-obj fb-token fail-event-id & args]
+  (-> auth-obj
+      (.signInWithCustomToken fb-token)
+      (.catch (fn [fb-error]
+                (re/dispatch
+                  (apply vector fail-event-id (js->clj fb-error) args))))))
+
+
+(defn on-auth-change
+  "Registers a re-frame event to be fired whenever the state of the given
+  firebase.auth.Auth instance changes. The event is a vector whose first
+  element is the given event id (typically a keyword), followed by the
+  currently signed-in user as a ClojureScript map with keyword keys (or nil if
+  no longer signed in), followed by the given arguments, if any. Returns a
+  no-arg. function, which may be called to stop listening for these changes.
+  "
+  [auth-obj event-id & args]
+  (.onAuthStateChanged auth-obj
+                       (fn [fb-user]
+                         (re/dispatch
+                           (apply vector event-id (js->clj fb-user) args)))))
 
 
 ;  ;  ;  ;  ;  ;  ;  ;  Communicating with Firebase DB  ;  ;  ;  ;  ;  ;  ;  ;
@@ -267,7 +312,7 @@
   remove all (next, error, or complete) callbacks from the running task, if
   called.
   "
-  [js-file & {:keys [into-dir next error complete-with-snapshot] :as options}]
+  [js-file & {:keys [into-dir error complete-with-snapshot] :as options}]
 
   (let [dir           (or into-dir "")
         path          (str dir "/" (.-name js-file))

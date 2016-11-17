@@ -1,25 +1,24 @@
 (ns owlet-ui.components.login
   (:require
-    [owlet-ui.config :as config]
-    [secretary.core :as secretary]
-    [re-frame.core :as re-frame]))
+    [owlet-ui.auth0 :as auth0]
+    [re-frame.core :as re]
+    [owlet-ui.firebase :as fb]))
 
 (defn login-button []
       [:button.btn.btn-secondary.btn-sm
        {:type     "button"
-        :on-click #(.show config/lock #js {:popup true})}
+        :on-click #(.show auth0/lock #js {:popup true})}
        "Log in"])
 
 (defn logout-button []
       [:button.btn.btn-outline-secondary.btn-sm
        {:type     "button"
-        :on-click #(do
-                    (re-frame/dispatch [:user-has-logged-in-out! false])
-                    (.removeItem js/localStorage "userToken"))}
+        :on-click #(do (.signOut fb/firebase-auth-object)
+                       (re/dispatch [:user-has-logged-in-out! false]))}
        "Log out"])
 
 (defn login-component []
-      (let [is-user-logged-in? (re-frame/subscribe [:is-user-logged-in?])]
+      (let [is-user-logged-in? (re/subscribe [:my-user-id])]
            (fn []
                (if @is-user-logged-in?
                  [logout-button]

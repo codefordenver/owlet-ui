@@ -8,7 +8,7 @@
 
 (defn header-component []
   (let [src (re-frame/subscribe [:user-has-background-image?])
-        is-user-logged-in? (re-frame/subscribe [:is-user-logged-in?])
+        is-user-logged-in? (re-frame/subscribe [:my-user-id])
         open-modal (fn [_] (reset! show? true))
         close-modal (fn [_] (reset! show? false))]
     (fn []

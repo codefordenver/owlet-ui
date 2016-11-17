@@ -46,10 +46,7 @@
    (reaction (:active-view @db))))
 
 
-(re/register-sub
- :is-user-logged-in?
- (fn [db]
-   (reaction (get-in @db [:user :logged-in?]))))
+(register-getter-sub :my-user-id [:my-user-id])
 
 
 (re/register-sub
