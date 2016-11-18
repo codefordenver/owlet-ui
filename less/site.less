@@ -208,11 +208,29 @@ mark.white {
 
 #main {
   display: flex;
+  overflow-y: visible;
 }
 
 .content {
-  width: 100%;
   overflow-y: auto;
+  height: 100%;
+  width: 100%;
+}
+
+.outer-height-wrap {
+  height: 100vh;
+  width: 100%;
+}
+
+.inner-height-wrap {
+  height: 100%;
+  width: 100%;
+}
+
+@media (min-width: 992px) {
+  #main {
+    height: 100vh;
+  }
 }
 
 /* tracks view */
@@ -221,6 +239,8 @@ mark.white {
   padding-right: inherit;
   padding-left: inherit;
 }
+
+
 
 .tracks {
   margin: 2.5em 1.5em 2em 1.5em;

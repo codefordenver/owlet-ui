@@ -8,23 +8,18 @@
             [reagent.core :as reagent]))
 
 (defn activity-view []
-  (reagent/create-class
-    {:component-did-mount
-     (fn []
-       (js/zadenMagic2))
-     :reagent-render
-      (fn []
-        [:div.activity
-          [back-track]
-          [:div.activity-wrap
-            [:div.activity-header.col-xs-12
-              [activity-title]]
-            [:div.activity-content.col-xs-12.col-lg-8
-              [activity-embed]
-              [:div.hidden-sm-down
-                [activity-reflection]]]
-            [:div.activity-content.col-xs-12.col-lg-4
-              [activity-info]
-              [:div.hidden-md-up
-                [activity-reflection]]
-              [activity-inspiration]]]])}))
+  (fn []
+    [:div.activity
+      [back-track]
+      [:div.activity-wrap
+        [:div.activity-header.col-xs-12
+          [activity-title]]
+        [:div.activity-content.col-xs-12.col-lg-8
+          [activity-embed]
+          [:div.hidden-sm-down
+            [activity-reflection]]]
+        [:div.activity-content.col-xs-12.col-lg-4
+          [activity-info]
+          [:div.hidden-md-up
+            [activity-reflection]]
+          [activity-inspiration]]]]))
