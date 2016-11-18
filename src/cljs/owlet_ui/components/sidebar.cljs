@@ -7,8 +7,10 @@
 (defn sidebar-component []
   [:div
     [:div#lpsidebar
-      [:a {:href "#"}
-        [:img.owlet {:src "img/owlet-logo-newer.png"}]]
+      [:div#owlet-wrap
+        [:a {:href "#"}
+          [:img#owlet-image {:src "img/owlet-logo.png"}]
+          [:p#owlet-text "OWLET"]]]
       [:div.menu
         [:div.login
          [login-component]]
