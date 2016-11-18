@@ -55,15 +55,15 @@
 
   then (my assoc-in db [:k1 :k2] \"new value\") will return the value
 
-    {... :my-user-id :xxx, :users {:yyy {},
-                                   :xxx {:k1 {:k2 \"new value\"}}
-                                   ...}
+    {... :my-user-id :xxx, :users {:yyy {}, :xxx {:k1 {:k2 \"new value\"}} ...}
 
   Of course, you can similarly call with get-in or update-in.
+  If (:my-user-id db) is nil, then nil is returned.
   "
   [f-in db ks & args]
-  (let [path (concat [:users (:my-user-id db)] ks)]
-    (apply f-in db path args)))
+  (when-some [uid (:my-user-id db)]
+    (let [path (concat [:users uid] ks)]
+      (apply f-in db path args))))
 
 
 (re/register-handler
@@ -104,6 +104,9 @@
       (do
         (js/console.log "Firebase user is signed out.")
         (dissoc db :my-user-id)))))
+
+
+(register-setter-handler :fb-users-change [:users])
 
 
 (re/register-handler

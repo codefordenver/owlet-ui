@@ -10,6 +10,7 @@
             [owlet-ui.views.tracks :refer [tracks-view]]
             [owlet-ui.views.settings :refer [settings-view]]
             [owlet-ui.views.track-activities :refer [track-activities-view]]
+            [owlet-ui.async :as async]
             [owlet-ui.auth0 :as auth0]
             [owlet-ui.firebase :as fb]))
 
@@ -28,8 +29,14 @@
 (def show? (reagent/atom false))
 
 (defn main-view []
+  (async/repeatedly-run)    ; Needed to poll subscriptions to update Firebase DB.
+
   (auth0/on-authenticated auth0/lock :authenticated)
   (fb/on-auth-change fb/firebase-auth-object :firebase-user)
+
+  (let [users-db-path (fb/db-ref-for-path "users")]
+    (fb/on-change users-db-path :fb-users-change)
+    (fb/change-on users-db-path :change-fb-users))
 
   (let [active-view (re/subscribe [:active-view])
         loading? (re/subscribe [:set-loading-state?])

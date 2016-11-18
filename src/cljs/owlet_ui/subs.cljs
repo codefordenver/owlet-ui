@@ -49,6 +49,9 @@
 (register-getter-sub :my-user-id [:my-user-id])
 
 
+(register-getter-sub :change-fb-users [:users] prn)
+
+
 (re/register-sub
  :social-id-subscription
  (fn [db]
