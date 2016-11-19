@@ -4,7 +4,8 @@
             [owlet-ui.components.activity.embed :refer [activity-embed]]
             [owlet-ui.components.activity.info :refer [activity-info]]
             [owlet-ui.components.activity.inspiration :refer [activity-inspiration]]
-            [owlet-ui.components.activity.reflection :refer [activity-reflection]]))
+            [owlet-ui.components.activity.reflection :refer [activity-reflection]]
+            [reagent.core :as reagent]))
 
 (defn activity-view []
   (fn []

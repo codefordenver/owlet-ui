@@ -15,6 +15,10 @@ h1 {
   margin-top: 10px;
 }
 
+a:hover {
+  text-decoration: none;
+}
+
 #lpsidebar {
   text-align: center;
   background-color: @purple;
@@ -30,9 +34,22 @@ h1 {
   img {
     margin-top: 30px;
   }
-  img.owlet {
+  #owlet-wrap {
+    background-color: #65D2C0;
+    border: 1px solid #65D2C0;
+    border-bottom-right-radius: 20px;
+    border-bottom-left-radius: 20px;
+  }
+  #owlet-image {
     margin-top: 0;
     width: 100%;
+  }
+  #owlet-text {
+    padding-left: 3px;
+    font-weight: 400;
+    letter-spacing: 3px;
+    color: white;
+    margin-bottom: 5px;
   }
   .menu {
     padding-top: 10px;
@@ -192,11 +209,29 @@ mark.white {
 
 #main {
   display: flex;
+  overflow-y: visible;
 }
 
 .content {
-  width: 100%;
   overflow-y: auto;
+  height: 100%;
+  width: 100%;
+}
+
+.outer-height-wrap {
+  height: 100vh;
+  width: 100%;
+}
+
+.inner-height-wrap {
+  height: 100%;
+  width: 100%;
+}
+
+@media (min-width: 992px) {
+  #main {
+    height: 100vh;
+  }
 }
 
 /* tracks view */
@@ -205,6 +240,8 @@ mark.white {
   padding-right: inherit;
   padding-left: inherit;
 }
+
+
 
 .tracks {
   margin: 2.5em 1.5em 2em 1.5em;
@@ -408,13 +445,13 @@ button {
   background-color: #65D2C0;
   border-color: #65D2C0;
   &:hover {
-    color: ##0BFFE1;
+    color: #5EFFE4;
     background-color: transparent;
   }
 }
 
 .btn-logout {
-  color: #0BFFE1;
+  color: #5EFFE4;
   background-color: transparent;
   border-color: #65D2C0;
   &:hover {
@@ -439,10 +476,8 @@ input[type="radio"]:checked + label{
 }
 
 .search {
-  padding: 10px;
   input {
     border-radius: 2px;
-    margin-left: 10px;
     font-size: 0.9rem;
     border: 1px solid #2a2b31;
     background-color: white;
