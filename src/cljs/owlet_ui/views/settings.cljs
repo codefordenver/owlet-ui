@@ -20,10 +20,9 @@
            #(reset! district-id (:district_id %))))
        :reagent-render
        (fn []
-         [:div.container
-          [:div.row
-           [:div.col-lg-12
-             [:h1 "My Settings"]
+         [:div.outer-height-wrap
+           [:div.inner-height-wrap
+             [:h1#title [:mark "My Settings"]]
              [:div.search
               [:label "District ID:"
                [:input.test {:type        "text"
@@ -39,4 +38,4 @@
                                          {:params  {:district-id @district-id
                                                     :user-id     (session/get :user-id)}
                                           :handler (fn [res]
-                                                     (js/alert res))}))}]]]]]])})))
+                                                     (js/alert res))}))}]]]]])})))
