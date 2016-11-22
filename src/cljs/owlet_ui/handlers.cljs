@@ -66,7 +66,7 @@
   (re/path [:user])
   (fn [db [_ val]]
     ;; reset user-bg-image on logout
-    (when (false? val)
+    (if (false? val)
       (do
         (re/dispatch [:reset-user-bg-image! config/default-header-bg-image])
         (re/dispatch [:reset-user-db!])))

@@ -7,7 +7,10 @@
 (defn login-button []
       [:button.btn.btn-login.btn-sm
        {:type     "button"
-        :on-click #(.show config/lock #js {:popup true})}
+        :on-click (fn [] (.setItem js/localStorage "owlet.redirectUrl" (str js/location.protocol "//"
+                                                                            js/location.host "/"
+                                                                            js/location.hash))
+                         (.show config/lock #js {:popup true}))}
        "Log in"])
 
 (defn logout-button []

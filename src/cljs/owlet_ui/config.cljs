@@ -15,21 +15,17 @@
 (when debug?
   (enable-console-print!))
 
-(def lock (let [current-url (str window.location.protocol "//"
-                                 window.location.host "/"
-                                 window.location.hash)]
-            (prn current-url)
-            (new js/Auth0Lock
-                 "aCHybcxZ3qE6nWta60psS0An1jHUlgMm"
-                 "codefordenver.auth0.com"
-                 (clj->js {:auth {:redirect    true
-                                  :redirectUrl current-url}}))))
+(def lock
+  (new js/Auth0Lock
+       "aCHybcxZ3qE6nWta60psS0An1jHUlgMm"
+       "codefordenver.auth0.com"))
 
 (.on lock "authenticated"
      (fn [auth-res]
        (let [_auth-res_ (js->clj auth-res :keywordize-keys true)
              token (:idToken _auth-res_)
              social-id (-> _auth-res_ :idTokenPayload :sub)]
+
          (re-frame/dispatch [:user-has-logged-in-out! true])
          (re-frame/dispatch [:update-sid-and-get-cms-entries-for social-id])
          (.setItem js/localStorage "userToken" token))))
@@ -44,4 +40,3 @@
           :authDomain    "owlet-users.firebaseapp.com"
           :databaseURL   "https://owlet-users.firebaseio.com"
           :storageBucket "owlet-users.appspot.com"})
-
