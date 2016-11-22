@@ -15,9 +15,15 @@
 (when debug?
   (enable-console-print!))
 
-(def lock (new js/Auth0Lock
-               "aCHybcxZ3qE6nWta60psS0An1jHUlgMm"
-               "codefordenver.auth0.com"))
+(def lock (let [current-url (str window.location.protocol "//"
+                                 window.location.host "/"
+                                 window.location.hash)]
+            (prn current-url)
+            (new js/Auth0Lock
+                 "aCHybcxZ3qE6nWta60psS0An1jHUlgMm"
+                 "codefordenver.auth0.com"
+                 (clj->js {:auth {:redirect    true
+                                  :redirectUrl current-url}}))))
 
 (.on lock "authenticated"
      (fn [auth-res]
