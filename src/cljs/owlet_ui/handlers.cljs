@@ -69,7 +69,8 @@
     (if (false? val)
       (do
         (re/dispatch [:reset-user-bg-image! config/default-header-bg-image])
-        (re/dispatch [:reset-user-db!])))
+        (re/dispatch [:reset-user-db!]))
+      (set! js/location.href (.getItem js/localStorage "owlet.redirectUrl")))
     (assoc db :logged-in? val)))
 
 
