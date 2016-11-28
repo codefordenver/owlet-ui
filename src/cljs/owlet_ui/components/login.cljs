@@ -5,15 +5,10 @@
     [re-frame.core :as re-frame]))
 
 (defn login-button []
-  [:button.btn.btn-login.btn-sm
-   {:type     "button"
-    :on-click (fn [] (let [protocol (.-protocol js/location)
-                           host (.-host js/location)
-                           hash (.-hash js/location)
-                           location (str protocol "//" host "/" hash)]
-                       (.setItem js/localStorage "owlet.redirectUrl" location))
-                (.show config/lock #js {:popup true}))}
-   "Log in"])
+      [:button.btn.btn-login.btn-sm
+       {:type     "button"
+        :on-click #(.show config/lock #js {:popup true})}
+       "Log in"])
 
 (defn logout-button []
       [:button.btn.btn-logout.btn-sm
