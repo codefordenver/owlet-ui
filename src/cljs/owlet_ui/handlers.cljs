@@ -66,11 +66,10 @@
   (re/path [:user])
   (fn [db [_ val]]
     ;; reset user-bg-image on logout
-    (if (false? val)
+    (when (false? val)
       (do
         (re/dispatch [:reset-user-bg-image! config/default-header-bg-image])
-        (re/dispatch [:reset-user-db!]))
-      (set! js/location.href (.getItem js/localStorage "owlet.redirectUrl")))
+        (re/dispatch [:reset-user-db!])))
     (assoc db :logged-in? val)))
 
 

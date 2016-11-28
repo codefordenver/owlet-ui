@@ -5,7 +5,6 @@
 (def debug?
   ^boolean js/goog.DEBUG)
 
-;; TODO:
 ;; Use a lein env var like the one above
 ;; to toggle this during development
 ;; http://localhost:3000
@@ -15,7 +14,12 @@
 (when debug?
   (enable-console-print!))
 
-(def lock (new js/Auth0Lock "aCHybcxZ3qE6nWta60psS0An1jHUlgMm" "codefordenver.auth0.com"))
+(def lock
+  (new js/Auth0Lock
+       "aCHybcxZ3qE6nWta60psS0An1jHUlgMm"
+       "codefordenver.auth0.com"
+       (clj->js {:auth {:redirect false
+                        :responseType "token"}})))
 
 (.on lock "authenticated"
      (fn [auth-res]
