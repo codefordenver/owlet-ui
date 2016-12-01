@@ -2,7 +2,7 @@
     (:require [reagent.core :as reagent]))
 
 (defn activity-thumbnail [fields url]
-  (let [image (get-in fields [:preview :sys :url] "img/owlet-logo.png")
+  (let [image (get-in fields [:preview :sys :url] "img/default-thumbnail.png")
         {:keys [title track-id summary]} fields]
     (fn []
       [:div.col-lg-4.col-sm-6.col-xs-12
