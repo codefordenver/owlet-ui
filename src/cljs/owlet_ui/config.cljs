@@ -28,7 +28,7 @@
              social-id (-> _auth-res_ :idTokenPayload :sub)]
          (re-frame/dispatch [:user-has-logged-in-out! true])
          (re-frame/dispatch [:update-sid-and-get-cms-entries-for social-id])
-         (.setItem js/localStorage "userToken" token))))
+         (.setItem js/localStorage "owlet:user-token" token))))
 
 (def default-header-bg-image
   "http://apod.nasa.gov/apod/image/1607/OrionNebula_ESO_4000.jpg")
