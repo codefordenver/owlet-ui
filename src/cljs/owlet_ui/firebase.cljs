@@ -108,7 +108,7 @@
 
   ([a-ref v callback]
    {:pre [(or (legal-db-value? v)
-              (println "Illegal Firebase value:" (pr-str v)))
+              (.log js/console (str "Illegal Firebase value:" (pr-str v))))
           (fn? callback)]}
    (let [value (clj->js v)]
      (.set a-ref value callback))))
@@ -140,9 +140,10 @@
        (fn [snapshot]
          (let [snap-as-clj (-> snapshot .val (js->clj :keywordize-keys true))]
            (re/dispatch (apply vector event-id snap-as-clj args))))
-       #(println "owlet-ui.firebase/on-change"
-                 "calling firebase.database.Reference's .on():\n"
-                 (.toString %))))
+       #(.log js/console
+              (str "owlet-ui.firebase/on-change"
+                   "calling firebase.database.Reference's .on():\n"
+                   (.toString %)))))
 
 
 (defn on-presence-change
@@ -175,10 +176,11 @@
                      (clj->js {:online             connected?
                                :online-change-time timestamp-placeholder})
                      #(when %
-                       (println "owlet-ui.firebase/on-presence-change"
-                                "calling firebase.database.OnDisconnect's"
-                                ".uppdate():\n"
-                                (.toString %)))))]
+                        (.log js/console
+                              (str "owlet-ui.firebase/on-presence-change \n"
+                                   "calling firebase.database.OnDisconnect's"
+                                   ".uppdate():\n"
+                                   (.toString %))))))]
 
     [(.on (db-ref-for-path ".info/connected")
           "value"
@@ -189,9 +191,9 @@
               ; Tell db-ref to do update on the server only if connection is
               ; lost. This happens at most once.
               (update-presence-info (.onDisconnect db-ref) false)))
-          #(println "owlet-ui.firebase/on-presence-change"
-                    "calling firebase.database.Reference's .on():\n"
-                    (.toString %)))
+          #(.log js/console (str "owlet-ui.firebase/on-presence-change \n"
+                                 "calling firebase.database.Reference's .on():\n"
+                                 (.toString %))))
 
      ; When a connection or disconnection occurs, dispatch an event vector
      ; with the new contents of db-ref,
@@ -245,9 +247,10 @@
   (.once (db-ref-for-path rel-path)
          "value"
          #(-> % .val js->clj callback)
-         #(println "owlet-ui.firebase/promise-for-path"
-                   "calling firebase.database.Reference's .once():\n"
-                   (.toString %))))
+         #(.log js/console
+            (str "owlet-ui.firebase/promise-for-path \n"
+                 "calling firebase.database.Reference's .once():\n"
+                 (.toString %)))))
 
 
 ;  ;  ;  ;  ;  ;  ;  Communicating with Firebase Storage   ;  ;  ;  ;  ;  ;  ;

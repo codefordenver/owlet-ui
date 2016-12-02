@@ -168,7 +168,7 @@
 (re/register-handler
   :get-auth0-profile
   (fn [db [_ _]]
-    (when-let [user-token (.getItem js/localStorage "userToken")]
+    (when-let [user-token (.getItem js/localStorage "owlet:user-token")]
       (.getProfile
         config/lock
         user-token
@@ -176,7 +176,7 @@
           (if (some? err)
             ;; delete expired token
             (when user-token
-              (.removeItem js/localStorage "userToken"))
+              (.removeItem js/localStorage "owlet:user-token"))
             (let [user-id (.-user_id profile)]
               (re/dispatch [:user-has-logged-in-out! true])
               (re/dispatch [:update-sid-and-get-cms-entries-for user-id])
