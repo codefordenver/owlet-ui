@@ -31,7 +31,7 @@
                      [:p.no-activities [:mark "No activities in this track yet. Check back soon."]]
                      (for [activity activity-items
                            :let [fields (:fields activity)
-                                 id (get-in fields [:preview :sys :id])
+                                 id (get-in fields [:preview :sys :id] (gensym "key-"))
                                  _fields_ (assoc fields :track-id (name track-id))
                                  url (:url-safe-name activity)]]
                        ^{:key id} [activity-thumbnail _fields_ url]))]]]]))})))
