@@ -14,7 +14,6 @@
         :let [pluck-name (get-in activity [:fields :title])]]
        (assoc activity :url-safe-name (->camelCase pluck-name))))
 
-
 (defn register-setter-handler
   "Provides an easy way to register a new handler returning a map that differs
   from the given one only at the location at the given path vector. Simply
@@ -284,8 +283,9 @@
 (re/register-handler
   :set-activity-in-view
     (re/path [:activity-in-view])
-  (fn [_ [_ activities activity]]
-    (some #(when (= (:url-safe-name %) activity) %)
+  (fn [_ [_ activities activity-id]]
+    (js/console.log activity-id)
+    (some #(when (= (get-in % [:sys :id]) activity-id) %)
           activities)))
 
 (re/register-handler
