@@ -284,7 +284,6 @@
   :set-activity-in-view
     (re/path [:activity-in-view])
   (fn [_ [_ activities activity-id]]
-    (js/console.log activity-id)
     (some #(when (= (get-in % [:sys :id]) activity-id) %)
           activities)))
 
