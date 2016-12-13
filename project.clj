@@ -18,6 +18,7 @@
                  [cljsjs/marked "0.3.5-0"]
                  [org.clojure/core.async "0.2.385"]
                  [camel-snake-kebab "0.4.0"]
+                 [cljsjs/google-analytics "2015.04.13-0"]
                  [re-com "1.0.0"]]
 
   :plugins [[lein-cljsbuild "1.1.3"]
