@@ -21,9 +21,9 @@
               track-name (get-track-name models model-id)]
           [:div.back-track-wrap
            [:div
-            [:a {:href (str "#/tracks/" model-id)}
+            [:a {:href (str "#/branches/" model-id)}
              [:img {:src "img/back.png"}]]]
            [:div
-            [:a {:href (str "#/tracks/" model-id)}
+            [:a {:href (str "#/branches/" model-id)}
              [:p track-name]]]])})))
 

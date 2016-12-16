@@ -3,7 +3,6 @@
             [reagent.core :as reagent]
             [owlet-ui.components.upload-image-modal :refer [upload-image-component]]
             [owlet-ui.components.sidebar :refer [sidebar-component]]
-            ; [owlet-ui.components.header :refer [header-component]]
             [owlet-ui.components.loading :refer [loading-component]]
             [owlet-ui.views.welcome :refer [welcome-view]]
             [owlet-ui.views.activity :refer [activity-view]]

@@ -14,7 +14,7 @@
   {:user                        default-user-db
    :app                         {:loading? nil}
    :activities                  []
-   :activity-models             nil
+   :activity-branches           nil
    :activities-by-track-in-view {:track-id nil :display-name nil}
    :activities-by-track         {}
    :activities-in-view          nil

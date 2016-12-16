@@ -70,9 +70,9 @@
     (reaction (get-in @db [:activities]))))
 
 (re/register-sub
-  :library-activity-models
+  :activity-branches
   (fn [db]
-    (reaction (get-in @db [:activity-models]))))
+    (reaction (get-in @db [:activity-branches]))))
 
 (re/register-sub
   :activities-by-track

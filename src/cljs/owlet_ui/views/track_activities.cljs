@@ -19,10 +19,10 @@
               [:div.inner-height-wrap
                 [:div.back-track-wrap
                   [:div
-                    [:a {:href "#/tracks"}
+                    [:a {:href "#/branches"}
                       [:img {:src "img/back.png"}]]]
                   [:div
-                    [:a {:href "#/tracks"}
+                    [:a {:href "#/branches"}
                       [:p "ALL TRACKS"]]]]
                 [:div.container-fluid.track-activities-wrap
                   [:h2 [:mark.white.box-shadow [:b display-name]]]

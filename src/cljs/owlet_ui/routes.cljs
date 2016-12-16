@@ -39,7 +39,7 @@
   (defroute "/about" []
             (re/dispatch [:set-active-view :about-view]))
 
-  (defroute "/tracks" []
+  (defroute "/branches" []
             ; Before dispatching to the view, ensure we have current activity library.
             (get-then-dispatch library-url #(vector :activities-get-successful %))
             (re/dispatch [:set-active-view :tracks-view]))
