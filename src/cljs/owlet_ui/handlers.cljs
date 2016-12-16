@@ -192,7 +192,7 @@
   (fn [db [_ route-params]]
     (when (empty? (:activity-branches db))
       (re/dispatch [:get-activity-branches]))
-    (GET (str config/server-url "/api/content/entries?library-view=true&space-id=" config/library-space-id)
+    (GET (str config/server-url "/api/content/entries?library-view=true&space-id=" config/owlet-activities-2-space-id)
          {:response-format :json
           :keywords?       true
           :handler         #(re/dispatch [:activities-get-successful % route-params])
@@ -256,7 +256,7 @@
   :get-activity-branches
   (fn [db [_ _]]
     (re/dispatch [:set-loading-state! true])
-    (GET (str config/server-url "/api/content/branches/" config/library-space-id)
+    (GET (str config/server-url "/api/content/branches/" config/owlet-activities-2-space-id)
          {:response-format :json
           :keywords?       true
           :handler         #(re/dispatch [:get-activity-branches-successful %])

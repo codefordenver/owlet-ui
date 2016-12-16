@@ -1,4 +1,4 @@
-(ns owlet-ui.components.activity.back-track
+(ns owlet-ui.components.activity.breadcrumb
   (:require [re-frame.core :as re]
             [reagent.core :as reagent :refer [atom]]))
 
@@ -9,7 +9,7 @@
                        (:name %)) models)]
     match))
 
-(defn back-track [activity-data]
+(defn breadcrumb [activity-data]
   (let [activity-models (re/subscribe [:library-activity-models])]
     (reagent/create-class
       {:component-will-mount
@@ -19,11 +19,10 @@
        #(let [models (get-in @activity-models [:models])
               model-id (get-in @activity-data [:sys :contentType :sys :id])
               track-name (get-track-name models model-id)]
-          [:div.back-track-wrap
+          [:div.breadcrumb-wrap
            [:div
             [:a {:href (str "#/branches/" model-id)}
              [:img {:src "img/back.png"}]]]
            [:div
             [:a {:href (str "#/branches/" model-id)}
              [:p track-name]]]])})))
-

@@ -32,8 +32,7 @@
 (def default-header-bg-image
   "http://apod.nasa.gov/apod/image/1607/OrionNebula_ESO_4000.jpg")
 
-;; TODO: raname this to owlet-activities-2
-(defonce library-space-id "ir2v150dybog")
+(defonce owlet-activities-2-space-id "ir2v150dybog")
 
 (defonce firebase-app-init
          {:apiKey        "AIzaSyAbs6wXxPGX-8XEWR6nyj7iCETOL6dZjzY"

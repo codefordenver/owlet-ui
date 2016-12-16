@@ -1,9 +1,9 @@
-(ns owlet-ui.views.track-activities
+(ns owlet-ui.views.branch-activities
   (:require [re-frame.core :as re]
             [reagent.core :as reagent :refer [atom]]
             [owlet-ui.components.activity-thumbnail :refer [activity-thumbnail]]))
 
-(defn track-activities-view []
+(defn branch-activities-view []
   (let [active-view (re/subscribe [:activities-by-track-in-view])
         activities (re/subscribe [:activities-by-track])]
     (reagent/create-class
@@ -17,18 +17,18 @@
                activity-items (get @activities track-id)]
             [:div.outer-height-wrap
               [:div.inner-height-wrap
-                [:div.back-track-wrap
+                [:div.breadcrumb-wrap
                   [:div
                     [:a {:href "#/branches"}
                       [:img {:src "img/back.png"}]]]
                   [:div
                     [:a {:href "#/branches"}
-                      [:p "ALL TRACKS"]]]]
-                [:div.container-fluid.track-activities-wrap
+                      [:p "ALL BRANCHES"]]]]
+                [:div.container-fluid.branch-activities-wrap
                   [:h2 [:mark.white.box-shadow [:b display-name]]]
                   [:div.flexcontainer-wrap
                     (if (empty? activity-items)
-                     [:p.no-activities [:mark "No activities in this track yet. Check back soon."]]
+                     [:p.no-activities [:mark "No activities in this branch yet. Check back soon."]]
                      (for [activity activity-items
                            :let [fields (:fields activity)
                                  id (get-in fields [:preview :sys :id] (gensym "key-"))

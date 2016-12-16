@@ -14,7 +14,7 @@
               [:p "¡Bienvenidx a Owlet! Explora algunas de las cosas increíbles que puedes hacer con programación y con multimedios tú solx o en equipo. ¡Adelante!"]]
             [:a {:href "#/branches"}
                ;; TODO: rename this button to btn-branches
-              [:button.btn.btn-tracks "Go to Activities"]]]]
+              [:button.btn.btn-branches "Go to Activities"]]]]
     [:div.login-landing
       [login-component]]
     [:div.flex-item]
