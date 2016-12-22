@@ -37,9 +37,8 @@
                    :close-button? false
                    :title    "What does this mean?"
                    :body     "UNPLUGGED activities do not require a computer or device"]]
-       [set-as-marked "<b>Technology</b><br>" tech-requirements])
-     [set-as-marked "<b>Summary</b><br>" summary]
-     [set-as-marked "<b>Why?</b><br>" why]
-     [set-as-marked "<b>Pre-requisites</b><br>" pre-reqs]
-     [set-as-marked "<b>Materials</b>" materials "list-title"]]))
-
+       [set-as-marked "<h3>Technology</h3>" tech-requirements])
+     [set-as-marked "<h3>Summary</h3>" summary]
+     [set-as-marked "<h3>Why?</h3>" why]
+     [set-as-marked "<h3>Pre-requisites</h3>" pre-reqs]
+     [set-as-marked "<h3>Materials</h3>" materials "list-title"]]))

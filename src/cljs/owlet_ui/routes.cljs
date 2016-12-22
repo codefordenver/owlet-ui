@@ -39,6 +39,9 @@
   (defroute "/about" []
             (re/dispatch [:set-active-view :about-view]))
 
+  (defroute "/create-content" []
+            (re/dispatch [:set-active-view :create-content-view]))
+
   (defroute "/tracks" []
             ; Before dispatching to the view, ensure we have current activity library.
             (get-then-dispatch library-url #(vector :activities-get-successful %))

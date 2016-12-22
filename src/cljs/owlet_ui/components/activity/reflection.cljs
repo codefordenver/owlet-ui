@@ -6,7 +6,6 @@
     (if-let [reflection (get-in @activity-data [:fields :reflectionQuestions])]
       [:div.activity-reflection-wrap.box-shadow
        [:div.list-title
-        [:p [:b "Reflection"]]]
+        [:h3 "Challenge"]]
        [:div {"dangerouslySetInnerHTML"
               #js{:__html (js/marked reflection)}}]])))
-

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Rubik:300,400,700');
+@import url('https://fonts.googleapis.com/css?family=Rubik:300,400,500,700');
 
 @font-stack: "Rubik", sans-serif;
 @primary-color: #0c171b;
@@ -14,6 +14,8 @@ body {
 h1 {
   margin-top: 10px;
 }
+
+b {font-weight: 500}
 
 a:hover {
   text-decoration: none;
@@ -329,12 +331,14 @@ mark.white {
 .activity-wrap {
   width: 98%;
   margin: 0 auto;
-  background-color: white;
   height: 100%;
-  font-size: 0.85em;
-  b {
+  font-size: 1em;
+  h3 {
     font-weight: 700;
     text-transform: uppercase;
+    font-size: 1em;
+    padding: 0;
+    margin: 0;
     line-height: 2em;
   }
   .list-title p {
@@ -358,7 +362,12 @@ mark.white {
     margin-bottom: 5px;
   }
   .author {
-    color: #ADADAD;
+    margin-top: 10px;
+    mark {
+      padding: 0.3em 0.6em;
+      color: #ADADAD;
+      font-weight: 400;
+    }
   }
   margin-top: 18px;
   margin-bottom: 15px;
@@ -366,7 +375,7 @@ mark.white {
 
 .activity-info-wrap, .activity-inspiration-wrap, .activity-reflection-wrap {
   background-color: white;
-  padding: 10px 12px;
+  padding: 10px 18px;
 }
 
 .activity-inspiration-wrap {
@@ -681,4 +690,26 @@ progress {
 // bootstrap 3 supplement for popover (recom)
 .popover-arrow {
   border-style: none;
+}
+
+// create content view
+.create-content-wrap {
+  width: 98%;
+  margin: 0 auto;
+  padding: 23px;
+  height: 100%;
+  h3 {
+    font-weight: 700;
+    text-transform: uppercase;
+    line-height: 2em;
+  }
+  .create-content-inner {
+    background-color: white;
+    padding: 23px;
+    margin-top: 23px;
+    font-size: 1.3em;
+  }
+  ol li {
+    line-height: 1.6em;
+  }
 }

@@ -6,6 +6,7 @@
             ; [owlet-ui.components.header :refer [header-component]]
             [owlet-ui.components.loading :refer [loading-component]]
             [owlet-ui.views.welcome :refer [welcome-view]]
+            [owlet-ui.views.create-content :refer [create-content-view]]
             [owlet-ui.views.activity :refer [activity-view]]
             [owlet-ui.views.tracks :refer [tracks-view]]
             [owlet-ui.views.settings :refer [settings-view]]
@@ -13,6 +14,7 @@
 
 (defmulti views identity)
 (defmethod views :welcome-view [] [welcome-view])
+(defmethod views :create-content-view [] [create-content-view])
 (defmethod views :activity-view [] [activity-view])
 (defmethod views :tracks-view [] [tracks-view])
 (defmethod views :track-activities-view [] [track-activities-view])
