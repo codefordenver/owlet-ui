@@ -6,14 +6,6 @@
             [ajax.core :refer [GET POST PUT]]
             [camel-snake-kebab.core :refer [->camelCase]]))
 
-
-(defn add-url-safe-name-to-activities-collection
-  "assocs :url-safe-name into activities collection"
-  [activities]
-  (for [activity activities
-        :let [pluck-name (get-in activity [:fields :title])]]
-       (assoc activity :url-safe-name (->camelCase pluck-name))))
-
 (defn register-setter-handler
   "Provides an easy way to register a new handler returning a map that differs
   from the given one only at the location at the given path vector. Simply
@@ -55,7 +47,8 @@
 (re/register-handler
   :set-active-view
   (fn [db [_ active-view route-parameter]]
-    (when (or (= :track-activities-view active-view) (= :activity-view active-view))
+    (prn (str "active-view: " active-view ", route-parameter: " route-parameter))
+    (when (or (= :branch-activities-view active-view) (= :activity-view active-view))
       (re/dispatch [:get-library-content route-parameter]))
     (assoc db :active-view active-view)))
 
@@ -205,7 +198,6 @@
 
     ; Obtains the URL for each preview image, and adds a :url field next to
     ; its :id field in [:activities :fields :preview :sys] map.
-
     (let [url-for-id                                        ; Maps preview image IDs to associated URLs.
           (->> (get-in res [:includes :Asset])
                (map (juxt (comp :id :sys)
@@ -218,24 +210,19 @@
                               [:fields :preview :sys]
                               (fn [{id :id :as sys}]
                                 (assoc sys :url (url-for-id id))))))]
+
       (when route-params
         ;; i.e. when we are navigating to /tracks/:track/:activity
-        (let [{:keys [track activities activity]} route-params]
-          (re/dispatch [:set-activities-by-track-in-view :track-id track])
+        (let [{:keys [activities activity]} route-params]
           ;; i.e. when we request data for single activity view
-          (if activity
-            (re/dispatch [:activities-by-track (:activities _db_) track activity])
-            (re/dispatch [:activities-by-track (:activities _db_) track]))
           (when activities
             (re/dispatch [:set-activities-in-view activities]))))
       _db_)))
 
 (re/register-handler
-  :set-activities-by-track-in-view
-  (fn [db [_ prop arg]]
-    (case prop
-      :display-name (assoc-in db [:activities-by-track-in-view :display-name] arg)
-      :track-id (assoc-in db [:activities-by-track-in-view :track-id] (keyword arg)))))
+  :set-activities-by-branch-in-view
+  (fn [db [_ display-name]]
+    (assoc-in db [:activities-by-track-in-view :display-name] display-name)))
 
 (re/register-handler
   :set-activities-in-view
@@ -246,11 +233,11 @@
 (re/register-handler
   :activities-by-track
   (fn [db [_ activities track-id activity]]
-    (let [filtered-activities (filterv #(= (get-in % [:sys :contentType :sys :id]) track-id) activities)
-          processed-activities (add-url-safe-name-to-activities-collection filtered-activities)]
+    (let [filtered-activities (filterv #(= (get-in % [:sys :contentType :sys :id]) track-id) activities)]
+          ; processed-activities (add-url-safe-name-to-activities-collection filtered-activities)]
       (when activity
-        (re/dispatch [:set-activity-in-view processed-activities activity]))
-      (assoc-in db [:activities-by-track (keyword track-id)] processed-activities))))
+        (re/dispatch [:set-activity-in-view filtered-activities activity]))
+      (assoc-in db [:activities-by-track (keyword track-id)] filtered-activities))))
 
 (re/register-handler
   :get-activity-branches
@@ -267,18 +254,28 @@
   :get-activity-branches-successful
   (fn [db [_ res]]
       (re/dispatch [:set-loading-state! false])
-      ;(re/dispatch [:set-branch-display-name (:branches (:branches res))])
+      (prn res)
+      (prn db)
+      ; (let [branches (:branches (:branches res))])
+      ;; TODO: match :field :branch value(s) with items in (:activity-branches db)
+      (map (fn [activity]
+             (let [pluck-branches (get-in activity [:fields :branch])]
+              ;; look up branch in branches^
+              ;; some over collection if match then assoc into  :activities-by-track ( :activities-by-branch)
+              ;; change look from key lookup to string look (get x "foo")
+              (:activities db))))
+      (re/dispatch [:set-branch-display-name (:branches (:branches res))])
       (assoc db :activity-branches (:branches res))))
 
-;(re/register-handler
-;  :set-branch-display-name
-;  (fn [db [_ branches]]
-;    (let [branch-name (get-in db [:activities-by-track-in-view :branch-name])
-;          display-name (:name
-;                        (first
-;                         (filter #(if (= branch-name (keyword (:model-id %))) %) branches)))]
-;      (assoc-in db
-;            [:activities-by-track-in-view :display-name] display-name))))
+(re/register-handler
+ :set-branch-display-name
+ (fn [db [_ branches]]
+   (let [branch-name (get-in db [:activities-by-track-in-view :branch-name])
+         display-name (:name
+                       (first
+                        (filter #(if (= branch-name (keyword (:model-id %))) %) branches)))]
+     (assoc-in db
+           [:activities-by-track-in-view :display-name] display-name))))
 
 (re/register-handler
   :set-activity-in-view
