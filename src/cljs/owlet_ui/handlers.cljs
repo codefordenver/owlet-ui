@@ -4,7 +4,7 @@
             [owlet-ui.config :as config]
             [owlet-ui.firebase :as fb]
             [ajax.core :refer [GET POST PUT]]
-            [camel-snake-kebab.core :refer [->camelCase]]))
+            [camel-snake-kebab.core :refer [->kebab-case]]))
 
 (defn register-setter-handler
   "Provides an easy way to register a new handler returning a map that differs
@@ -205,11 +205,12 @@
                (into {}))
           _db_ (assoc db                                    ; Return new db, adding :url field to its [... :sys] map.
                  :activities
-                 (for [item (:items res)]
-                   (update-in item
-                              [:fields :preview :sys]
-                              (fn [{id :id :as sys}]
-                                (assoc sys :url (url-for-id id))))))]
+                 (into []
+                   (for [item (:items res)]
+                     (update-in item
+                                [:fields :preview :sys]
+                                (fn [{id :id :as sys}]
+                                  (assoc sys :url (url-for-id id)))))))]
 
       (when route-params
         ;; i.e. when we are navigating to /tracks/:track/:activity
@@ -254,18 +255,26 @@
   :get-activity-branches-successful
   (fn [db [_ res]]
       (re/dispatch [:set-loading-state! false])
-      (prn res)
-      (prn db)
-      ; (let [branches (:branches (:branches res))])
-      ;; TODO: match :field :branch value(s) with items in (:activity-branches db)
-      (map (fn [activity]
-             (let [pluck-branches (get-in activity [:fields :branch])]
-              ;; look up branch in branches^
-              ;; some over collection if match then assoc into  :activities-by-track ( :activities-by-branch)
-              ;; change look from key lookup to string look (get x "foo")
-              (:activities db))))
-      (re/dispatch [:set-branch-display-name (:branches (:branches res))])
-      (assoc db :activity-branches (:branches res))))
+      (let [branches (:branches (:branches res))
+            branches->keys (map #(keyword (->kebab-case %)) branches)
+            activities-by-branch (zipmap branches->keys (repeat (count branches) nil))]
+        (mapv (fn [activity branch]
+               (let [pluck-branches-from-activity (get-in activity [:fields :branch])]
+                (prn pluck-branches-from-activity)
+                (prn branch)
+                (when (some #(= % branch) pluck-branches-from-activity)
+                  (do
+                    (prn "here")
+                    (prn activity)
+                    (update activities-by-branch (keyword (->kebab-case branch)) activity))))
+               activities-by-branch)
+                ;; some over collection if match then assoc into :activities-by-branch
+                ;; change look from key lookup to string look (get x "foo")
+          (:activities db) ;; coll1
+          branches) ;; coll2
+        (prn activities-by-branch)
+        (re/dispatch [:set-branch-display-name branches])
+        (assoc db :activity-branches (:branches res)))))
 
 (re/register-handler
  :set-branch-display-name
