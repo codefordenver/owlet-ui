@@ -16,6 +16,6 @@
    :activities                  []
    :activity-branches           nil
    :activities-by-track-in-view {:track-id nil :display-name nil}
-   :activities-by-track         {}
+   :activities-by-branch        {}
    :activities-in-view          nil
    :activity-in-view            nil})
