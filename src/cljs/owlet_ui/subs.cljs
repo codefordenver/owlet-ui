@@ -75,14 +75,14 @@
     (reaction (get-in @db [:activity-branches]))))
 
 (re/register-sub
-  :activities-by-track
+  :activities-by-branch
   (fn [db]
-    (reaction (get-in @db [:activities-by-track]))))
+    (reaction (get-in @db [:activities-by-branch]))))
 
 (re/register-sub
-  :activities-by-track-in-view
+  :activities-by-branch-in-view
   (fn [db]
-    (reaction (get-in @db [:activities-by-track-in-view]))))
+    (reaction (get-in @db [:activities-by-branch-in-view]))))
 
 (re/register-sub
   :activity-in-view

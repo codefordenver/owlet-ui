@@ -11,11 +11,11 @@
 
 (def default-db
   "initial app state"
-  {:user                        default-user-db
-   :app                         {:loading? nil}
-   :activities                  []
-   :activity-branches           nil
-   :activities-by-track-in-view {:track-id nil :display-name nil}
-   :activities-by-branch        {}
-   :activities-in-view          nil
-   :activity-in-view            nil})
+  {:user                         default-user-db
+   :app                          {:loading? nil}
+   :activities                   []
+   :activity-branches            nil
+   :activities-by-branch-in-view nil
+   :activities-by-branch         {}
+   :activities-in-view           nil
+   :activity-in-view             nil})

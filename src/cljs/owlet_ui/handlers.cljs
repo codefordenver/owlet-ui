@@ -223,7 +223,7 @@
 (re/register-handler
   :set-activities-by-branch-in-view
   (fn [db [_ display-name]]
-    (assoc-in db [:activities-by-track-in-view :display-name] display-name)))
+    (assoc-in db [:activities-by-branch-in-view] display-name)))
 
 (re/register-handler
   :set-activities-in-view
@@ -257,25 +257,29 @@
     (re/dispatch [:set-loading-state! false])
     (let [branches (:branches (:branches res))
           all-activities (:activities db)
+
           branches-template (into {} (mapv (fn [branch]
                                              (hash-map (keyword (->kebab-case branch))
                                                {:activities []
                                                 :display-name branch})) branches))
+
           activities-by-branch (into {} (mapv (fn [[branch-key branch-val]]
                                                 (let [display-name (:display-name branch-val)
-                                                      match (filterv (fn [a]
-                                                                       (some #(= display-name %) (get-in a [:fields :branch])))
+                                                      activities   (:activities branch-val)
+                                                      matches (filterv (fn [a]
+                                                                         (some #(= display-name %)
+                                                                               (get-in a [:fields :branch])))
                                                                      all-activities)]
-                                                  (when (seq match)
-                                                    (do
-                                                      ;(prn branch-key)
-                                                      ;(prn match)
-                                                      (update-in branches-template [branch-key :activities]
-                                                                 concat match)))))
-
+                                                  (if (seq matches)
+                                                    (hash-map branch-key
+                                                              {:activities matches
+                                                               :display-name display-name})
+                                                    (hash-map branch-key
+                                                              {:activities activities
+                                                               :display-name display-name}))))
                                               branches-template))]
-      (prn activities-by-branch)
-      (re/dispatch [:set-branch-display-name branches])
+
+      ;(re/dispatch [:set-branch-display-name branches])
       (assoc db :activity-branches (:branches res)
                 :activities-by-branch activities-by-branch))))
 

@@ -4,8 +4,8 @@
             [owlet-ui.components.activity-thumbnail :refer [activity-thumbnail]]))
 
 (defn branch-activities-view []
-  (let [active-view (re/subscribe [:activities-by-track-in-view])
-        activities (re/subscribe [:activities-by-track])]
+  (let [active-view (re/subscribe [:activities-by-branch-in-view])
+        activities (re/subscribe [:activities-by-branch])]
     (reagent/create-class
       {:component-will-mount
        (fn []
