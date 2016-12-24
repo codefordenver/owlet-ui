@@ -235,7 +235,7 @@
   :activities-by-track
   (fn [db [_ activities track-id activity]]
     (let [filtered-activities (filterv #(= (get-in % [:sys :contentType :sys :id]) track-id) activities)]
-          ; processed-activities (add-url-safe-name-to-activities-collection filtered-activities)]
+      ; processed-activities (add-url-safe-name-to-activities-collection filtered-activities)]
       (when activity
         (re/dispatch [:set-activity-in-view filtered-activities activity]))
       (assoc-in db [:activities-by-track (keyword track-id)] filtered-activities))))
@@ -258,26 +258,27 @@
     (let [branches (:branches (:branches res))
           all-activities (:activities db)
 
-          branches-template (into {} (mapv (fn [branch]
-                                             (hash-map (keyword (->kebab-case branch))
-                                               {:activities []
-                                                :display-name branch})) branches))
+          branches-template (->> (mapv (fn [branch]
+                                         (hash-map (keyword (->kebab-case branch))
+                                                   {:activities   []
+                                                    :display-name branch})) branches)
+                                 (into {}))
 
-          activities-by-branch (into {} (mapv (fn [[branch-key branch-val]]
-                                                (let [display-name (:display-name branch-val)
-                                                      activities   (:activities branch-val)
-                                                      matches (filterv (fn [a]
-                                                                         (some #(= display-name %)
-                                                                               (get-in a [:fields :branch])))
+          activities-by-branch (->> (mapv (fn [branch]
+                                            (let [[branch-key branch-vals] branch]
+                                              (let [display-name (:display-name branch-vals)
+                                                    matches (filterv (fn [activity]
+                                                                       (some #(= display-name %)
+                                                                             (get-in activity [:fields :branch])))
                                                                      all-activities)]
-                                                  (if (seq matches)
-                                                    (hash-map branch-key
-                                                              {:activities matches
-                                                               :display-name display-name})
-                                                    (hash-map branch-key
-                                                              {:activities activities
-                                                               :display-name display-name}))))
-                                              branches-template))]
+                                                (if (seq matches)
+                                                  (hash-map branch-key
+                                                            {:activities   matches
+                                                             :display-name display-name})
+                                                  branch))))
+                                          branches-template)
+                                    (into {}))]
+
 
       ;(re/dispatch [:set-branch-display-name branches])
       (assoc db :activity-branches (:branches res)
@@ -295,7 +296,7 @@
 
 (re/register-handler
   :set-activity-in-view
-    (re/path [:activity-in-view])
+  (re/path [:activity-in-view])
   (fn [_ [_ activities activity-id]]
     (some #(when (= (get-in % [:sys :id]) activity-id) %)
           activities)))
@@ -304,4 +305,4 @@
   :set-loading-state!
   (re/path [:app :loading?])
   (fn [_ [_ state]]
-      state))
+    state))
