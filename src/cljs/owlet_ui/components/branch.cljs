@@ -18,7 +18,7 @@
              [:div.branchwrapper.col-xs-12.col-md-6.col-lg-4
               [:div.branchwrap
                [:div.branch-bg.box-shadow {:style {:background-color color}}
-                 [:a.branch {:on-click #(re/dispatch [:set-activities-by-branch-in-view branch])
+                 [:a.branch {:on-click #(re/dispatch [:set-activities-by-branch-in-view (->kebab-case branch)])
                              :href     (str "#/" (->kebab-case branch))}
                   [:h2 [:mark name-line1]
                     (when (<= 1 (count name-line2))

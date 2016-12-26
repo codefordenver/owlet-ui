@@ -48,8 +48,9 @@
   :set-active-view
   (fn [db [_ active-view route-parameter]]
     (prn (str "active-view: " active-view ", route-parameter: " route-parameter))
-    (when (or (= :branch-activities-view active-view) (= :activity-view active-view))
-      (re/dispatch [:get-library-content route-parameter]))
+    (if-let [branch (:branch route-parameter)]
+      (prn branch)
+      (re/dispatch [:set-activities-by-branch-in-view branch]))
     (assoc db :active-view active-view)))
 
 
@@ -195,7 +196,7 @@
 (re/register-handler
   :activities-get-successful
   (fn [db [_ res route-params]]
-
+    (prn ":activities-get-successful")
     ; Obtains the URL for each preview image, and adds a :url field next to
     ; its :id field in [:activities :fields :preview :sys] map.
     (let [url-for-id                                        ; Maps preview image IDs to associated URLs.
@@ -212,33 +213,34 @@
                                 (fn [{id :id :as sys}]
                                   (assoc sys :url (url-for-id id)))))))]
 
-      (when route-params
-        ;; i.e. when we are navigating to /tracks/:track/:activity
-        (let [{:keys [activities activity]} route-params]
-          ;; i.e. when we request data for single activity view
-          (when activities
-            (re/dispatch [:set-activities-in-view activities]))))
+      ; (when route-params
+      ;   ;; i.e. when we are navigating to /tracks/:track/:activity
+      ;   (let [{:keys [activities activity]} route-params]
+      ;     ;; i.e. when we request data for single activity view
+      ;     (when activities
+      ;       (re/dispatch [:set-activities-in-view activities]))))
       _db_)))
 
 (re/register-handler
   :set-activities-by-branch-in-view
-  (fn [db [_ display-name]]
-    (assoc-in db [:activities-by-branch-in-view] display-name)))
+  (fn [db [_ branch-keyword]]
+    (let [activities-by-branch ((keyword branch-keyword) (:activities-by-branch db))]
+      (assoc-in db [:activities-by-branch-in-view] activities-by-branch))))
 
-(re/register-handler
-  :set-activities-in-view
-  (re/path [:activities-in-view])
-  (fn [_ [_ activity-id]]
-    activity-id))
+; (re/register-handler
+;   :set-activities-in-view
+;   (re/path [:activities-in-view])
+;   (fn [_ [_ activity-id]]
+;     activity-id))
 
-(re/register-handler
-  :activities-by-track
-  (fn [db [_ activities track-id activity]]
-    (let [filtered-activities (filterv #(= (get-in % [:sys :contentType :sys :id]) track-id) activities)]
-      ; processed-activities (add-url-safe-name-to-activities-collection filtered-activities)]
-      (when activity
-        (re/dispatch [:set-activity-in-view filtered-activities activity]))
-      (assoc-in db [:activities-by-track (keyword track-id)] filtered-activities))))
+; (re/register-handler
+;   :activities-by-track
+;   (fn [db [_ activities track-id activity]]
+;     (let [filtered-activities (filterv #(= (get-in % [:sys :contentType :sys :id]) track-id) activities)]
+;       ; processed-activities (add-url-safe-name-to-activities-collection filtered-activities)]
+;       (when activity
+;         (re/dispatch [:set-activity-in-view filtered-activities activity]))
+;       (assoc-in db [:activities-by-track (keyword track-id)] filtered-activities))))
 
 (re/register-handler
   :get-activity-branches
@@ -255,6 +257,7 @@
   :get-activity-branches-successful
   (fn [db [_ res]]
     (re/dispatch [:set-loading-state! false])
+    (prn ":get-activity-branches-successful")
     (let [branches (:branches (:branches res))
           all-activities (:activities db)
 
@@ -278,21 +281,21 @@
                                                   branch))))
                                           branches-template)
                                     (into {}))]
-
-
-      ;(re/dispatch [:set-branch-display-name branches])
+      ; TODO: update this dispatch
+      ; (re/dispatch [:set-active-branch branches])
       (assoc db :activity-branches (:branches res)
                 :activities-by-branch activities-by-branch))))
 
+; TODO: update this handler
 (re/register-handler
- :set-branch-display-name
+ :set-active-branch
  (fn [db [_ branches]]
    (let [branch-name (get-in db [:activities-by-track-in-view :branch-name])
          display-name (:name
                        (first
                         (filter #(if (= branch-name (keyword (:model-id %))) %) branches)))]
      (assoc-in db
-           [:activities-by-track-in-view :display-name] display-name))))
+           [:active-branch-activities] display-name))))
 
 (re/register-handler
   :set-activity-in-view

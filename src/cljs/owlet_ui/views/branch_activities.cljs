@@ -4,17 +4,17 @@
             [owlet-ui.components.activity-thumbnail :refer [activity-thumbnail]]))
 
 (defn branch-activities-view []
-  (let [active-view (re/subscribe [:activities-by-branch-in-view])
-        activities (re/subscribe [:activities-by-branch])]
+  (let [active-branch-activities (re/subscribe [:activities-by-branch-in-view])
+        activities-by-branch (re/subscribe [:activities-by-branch])]
     (reagent/create-class
       {:component-will-mount
        (fn []
-         (when (empty? @active-view)
+         (when (empty? @active-branch-activities)
             (re/dispatch [:get-library-content])))
        :reagent-render
        (fn []
-         (let [{:keys [display-name track-id]} @active-view
-               activity-items (get @activities track-id)]
+         (prn @active-branch-activities)
+         (let [{:keys [display-name activities]} @active-branch-activities]
             [:div.outer-height-wrap
               [:div.inner-height-wrap
                 [:div.breadcrumb-wrap
@@ -27,11 +27,10 @@
                 [:div.container-fluid.branch-activities-wrap
                   [:h2 [:mark.white.box-shadow [:b display-name]]]
                   [:div.flexcontainer-wrap
-                    (if (empty? activity-items)
+                    (if (empty? activities)
                      [:p.no-activities [:mark "No activities in this branch yet. Check back soon."]]
-                     (for [activity activity-items
+                     (for [activity activities
                            :let [fields (:fields activity)
                                  id (get-in fields [:preview :sys :id] (gensym "key-"))
-                                 _fields_ (assoc fields :track-id (name track-id))
                                  entry-id (get-in activity [:sys :id])]]
-                      ^{:key id} [activity-thumbnail _fields_ entry-id]))]]]]))})))
+                      ^{:key id} [activity-thumbnail fields entry-id]))]]]]))})))

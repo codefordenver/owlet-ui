@@ -17,5 +17,6 @@
    :activity-branches            nil
    :activities-by-branch-in-view nil
    :activities-by-branch         {}
+   :active-branch-activities     nil
    :activities-in-view           nil
    :activity-in-view             nil})
