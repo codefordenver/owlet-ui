@@ -6,6 +6,7 @@
             [ajax.core :refer [GET POST PUT]]
             [camel-snake-kebab.core :refer [->kebab-case]]))
 
+
 (defn register-setter-handler
   "Provides an easy way to register a new handler returning a map that differs
   from the given one only at the location at the given path vector. Simply
@@ -47,10 +48,8 @@
 (re/register-handler
   :set-active-view
   (fn [db [_ active-view route-parameter]]
-    (prn (str "active-view: " active-view ", route-parameter: " route-parameter))
-    (if-let [branch (:branch route-parameter)]
-      (prn branch)
-      (re/dispatch [:set-activities-by-branch-in-view branch]))
+    (when (:branch route-parameter)
+      (re/dispatch [:get-library-content route-parameter]))
     (assoc db :active-view active-view)))
 
 
@@ -181,22 +180,23 @@
                 [:users (keyword user-id)]))))))
     db))
 
+
 (re/register-handler
   :get-library-content
   (fn [db [_ route-params]]
     (when (empty? (:activity-branches db))
-      (re/dispatch [:get-activity-branches]))
+      (re/dispatch [:get-activity-branches route-params]))
     (GET (str config/server-url "/api/content/entries?library-view=true&space-id=" config/owlet-activities-2-space-id)
          {:response-format :json
           :keywords?       true
-          :handler         #(re/dispatch [:activities-get-successful % route-params])
+          :handler         #(re/dispatch [:activities-get-successful %])
           :error-handler   #(prn %)})
     db))
 
+
 (re/register-handler
   :activities-get-successful
-  (fn [db [_ res route-params]]
-    (prn ":activities-get-successful")
+  (fn [db [_ res]]
     ; Obtains the URL for each preview image, and adds a :url field next to
     ; its :id field in [:activities :fields :preview :sys] map.
     (let [url-for-id                                        ; Maps preview image IDs to associated URLs.
@@ -212,50 +212,38 @@
                                 [:fields :preview :sys]
                                 (fn [{id :id :as sys}]
                                   (assoc sys :url (url-for-id id)))))))]
-
-      ; (when route-params
-      ;   ;; i.e. when we are navigating to /tracks/:track/:activity
-      ;   (let [{:keys [activities activity]} route-params]
-      ;     ;; i.e. when we request data for single activity view
-      ;     (when activities
-      ;       (re/dispatch [:set-activities-in-view activities]))))
       _db_)))
+
 
 (re/register-handler
   :set-activities-by-branch-in-view
-  (fn [db [_ branch-keyword]]
-    (let [activities-by-branch ((keyword branch-keyword) (:activities-by-branch db))]
+  (fn [db [_ branch-name]]
+    (let [activities-by-branch ((keyword branch-name) (:activities-by-branch db))]
       (assoc-in db [:activities-by-branch-in-view] activities-by-branch))))
 
-; (re/register-handler
-;   :set-activities-in-view
-;   (re/path [:activities-in-view])
-;   (fn [_ [_ activity-id]]
-;     activity-id))
 
-; (re/register-handler
-;   :activities-by-track
-;   (fn [db [_ activities track-id activity]]
-;     (let [filtered-activities (filterv #(= (get-in % [:sys :contentType :sys :id]) track-id) activities)]
-;       ; processed-activities (add-url-safe-name-to-activities-collection filtered-activities)]
-;       (when activity
-;         (re/dispatch [:set-activity-in-view filtered-activities activity]))
-;       (assoc-in db [:activities-by-track (keyword track-id)] filtered-activities))))
+(re/register-handler
+  :-synthetic-set-activities-by-branch-in-view
+  (fn [db [_ activities-by-branch branch-name]]
+    (let [_activities-by-branch_ ((keyword branch-name) activities-by-branch)]
+      (assoc-in db [:activities-by-branch-in-view] _activities-by-branch_))))
+
 
 (re/register-handler
   :get-activity-branches
-  (fn [db [_ _]]
+  (fn [db [_ route-params]]
     (re/dispatch [:set-loading-state! true])
     (GET (str config/server-url "/api/content/branches/" config/owlet-activities-2-space-id)
          {:response-format :json
           :keywords?       true
-          :handler         #(re/dispatch [:get-activity-branches-successful %])
+          :handler         #(re/dispatch [:get-activity-branches-successful % route-params])
           :error-handler   #(prn %)})
     db))
 
+
 (re/register-handler
   :get-activity-branches-successful
-  (fn [db [_ res]]
+  (fn [db [_ res route-params]]
     (re/dispatch [:set-loading-state! false])
     (prn ":get-activity-branches-successful")
     (let [branches (:branches (:branches res))
@@ -281,28 +269,13 @@
                                                   branch))))
                                           branches-template)
                                     (into {}))]
-      ; TODO: update this dispatch
-      ; (re/dispatch [:set-active-branch branches])
+      (when route-params
+        ;; i.e. when we are navigating to /:branch (where branch is code-art)
+        (let [{:keys [branch]} route-params]
+          (re/dispatch [:-synthetic-set-activities-by-branch-in-view activities-by-branch branch])))
       (assoc db :activity-branches (:branches res)
                 :activities-by-branch activities-by-branch))))
 
-; TODO: update this handler
-(re/register-handler
- :set-active-branch
- (fn [db [_ branches]]
-   (let [branch-name (get-in db [:activities-by-track-in-view :branch-name])
-         display-name (:name
-                       (first
-                        (filter #(if (= branch-name (keyword (:model-id %))) %) branches)))]
-     (assoc-in db
-           [:active-branch-activities] display-name))))
-
-(re/register-handler
-  :set-activity-in-view
-  (re/path [:activity-in-view])
-  (fn [_ [_ activities activity-id]]
-    (some #(when (= (get-in % [:sys :id]) activity-id) %)
-          activities)))
 
 (re/register-handler
   :set-loading-state!
