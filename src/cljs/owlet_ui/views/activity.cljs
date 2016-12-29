@@ -11,7 +11,7 @@
   (let [activity-data (re/subscribe [:activity-in-view])]
     (fn []
       [:div.activity
-        [breadcrumb activity-data]
+        [breadcrumb]
         [:div.activity-wrap
           [:div.activity-header.col-xs-12
             [activity-title activity-data]]

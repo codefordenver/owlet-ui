@@ -50,7 +50,7 @@
   (defroute "/:branch" {:as params}
             (re/dispatch [:set-active-view :branch-activities-view params]))
 
-  (defroute "/:activity" {:as params}
+  (defroute "/activity/:activity" {:as params}
             (re/dispatch [:set-active-view :activity-view params]))
 
   ; Ensure browser history uses Secretary to dispatch.

@@ -48,7 +48,7 @@
 (re/register-handler
   :set-active-view
   (fn [db [_ active-view route-parameter]]
-    (when (:branch route-parameter)
+    (when (or (:branch route-parameter) (:activity route-parameter))
       (re/dispatch [:get-library-content route-parameter]))
     (assoc db :active-view active-view)))
 
@@ -223,13 +223,6 @@
 
 
 (re/register-handler
-  :-synthetic-set-activities-by-branch-in-view
-  (fn [db [_ activities-by-branch branch-name]]
-    (let [_activities-by-branch_ ((keyword branch-name) activities-by-branch)]
-      (assoc-in db [:activities-by-branch-in-view] _activities-by-branch_))))
-
-
-(re/register-handler
   :get-activity-branches
   (fn [db [_ route-params]]
     (re/dispatch [:set-loading-state! true])
@@ -245,7 +238,6 @@
   :get-activity-branches-successful
   (fn [db [_ res route-params]]
     (re/dispatch [:set-loading-state! false])
-    (prn ":get-activity-branches-successful")
     (let [branches (:branches (:branches res))
           all-activities (:activities db)
 
@@ -269,13 +261,24 @@
                                                   branch))))
                                           branches-template)
                                     (into {}))]
-      (when route-params
+      (if route-params
         ;; i.e. when we are navigating to /:branch (where branch is code-art)
-        (let [{:keys [branch]} route-params]
-          (re/dispatch [:-synthetic-set-activities-by-branch-in-view activities-by-branch branch])))
-      (assoc db :activity-branches (:branches res)
-                :activities-by-branch activities-by-branch))))
-
+        (let [{:keys [branch activity]} route-params]
+          (when branch
+            (let [activities-by-branch-in-view ((keyword branch) activities-by-branch)]
+              (assoc db :activities-by-branch-in-view activities-by-branch-in-view
+                        :activity-branches (:branches res)
+                        :activities-by-branch activities-by-branch)))
+          (when activity
+            (let [activities-by-branch-in-view ((keyword branch) activities-by-branch)
+                  activity-in-view (some #(when (= (get-in % [:sys :id]) activity) %)
+                                         all-activities)]
+              (assoc db :activity-in-view activity-in-view
+                        :activities-by-branch-in-view activities-by-branch-in-view
+                        :activity-branches (:branches res)
+                        :activities-by-branch activities-by-branch))))
+        (assoc db :activity-branches (:branches res)
+                  :activities-by-branch activities-by-branch)))))
 
 (re/register-handler
   :set-loading-state!
