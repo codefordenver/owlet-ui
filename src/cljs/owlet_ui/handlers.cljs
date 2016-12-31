@@ -261,27 +261,29 @@
                                                   branch))))
                                           branches-template)
                                     (into {}))]
-      (if route-params
-        ;; i.e. when we are navigating to /:branch (where branch is code-art)
-        (let [{:keys [branch activity]} route-params]
+       (if route-params
+        (let [{:keys [activity branch]} route-params]
+          (when activity
+            (re/dispatch [:set-activity-in-view activity all-activities]))
           (when branch
             (let [activities-by-branch-in-view ((keyword branch) activities-by-branch)]
               (assoc db :activities-by-branch-in-view activities-by-branch-in-view
                         :activity-branches (:branches res)
-                        :activities-by-branch activities-by-branch)))
-          (when activity
-            (let [activities-by-branch-in-view ((keyword branch) activities-by-branch)
-                  activity-in-view (some #(when (= (get-in % [:sys :id]) activity) %)
-                                         all-activities)]
-              (assoc db :activity-in-view activity-in-view
-                        :activities-by-branch-in-view activities-by-branch-in-view
-                        :activity-branches (:branches res)
                         :activities-by-branch activities-by-branch))))
-        (assoc db :activity-branches (:branches res)
+        (assoc db :activity-branches (:branches res) ;; TODO: CHECK IF CAN BE DELETED
                   :activities-by-branch activities-by-branch)))))
+
 
 (re/register-handler
   :set-loading-state!
   (re/path [:app :loading?])
   (fn [_ [_ state]]
     state))
+
+
+(re/register-handler
+  :set-activity-in-view
+  (fn [db [_ activity-id all-activities]]
+    (assoc db :activity-in-view (some #(when (= (get-in % [:sys :id]) activity-id) %)
+                                      (or (:activities db) all-activities)))))
+

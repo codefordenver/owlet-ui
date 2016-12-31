@@ -9,18 +9,17 @@
 
 (defn activity-view []
   (let [activity-data (re/subscribe [:activity-in-view])]
-    (fn []
-      [:div.activity
-        [breadcrumb]
-        [:div.activity-wrap
-          [:div.activity-header.col-xs-12
-            [activity-title activity-data]]
-          [:div.activity-content.col-xs-12.col-lg-8
-            [activity-embed activity-data]
-            [:div.hidden-sm-down
-              [activity-reflection activity-data]]]
-          [:div.activity-content.col-xs-12.col-lg-4
-            [activity-info activity-data]
-            [:div.hidden-md-up
-              [activity-reflection activity-data]]
-            [activity-inspiration activity-data]]]])))
+    [:div.activity
+     [breadcrumb]
+     [:div.activity-wrap
+      [:div.activity-header.col-xs-12
+       [activity-title activity-data]]
+      [:div.activity-content.col-xs-12.col-lg-8
+       [activity-embed activity-data]
+       [:div.hidden-sm-down
+        [activity-reflection activity-data]]]
+      [:div.activity-content.col-xs-12.col-lg-4
+       [activity-info activity-data]
+       [:div.hidden-md-up
+        [activity-reflection activity-data]]
+       [activity-inspiration activity-data]]]]))
