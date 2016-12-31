@@ -28,7 +28,7 @@ a:hover {
   }
 }
 
-#sidebar {
+#sidebar, #lpsidebar{
   text-align: center;
   background-color: @purple;
   color: #cffffd;
@@ -76,37 +76,6 @@ a:hover {
   }
 }
 
-#lpsidebar {
-  text-align: center;
-  background-color: @purple;
-  color: #cffffd;
-  top: 0;
-  bottom: 0;
-  height: 100%;
-  width: 80px;
-  a {
-    margin-left: auto;
-    margin-right: auto;
-  }
-  img {
-    margin-top: 30px;
-  }
-  .menu {
-    padding-top: 10px;
-    margin-bottom: -9999px;
-    padding-bottom: 9999px;
-    overflow: hidden;
-    background-color: @purple;
-    a {
-      color: #cffffd;
-      text-decoration: none;
-    }
-    img {
-      width: 80px;
-    }
-  }
-}
-
 #lpsidebar-wrap {
   position: fixed;
   top: 0;
@@ -124,15 +93,15 @@ a:hover {
 label[for="lpsidebar-trigger"] {
   cursor: pointer;
   position: fixed;
-  top: 20px;
+  top: 1px;
   left: 0;
   z-index: 2;
-  width: 63px;
+  width: 30px;
   height: 86px;
   border-right: 1px solid transparent;
   border-top-right-radius: 20px;
   border-bottom-right-radius: 20px;
-  background-image: url( "../img/owlet-tab.png" );
+  background-image: url( "../img/owlet-tab-closed.png" );
   background-color: transparent;
 }
 
@@ -141,6 +110,18 @@ label[for="lpsidebar-trigger"] {
     left: 80px;
     border-left: 1px solid #000;
   }
+    cursor: pointer;
+    position: fixed;
+    top: 1px;
+    left: 0;
+    z-index: 2;
+    width: 30px;
+    height: 86px;
+    border-right: 1px solid transparent;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    background-image: url( "../img/owlet-tab-opened.png" );
+    background-color: transparent;
 }
 
 #lpsidebar-trigger:checked ~ .content {
@@ -300,7 +281,7 @@ mark.white {
 
 .content {
   @media (max-width: 767px) {
-    padding-left: 50px;
+    padding-left: 15px;
   }
   overflow-y: auto;
   height: 100%;
