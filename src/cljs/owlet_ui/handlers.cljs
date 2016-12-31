@@ -270,7 +270,7 @@
               (assoc db :activities-by-branch-in-view activities-by-branch-in-view
                         :activity-branches (:branches res)
                         :activities-by-branch activities-by-branch))))
-        (assoc db :activity-branches (:branches res) ;; TODO: CHECK IF CAN BE DELETED
+        (assoc db :activity-branches (:branches res)
                   :activities-by-branch activities-by-branch)))))
 
 

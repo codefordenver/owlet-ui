@@ -1,6 +1,5 @@
 (ns owlet-ui.views.branches
   (:require [re-frame.core :as re]
-            [reagent.core :as reagent :refer [atom]]
             [owlet-ui.components.branch :refer [branch]]))
 
 (defn pair-color [activity-branches]
@@ -9,16 +8,12 @@
 
 (defn branches-view []
   (let [activity-branches (re/subscribe [:activity-branches])]
-    (reagent/create-class
-      {:component-will-mount
-       #(when (empty? @activity-branches)
-          (re/dispatch [:get-activity-branches]))
-       :reagent-render
-       (fn []
-         [:div
-          [:div.branches
-           [:h1#title [:mark "Get started by choosing a branch below"]]
-           [:br]
-           (let [color-pairs (pair-color (:branches @activity-branches))]
-             (for [pair color-pairs]
-                  ^{:key (gensym "branch-")} [branch pair]))]])})))
+    (if (empty? @activity-branches)
+      (re/dispatch [:get-activity-branches])
+      [:div
+       [:div.branches
+        [:h1#title [:mark "Get started by choosing a branch below"]]
+        [:br]
+        (let [color-pairs (pair-color (sort (:branches @activity-branches)))]
+          (for [pair color-pairs] ^{:key (gensym "branch-")}
+                                  [branch pair]))]])))
