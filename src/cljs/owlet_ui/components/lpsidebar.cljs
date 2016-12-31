@@ -1,16 +1,12 @@
-(ns owlet-ui.components.sidebar
+(ns owlet-ui.components.lpsidebar
   (:require
     [cljsjs.jquery]
     [owlet-ui.components.login :refer [login-component]]
     [reagent.core :refer [atom]]))
 
-(defn sidebar-component []
+(defn lpsidebar-component []
   [:div
-    [:div#sidebar
-      [:div#owlet-wrap
-        [:a {:href "#"}
-          [:img#owlet-image {:src "img/owlet-logo.png"}]
-          [:p#owlet-text "OWLET"]]]
+    [:div#lpsidebar
       [:div.menu
         [:div.login
          [login-component]]

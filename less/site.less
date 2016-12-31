@@ -9,20 +9,26 @@ body {
   font-weight: 300;
   color: @primary-color;
   font-size: 1.2rem;
+  overflow-x: hidden;
 }
 
 h1 {
   margin-top: 10px;
+  line-height: 1.55em;
 }
 
 a:hover {
   text-decoration: none;
 }
 
-#lpsidebar {
-  @media (max-width: 800px) {
-    display: none;
+.btn:focus {
+  outline: none;
+  &hover {
+    outline: none;
   }
+}
+
+#sidebar {
   text-align: center;
   background-color: @purple;
   color: #cffffd;
@@ -68,6 +74,83 @@ a:hover {
       width: 80px;
     }
   }
+}
+
+#lpsidebar {
+  text-align: center;
+  background-color: @purple;
+  color: #cffffd;
+  top: 0;
+  bottom: 0;
+  height: 100%;
+  width: 80px;
+  a {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  img {
+    margin-top: 30px;
+  }
+  .menu {
+    padding-top: 10px;
+    margin-bottom: -9999px;
+    padding-bottom: 9999px;
+    overflow: hidden;
+    background-color: @purple;
+    a {
+      color: #cffffd;
+      text-decoration: none;
+    }
+    img {
+      width: 80px;
+    }
+  }
+}
+
+#lpsidebar-wrap {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 0;
+}
+
+#lpsidebar-trigger {
+  position: absolute;
+  clip: rect(0, 0, 0, 0);
+}
+
+label[for="lpsidebar-trigger"] {
+  cursor: pointer;
+  position: fixed;
+  top: 20px;
+  left: 0;
+  z-index: 2;
+  width: 63px;
+  height: 86px;
+  border-right: 1px solid transparent;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  background-image: url( "../img/owlet-tab.png" );
+  background-color: transparent;
+}
+
+#lpsidebar-trigger:checked + label {
+  @media(max-width: 767px) {
+    left: 80px;
+    border-left: 1px solid #000;
+  }
+}
+
+#lpsidebar-trigger:checked ~ .content {
+  @media(max-width: 767px) {
+    left: 80px;
+  }
+}
+
+#lpsidebar-trigger + label, .content {
+  transition: left 0.3s;
 }
 
 mark {
@@ -216,9 +299,17 @@ mark.white {
 }
 
 .content {
+  @media (max-width: 767px) {
+    padding-left: 50px;
+  }
   overflow-y: auto;
   height: 100%;
   width: 100%;
+  position: relative;
+  top: 0;
+  bottom: 100%;
+  left: 0;
+  z-index: 1;
 }
 
 .outer-height-wrap {
