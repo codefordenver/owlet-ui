@@ -14,7 +14,7 @@
   "
   (str config/server-url
        "/api/content/entries?library-view=true&space-id="
-       config/library-space-id))
+       config/owlet-activities-2-space-id))
 
 
 (defn get-then-dispatch
@@ -39,18 +39,18 @@
   (defroute "/about" []
             (re/dispatch [:set-active-view :about-view]))
 
-  (defroute "/tracks" []
+  (defroute "/branches" []
             ; Before dispatching to the view, ensure we have current activity library.
             (get-then-dispatch library-url #(vector :activities-get-successful %))
-            (re/dispatch [:set-active-view :tracks-view]))
+            (re/dispatch [:set-active-view :branches-view]))
 
   (defroute "/settings" []
             (re/dispatch [:set-active-view :settings-view]))
 
-  (defroute "/tracks/:track" {:as params}
-            (re/dispatch [:set-active-view :track-activities-view params]))
+  (defroute "/:branch" {:as params}
+            (re/dispatch [:set-active-view :branch-activities-view params]))
 
-  (defroute "/tracks/:track/:activity" {:as params}
+  (defroute "/activity/:activity" {:as params}
             (re/dispatch [:set-active-view :activity-view params]))
 
   ; Ensure browser history uses Secretary to dispatch.

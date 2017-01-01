@@ -1,5 +1,5 @@
 (ns owlet-ui.views.activity
-  (:require [owlet-ui.components.activity.back-track :refer [back-track]]
+  (:require [owlet-ui.components.activity.breadcrumb :refer [breadcrumb]]
             [owlet-ui.components.activity.title :refer [activity-title]]
             [owlet-ui.components.activity.embed :refer [activity-embed]]
             [owlet-ui.components.activity.info :refer [activity-info]]
@@ -9,18 +9,17 @@
 
 (defn activity-view []
   (let [activity-data (re/subscribe [:activity-in-view])]
-    (fn []
-      [:div.activity
-        [back-track activity-data]
-        [:div.activity-wrap
-          [:div.activity-header.col-xs-12
-            [activity-title activity-data]]
-          [:div.activity-content.col-xs-12.col-lg-8
-            [activity-embed activity-data]
-            [:div.hidden-sm-down
-              [activity-reflection activity-data]]]
-          [:div.activity-content.col-xs-12.col-lg-4
-            [activity-info activity-data]
-            [:div.hidden-md-up
-              [activity-reflection activity-data]]
-            [activity-inspiration activity-data]]]])))
+    [:div.activity
+     [breadcrumb]
+     [:div.activity-wrap
+      [:div.activity-header.col-xs-12
+       [activity-title activity-data]]
+      [:div.activity-content.col-xs-12.col-lg-8
+       [activity-embed activity-data]
+       [:div.hidden-sm-down
+        [activity-reflection activity-data]]]
+      [:div.activity-content.col-xs-12.col-lg-4
+       [activity-info activity-data]
+       [:div.hidden-md-up
+        [activity-reflection activity-data]]
+       [activity-inspiration activity-data]]]]))
