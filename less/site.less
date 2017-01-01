@@ -86,7 +86,7 @@ a:hover {
 }
 
 #lpsidebar-trigger {
-  position: absolute;
+  position: fixed;
   clip: rect(0, 0, 0, 0);
 }
 
@@ -128,10 +128,6 @@ label[for="lpsidebar-trigger"] {
   @media(max-width: 767px) {
     left: 80px;
   }
-}
-
-#lpsidebar-trigger + label, .content {
-  transition: left 0.3s;
 }
 
 mark {
@@ -280,9 +276,6 @@ mark.white {
 }
 
 .content {
-  @media (max-width: 767px) {
-    padding-left: 15px;
-  }
   overflow-y: auto;
   height: 100%;
   width: 100%;
@@ -326,6 +319,9 @@ mark.white {
     padding: 25px 15px;
   }
   .trackwrap {
+    @media(max-width: 767px) {
+      width: 100vw;
+    }
     margin: 15px 0;
     height: 117px;
     .track-bg {
