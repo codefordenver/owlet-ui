@@ -28,7 +28,7 @@ a:hover {
   }
 }
 
-#sidebar, #lpsidebar{
+#sidebar {
   text-align: center;
   background-color: @purple;
   color: #cffffd;
@@ -64,6 +64,52 @@ a:hover {
     padding-top: 10px;
     margin-bottom: -9999px;
     padding-bottom: 9999px;
+    overflow: hidden;
+    background-color: @purple;
+    a {
+      color: #cffffd;
+      text-decoration: none;
+    }
+    img {
+      width: 80px;
+    }
+  }
+}
+
+#lpsidebar {
+  text-align: center;
+  background-color: @purple;
+  color: #cffffd;
+  top: 0;
+  bottom: 0;
+  height: 100vh;
+  width: 80px;
+  a {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  img {
+    margin-top: 30px;
+  }
+  #owlet-wrap {
+    background-color: #65D2C0;
+    border: 1px solid #65D2C0;
+    border-bottom-right-radius: 20px;
+    border-bottom-left-radius: 20px;
+  }
+  #owlet-image {
+    margin-top: 0;
+    width: 100%;
+  }
+  #owlet-text {
+    padding-left: 3px;
+    font-weight: 400;
+    letter-spacing: 3px;
+    color: white;
+    margin-bottom: 5px;
+  }
+  .menu {
+    height: 100%;
     overflow: hidden;
     background-color: @purple;
     a {
@@ -277,6 +323,7 @@ mark.white {
 
 .content {
   overflow-y: auto;
+  overflow-x: hidden;
   height: 100%;
   width: 100%;
   position: relative;
