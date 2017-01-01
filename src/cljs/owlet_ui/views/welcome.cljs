@@ -13,7 +13,6 @@
               [:p "Explore some of the awesome things you can do with coding & multimedia, by yourself and with others. Enjoy!"]
               [:p "¡Bienvenidx a Owlet! Explora algunas de las cosas increíbles que puedes hacer con programación y con multimedios tú solx o en equipo. ¡Adelante!"]]
             [:a {:href "#/branches"}
-               ;; TODO: rename this button to btn-branches
               [:button.btn.btn-branches "Go to Activities"]]]]
     [:div.login-landing
       [login-component]]

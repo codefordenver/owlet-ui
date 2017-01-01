@@ -7,9 +7,7 @@
 (defn branch [[color branch]]
   (fn []
     (reagent/create-class
-      {:component-did-mount
-       (fn []
-         (js/zadenMagic))
+      {:component-did-mount #(js/zadenMagic)
        :reagent-render
          (fn []
            (let [name (str/upper-case branch)
