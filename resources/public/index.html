@@ -27,17 +27,5 @@
 <div id="app"></div>
 <script src="js/compiled/app.js"></script>
 <script>owlet_ui.core.init();</script>
-<script>
-  function zadenMagic() {
-    var trackwrappers = document.getElementsByClassName('trackwrapper');
-    for(var i = 0, ilen = trackwrappers.length; i < ilen; i++) {
-      if (i == ilen - 1) {
-        if (ilen % 2 == 1) {
-          trackwrappers[i].className = "trackwrapper col-xs-12 col-md-6 offset-md-3 col-lg-4 offset-lg-0";
-        }
-      }
-    }
-  }
-</script>
 </body>
 </html>

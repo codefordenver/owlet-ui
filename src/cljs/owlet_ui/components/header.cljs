@@ -15,7 +15,7 @@
       [:div#header {:style {:position "fixed"
                             :width "100%"
                             :height "100%"
-                            :background-image "url(https://apod.nasa.gov/apod/image/1607/OrionNebula_ESO_4000.jpg)"
+                            :background-image (str "url(" @src ")")
                             :background-size "cover"
                             :z-index "-1"}}
        [upload-image-component show? close-modal]
