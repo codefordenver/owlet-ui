@@ -8,8 +8,7 @@
 ;; Use a lein env var like the one above
 ;; to toggle this during development
 ;; http://localhost:3000
-(def server-url
-  "https://owlet-api.herokuapp.com")
+(def server-url "https://owlet-api.herokuapp.com")
 
 (when debug?
   (enable-console-print!))
@@ -33,7 +32,7 @@
 (def default-header-bg-image
   "img/default_background.png")
 
-(defonce library-space-id "c7i369745nqp")
+(defonce owlet-activities-2-space-id "ir2v150dybog")
 
 (defonce firebase-app-init
          {:apiKey        "AIzaSyAbs6wXxPGX-8XEWR6nyj7iCETOL6dZjzY"
