@@ -4,7 +4,7 @@
             [camel-snake-kebab.core :refer [->kebab-case]]))
 
 (defn branch [[color branch]]
- (fn []
+  (fn []
    (let [name (str/upper-case branch)
          name-line1 (first (str/split name " "))
          name-line2 (rest (str/split name " "))]

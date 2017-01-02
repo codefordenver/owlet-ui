@@ -23,7 +23,7 @@ a:hover {
 
 .btn:focus {
   outline: none;
-  &hover {
+  &:active {
     outline: none;
   }
 }
@@ -173,6 +173,12 @@ label[for="lpsidebar-trigger"] {
 #lpsidebar-trigger:checked ~ .content {
   @media(max-width: 767px) {
     left: 80px;
+  }
+}
+
+#lpsidebar-trigger:checked ~ .content .branchwrapper {
+  @media(max-width: 767px) {
+    padding-right: 80px;
   }
 }
 
@@ -366,9 +372,6 @@ mark.white {
     padding: 25px 15px;
   }
   .branchwrap {
-    @media(max-width: 767px) {
-      width: 100vw;
-    }
     margin: 15px 0;
     height: 117px;
     .branch-bg {
@@ -791,7 +794,6 @@ progress {
   background-image:      -o-linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
   background-image:         linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
 }
-
 
 // bootstrap 3 supplement for popover (recom)
 .popover-arrow {
