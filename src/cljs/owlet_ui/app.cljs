@@ -3,11 +3,14 @@
             [reagent.core :as reagent]
             [owlet-ui.components.upload-image-modal :refer [upload-image-component]]
             [owlet-ui.components.sidebar :refer [sidebar-component]]
+            [owlet-ui.components.lpsidebar :refer [lpsidebar-component]]
+            ; [owlet-ui.components.header :refer [header-component]]
             [owlet-ui.components.loading :refer [loading-component]]
             [owlet-ui.views.welcome :refer [welcome-view]]
             [owlet-ui.views.activity :refer [activity-view]]
             [owlet-ui.views.branches :refer [branches-view]]
             [owlet-ui.views.settings :refer [settings-view]]
+            [owlet-ui.components.login :refer [login-component]]))
             [owlet-ui.views.branch-activities :refer [branch-activities-view]]))
 
 (defmulti views identity)
@@ -39,7 +42,12 @@
          (if (= @active-view :welcome-view)
            [show-view @active-view]
            [:div#main
-            [sidebar-component]
+            [:div#lpsidebar-wrap.hidden-md-up
+              [lpsidebar-component]]
+            [:input#lpsidebar-trigger.hidden-md-up {:type "checkbox"}]
+            [:label.hidden-md-up {:for "lpsidebar-trigger"}]
+            [:div#sidebar-wrap.hidden-sm-down
+              [sidebar-component]]
             [:div.content {:style {:width "100%"
                                    :background-image (str "url(" @src ")")
                                    :background-size "cover"}}

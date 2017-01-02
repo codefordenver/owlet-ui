@@ -30,7 +30,7 @@
          (.setItem js/localStorage "owlet:user-token" token))))
 
 (def default-header-bg-image
-  "http://apod.nasa.gov/apod/image/1607/OrionNebula_ESO_4000.jpg")
+  "img/default_background.png")
 
 (defonce owlet-activities-2-space-id "ir2v150dybog")
 

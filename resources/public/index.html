@@ -27,17 +27,5 @@
 <div id="app"></div>
 <script src="js/compiled/app.js"></script>
 <script>owlet_ui.core.init();</script>
-<script>
-  function zadenMagic() {
-    var branchwrappers = document.getElementsByClassName('branchwrapper');
-    for(var i = 0, ilen = branchwrappers.length; i < ilen; i++) {
-      if (i == ilen - 1) {
-        if (ilen % 2 == 1) {
-          branchwrappers[i].className = "branchwrapper col-xs-12 col-md-0 col-lg-4";
-        }
-      }
-    }
-  }
-</script>
 </body>
 </html>

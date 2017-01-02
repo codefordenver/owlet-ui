@@ -9,20 +9,26 @@ body {
   font-weight: 300;
   color: @primary-color;
   font-size: 1.2rem;
+  overflow-x: hidden;
 }
 
 h1 {
   margin-top: 10px;
+  line-height: 1.55em;
 }
 
 a:hover {
   text-decoration: none;
 }
 
-#lpsidebar {
-  @media (max-width: 800px) {
-    display: none;
+.btn:focus {
+  outline: none;
+  &hover {
+    outline: none;
   }
+}
+
+#sidebar {
   text-align: center;
   background-color: @purple;
   color: #cffffd;
@@ -67,6 +73,106 @@ a:hover {
     img {
       width: 80px;
     }
+  }
+}
+
+#lpsidebar {
+  text-align: center;
+  background-color: @purple;
+  color: #cffffd;
+  top: 0;
+  bottom: 0;
+  height: 100vh;
+  width: 80px;
+  a {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  img {
+    margin-top: 30px;
+  }
+  #owlet-wrap {
+    background-color: #65D2C0;
+    border: 1px solid #65D2C0;
+    border-bottom-right-radius: 20px;
+    border-bottom-left-radius: 20px;
+  }
+  #owlet-image {
+    margin-top: 0;
+    width: 100%;
+  }
+  #owlet-text {
+    padding-left: 3px;
+    font-weight: 400;
+    letter-spacing: 3px;
+    color: white;
+    margin-bottom: 5px;
+  }
+  .menu {
+    height: 100%;
+    overflow: hidden;
+    background-color: @purple;
+    a {
+      color: #cffffd;
+      text-decoration: none;
+    }
+    img {
+      width: 80px;
+    }
+  }
+}
+
+#lpsidebar-wrap {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 0;
+}
+
+#lpsidebar-trigger {
+  position: fixed;
+  clip: rect(0, 0, 0, 0);
+}
+
+label[for="lpsidebar-trigger"] {
+  cursor: pointer;
+  position: fixed;
+  top: 1px;
+  left: 0;
+  z-index: 2;
+  width: 30px;
+  height: 86px;
+  border-right: 1px solid transparent;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  background-image: url( "../img/owlet-tab-closed.png" );
+  background-color: transparent;
+}
+
+#lpsidebar-trigger:checked + label {
+  @media(max-width: 767px) {
+    left: 80px;
+    border-left: 1px solid #000;
+  }
+    cursor: pointer;
+    position: fixed;
+    top: 1px;
+    left: 0;
+    z-index: 2;
+    width: 30px;
+    height: 86px;
+    border-right: 1px solid transparent;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    background-image: url( "../img/owlet-tab-opened.png" );
+    background-color: transparent;
+}
+
+#lpsidebar-trigger:checked ~ .content {
+  @media(max-width: 767px) {
+    left: 80px;
   }
 }
 
@@ -217,8 +323,14 @@ mark.white {
 
 .content {
   overflow-y: auto;
+  overflow-x: hidden;
   height: 100%;
   width: 100%;
+  position: relative;
+  top: 0;
+  bottom: 100%;
+  left: 0;
+  z-index: 1;
 }
 
 .outer-height-wrap {
@@ -254,6 +366,9 @@ mark.white {
     padding: 25px 15px;
   }
   .branchwrap {
+    @media(max-width: 767px) {
+      width: 100vw;
+    }
     margin: 15px 0;
     height: 117px;
     .branch-bg {
