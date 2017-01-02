@@ -2,6 +2,7 @@
     (:require [reagent.core :as reagent]
               [re-frame.core :as re-frame]
               [devtools.core :as devtools]
+              [dirac.runtime :as dirac]
               [owlet-ui.handlers]
               [owlet-ui.subs]
               [owlet-ui.routes :as routes]
@@ -11,7 +12,8 @@
 (defn dev-setup []
   (when config/debug?
     (println "dev mode")
-    (devtools/install!)))
+    (devtools/install!)
+    (dirac/install!)))
 
 (defn mount-root []
   (reagent/render [app/main-view]

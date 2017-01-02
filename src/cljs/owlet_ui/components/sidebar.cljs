@@ -14,7 +14,7 @@
       [:div.menu
         [:div.login
          [login-component]]
-        [:a {:href "#/tracks"}
+        [:a {:href "#/branches"}
           [:img {:src "img/icon1.png"}]]
         [:br]
         [:a {:href "#/"}

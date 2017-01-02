@@ -8,16 +8,16 @@
             [owlet-ui.components.loading :refer [loading-component]]
             [owlet-ui.views.welcome :refer [welcome-view]]
             [owlet-ui.views.activity :refer [activity-view]]
-            [owlet-ui.views.tracks :refer [tracks-view]]
+            [owlet-ui.views.branches :refer [branches-view]]
             [owlet-ui.views.settings :refer [settings-view]]
-            [owlet-ui.views.track-activities :refer [track-activities-view]]
             [owlet-ui.components.login :refer [login-component]]))
+            [owlet-ui.views.branch-activities :refer [branch-activities-view]]))
 
 (defmulti views identity)
 (defmethod views :welcome-view [] [welcome-view])
 (defmethod views :activity-view [] [activity-view])
-(defmethod views :tracks-view [] [tracks-view])
-(defmethod views :track-activities-view [] [track-activities-view])
+(defmethod views :branches-view [] [branches-view])
+(defmethod views :branch-activities-view [] [branch-activities-view])
 (defmethod views :settings-view [] [settings-view])
 (defmethod views :default [] [:div])
 
