@@ -43,10 +43,11 @@
             [:div#lpsidebar-wrap.hidden-md-up
              [lpsidebar-component]]
             [:input#lpsidebar-trigger.hidden-md-up
-             {:type    "checkbox"
-              :on-change #(re/dispatch [:set-sidebar-state! true])
-              :checked @(re/subscribe [:open-sidebar?])}]
-            [:label.hidden-md-up {:for "lpsidebar-trigger"}]
+             {:type      "checkbox"
+              :on-change #(re/dispatch [:set-sidebar-state! (not @(re/subscribe [:open-sidebar?]))])
+              :checked   @(re/subscribe [:open-sidebar?])}]
+            [:label.hidden-md-up {:for      "lpsidebar-trigger"
+                                  :on-click #(re/dispatch [:set-sidebar-state! (not @(re/subscribe [:open-sidebar?]))])}]
             [:div#sidebar-wrap.hidden-sm-down
              [sidebar-component]]
             [:div.content {:style {:width            "100%"
