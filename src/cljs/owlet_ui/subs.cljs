@@ -93,3 +93,8 @@
   :set-loading-state?
   (fn [db]
     (reaction (get-in @db [:app :loading?]))))
+
+(re/register-sub
+  :open-sidebar?
+  (fn [db]
+    (reaction (get-in @db [:app :open-sidebar]))))

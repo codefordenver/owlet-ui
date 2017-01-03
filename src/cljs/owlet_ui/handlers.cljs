@@ -50,6 +50,7 @@
   (fn [db [_ active-view route-parameter]]
     (when (or (:branch route-parameter) (:activity route-parameter))
       (re/dispatch [:get-library-content route-parameter]))
+    (re/dispatch [:set-sidebar-state! false])
     (assoc db :active-view active-view)))
 
 
@@ -287,3 +288,7 @@
     (assoc db :activity-in-view (some #(when (= (get-in % [:sys :id]) activity-id) %)
                                       (or (:activities db) all-activities)))))
 
+(re/register-handler
+  :set-sidebar-state!
+  (fn [db [_ state]]
+    (assoc-in db [:app :open-sidebar] state)))

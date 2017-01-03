@@ -30,8 +30,8 @@
         loading? (re/subscribe [:set-loading-state?])
         src (re/subscribe [:user-has-background-image?])
         is-user-logged-in? (re/subscribe [:is-user-logged-in?])
-        open-modal (fn [_] (reset! show? true))
-        close-modal (fn [_] (reset! show? false))]
+        open-modal (fn [] (reset! show? true))
+        close-modal (fn [] (reset! show? false))]
     (reagent/create-class
       {:component-will-mount
        #(re/dispatch [:get-auth0-profile])
@@ -41,23 +41,26 @@
            [show-view @active-view]
            [:div#main
             [:div#lpsidebar-wrap.hidden-md-up
-              [lpsidebar-component]]
-            [:input#lpsidebar-trigger.hidden-md-up {:type "checkbox"}]
+             [lpsidebar-component]]
+            [:input#lpsidebar-trigger.hidden-md-up
+             {:type    "checkbox"
+              :on-change #(re/dispatch [:set-sidebar-state! true])
+              :checked @(re/subscribe [:open-sidebar?])}]
             [:label.hidden-md-up {:for "lpsidebar-trigger"}]
             [:div#sidebar-wrap.hidden-sm-down
-              [sidebar-component]]
-            [:div.content {:style {:width "100%"
+             [sidebar-component]]
+            [:div.content {:style {:width            "100%"
                                    :background-image (str "url(" @src ")")
-                                   :background-size "cover"}}
+                                   :background-size  "cover"}}
              [upload-image-component show? close-modal]
              [:button#change-header-btn
               {:type     "button"
                :class    "btn btn-secondary"
                :style    {:font-size "1em"
-                          :padding "6px"
-                          :display (if @is-user-logged-in?
-                                     "block"
-                                     "none")}
+                          :padding   "6px"
+                          :display   (if @is-user-logged-in?
+                                       "block"
+                                       "none")}
                :on-click open-modal}
               [:i.fa.fa-pencil-square-o]]
              (when @loading?
