@@ -12,7 +12,8 @@
 (def default-db
   "initial app state"
   {:user                         default-user-db
-   :app                          {:loading? nil}
+   :app                          {:loading?     nil
+                                  :open-sidebar false}
    :activities                   []
    :activity-branches            nil
    :activities-by-branch-in-view nil
