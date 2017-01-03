@@ -23,7 +23,7 @@ a:hover {
 
 .btn:focus {
   outline: none;
-  &hover {
+  &:active {
     outline: none;
   }
 }
@@ -173,6 +173,18 @@ label[for="lpsidebar-trigger"] {
 #lpsidebar-trigger:checked ~ .content {
   @media(max-width: 767px) {
     left: 80px;
+  }
+}
+
+#lpsidebar-trigger:checked ~ .content .branchwrapper {
+  @media(max-width: 767px) {
+    padding-right: 80px;
+  }
+}
+
+#lpsidebar-trigger:checked ~ .content .activity-thumbnail-wrap {
+  @media(max-width: 767px) {
+    margin-right: 76px;
   }
 }
 
@@ -331,6 +343,8 @@ mark.white {
   bottom: 100%;
   left: 0;
   z-index: 1;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 .outer-height-wrap {
@@ -366,9 +380,6 @@ mark.white {
     padding: 25px 15px;
   }
   .branchwrap {
-    @media(max-width: 767px) {
-      width: 100vw;
-    }
     margin: 15px 0;
     height: 117px;
     .branch-bg {
@@ -412,6 +423,7 @@ mark.white {
   padding: 10px;
   margin: 22px 6px 22px 6px;
   height: 330px;
+  overflow-y: auto;
   @media only screen and (max-width: 768px) {
     height: 280px;
   }
@@ -436,6 +448,25 @@ mark.white {
   .summary {
     margin-top: 10px;
     font-size: 0.9em;
+  }
+  .technology {
+    background-color: #65D2C0;
+    display: inline-block;
+    margin-top: 10px;
+    padding-bottom: none;
+    font-size: 0.9em;
+    &:hover {
+      a {
+        color: black;
+      }
+    }
+    p {
+      margin: 0;
+    }
+    a {
+      text-decoration: none;
+      color: white;
+    }
   }
 }
 
@@ -500,6 +531,7 @@ mark.white {
 }
 
 .breadcrumb-wrap {
+  width: 100vw;
   height: 50px;
   text-decoration: none;
   text-align: left;
@@ -791,7 +823,6 @@ progress {
   background-image:      -o-linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
   background-image:         linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
 }
-
 
 // bootstrap 3 supplement for popover (recom)
 .popover-arrow {
