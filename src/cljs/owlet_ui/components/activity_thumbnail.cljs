@@ -15,14 +15,13 @@
         {:keys [title summary techRequirements]} fields]
 
     (fn []
-      [:div.col-lg-4.col-sm-6.col-xs-12
+      [:div.col-xs-12.col-md-6.col-lg-4
        [:div.activity-thumbnail-wrap.box-shadow
         [:a {:href (str "#/activity/" entry-id)
              :on-click #(rf/dispatch [:set-activity-in-view entry-id])}
          [:div.activity-thumbnail {:style {:background-image (str "url('" image "')")
                                            :background-size  "cover"}}
           [:mark.title title]]]
-        [:div.technology
-          [:p "Tech:"]
+        [:div.technology.btn
           [set-as-marked techRequirements]]
         [:div.summary summary]]])))

@@ -182,6 +182,12 @@ label[for="lpsidebar-trigger"] {
   }
 }
 
+#lpsidebar-trigger:checked ~ .content .activity-thumbnail-wrap {
+  @media(max-width: 767px) {
+    margin-right: 76px;
+  }
+}
+
 mark {
   color: white;
   background-color: black;
@@ -417,7 +423,7 @@ mark.white {
   padding: 10px;
   margin: 22px 6px 22px 6px;
   height: 330px;
-  overflow-y: scroll;
+  overflow-y: auto;
   @media only screen and (max-width: 768px) {
     height: 280px;
   }
@@ -444,10 +450,22 @@ mark.white {
     font-size: 0.9em;
   }
   .technology {
+    background-color: #65D2C0;
+    display: inline-block;
+    margin-top: 10px;
     padding-bottom: none;
     font-size: 0.9em;
+    &:hover {
+      a {
+        color: black;
+      }
+    }
     p {
-      margin-bottom: 0;
+      margin: 0;
+    }
+    a {
+      text-decoration: none;
+      color: white;
     }
   }
 }
