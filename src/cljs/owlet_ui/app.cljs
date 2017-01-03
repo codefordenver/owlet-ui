@@ -31,7 +31,8 @@
         src (re/subscribe [:user-has-background-image?])
         is-user-logged-in? (re/subscribe [:is-user-logged-in?])
         open-modal (fn [] (reset! show? true))
-        close-modal (fn [] (reset! show? false))]
+        close-modal (fn [] (reset! show? false))
+        open-sidebar? (re/subscribe [:open-sidebar?])]
     (reagent/create-class
       {:component-will-mount
        #(re/dispatch [:get-auth0-profile])
@@ -44,10 +45,10 @@
              [lpsidebar-component]]
             [:input#lpsidebar-trigger.hidden-md-up
              {:type      "checkbox"
-              :on-change #(re/dispatch [:set-sidebar-state! (not @(re/subscribe [:open-sidebar?]))])
+              :on-change #(re/dispatch [:set-sidebar-state! (not @open-sidebar?)])
               :checked   @(re/subscribe [:open-sidebar?])}]
             [:label.hidden-md-up {:for      "lpsidebar-trigger"
-                                  :on-click #(re/dispatch [:set-sidebar-state! (not @(re/subscribe [:open-sidebar?]))])}]
+                                  :on-click #(re/dispatch [:set-sidebar-state! (not @open-sidebar?)])}]
             [:div#sidebar-wrap.hidden-sm-down
              [sidebar-component]]
             [:div.content {:style {:width            "100%"
