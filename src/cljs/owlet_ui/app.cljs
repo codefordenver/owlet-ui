@@ -9,7 +9,6 @@
             [owlet-ui.views.activity :refer [activity-view]]
             [owlet-ui.views.branches :refer [branches-view]]
             [owlet-ui.views.settings :refer [settings-view]]
-            [owlet-ui.components.login :refer [login-component]]
             [owlet-ui.views.branch-activities :refer [branch-activities-view]]))
 
 (defmulti views identity)
