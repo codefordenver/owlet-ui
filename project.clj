@@ -4,7 +4,7 @@
                  [reagent "0.6.0"]
                  [binaryage/devtools "RELEASE"]
                  [binaryage/dirac "RELEASE"]
-                 [re-frame "0.7.0"]
+                 [re-frame "0.9.1"]
                  [secretary "1.2.3"]
                  [compojure "1.5.0"]
                  [yogthos/config "0.8"]

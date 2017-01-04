@@ -1,8 +1,11 @@
 (ns owlet-ui.async
   "Utilities for running asynchronous processes."
-  (:require [re-frame.router :refer [run-after-next-annimation-frame]]
-            [cljs.core.async :refer [put!]]))
+  (:require [cljs.core.async :refer [put!]]))
 
+(def run-after-next-annimation-frame
+  (if (exists? reagent.core/after-render)
+    (.-after-render reagent.core)                ;; reagent >= 0.6.0
+    (.-do-later reagent.impl.batching)))          ;; reagent < 0.6.0
 
 (def repeatedly-running
   "Each member of the set in this atom should be a function of no arguments

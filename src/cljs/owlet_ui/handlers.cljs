@@ -33,19 +33,19 @@
    (register-setter-handler event-key db-path identity))
 
   ([event-key db-path f]
-   (re/register-handler
+   (re/reg-event-db
      event-key
      (fn [db [_ new-data & args]]
        (assoc-in db db-path (apply f new-data args))))))
 
 
-(re/register-handler
+(re/reg-event-db
   :initialize-db
   (fn [_ _]
     db/default-db))
 
 
-(re/register-handler
+(re/reg-event-db
   :set-active-view
   (fn [db [_ active-view route-parameter]]
     (when (or (:branch route-parameter) (:activity route-parameter))
@@ -54,7 +54,7 @@
     (assoc db :active-view active-view)))
 
 
-(re/register-handler
+(re/reg-event-db
   :user-has-logged-in-out!
   (re/path [:user])
   (fn [db [_ val]]
@@ -66,14 +66,14 @@
     (assoc db :logged-in? val)))
 
 
-(re/register-handler
+(re/reg-event-db
   :reset-user-db!
   (re/path [:user])
   (fn [_ [_ _]]
     db/default-user-db))
 
 
-(re/register-handler
+(re/reg-event-db
   :update-sid-and-get-cms-entries-for
   (re/path [:user])
   (fn [db [_ sid]]
@@ -84,7 +84,7 @@
     (assoc db :social-id sid)))
 
 
-(re/register-handler
+(re/reg-event-db
   :process-fetch-entries-success!
   (re/path [:user :content-entries])
   (fn [db [_ entries]]
@@ -92,7 +92,7 @@
     (conj db entries)))
 
 
-(re/register-handler
+(re/reg-event-db
   :set-user-background-image!
   (re/path [:user :background-image])
   (fn [_ [_ coll]]
@@ -106,14 +106,14 @@
       (get-in user-bg-image-entries [:fields :url :en-US]))))
 
 
-(re/register-handler
+(re/reg-event-db
   :set-backround-image-entry-id!
   (re/path [:user :background-image-entry-id])
   (fn [_ [_ id]]
     id))
 
 
-(re/register-handler
+(re/reg-event-db
   :update-user-background!
   (fn [db [_ url]]
     ;; if we have a url and an entry-id, aka existing entry for *userBgImage*
@@ -143,7 +143,7 @@
     db))
 
 
-(re/register-handler
+(re/reg-event-db
   :update-user-background-after-successful-post!
   (re/path [:user :background-image])
   (fn [_ [_ res]]
@@ -151,14 +151,14 @@
     (get-in res [:fields :url :en-US])))
 
 
-(re/register-handler
+(re/reg-event-db
   :reset-user-bg-image!
   (re/path [:user :background-image])
   (fn [_ [_ url]]
     url))
 
 
-(re/register-handler
+(re/reg-event-db
   :get-auth0-profile
   (fn [db [_ _]]
     (when-let [user-token (.getItem js/localStorage "owlet:user-token")]
@@ -182,7 +182,7 @@
     db))
 
 
-(re/register-handler
+(re/reg-event-db
   :get-library-content
   (fn [db [_ route-params]]
     (when (empty? (:activity-branches db))
@@ -195,7 +195,7 @@
     db))
 
 
-(re/register-handler
+(re/reg-event-db
   :activities-get-successful
   (fn [db [_ res]]
     ; Obtains the URL for each preview image, and adds a :url field next to
@@ -216,14 +216,14 @@
       _db_)))
 
 
-(re/register-handler
+(re/reg-event-db
   :set-activities-by-branch-in-view
   (fn [db [_ branch-name]]
     (let [activities-by-branch ((keyword branch-name) (:activities-by-branch db))]
       (assoc-in db [:activities-by-branch-in-view] activities-by-branch))))
 
 
-(re/register-handler
+(re/reg-event-db
   :get-activity-branches
   (fn [db [_ route-params]]
     (re/dispatch [:set-loading-state! true])
@@ -235,7 +235,7 @@
     db))
 
 
-(re/register-handler
+(re/reg-event-db
   :get-activity-branches-successful
   (fn [db [_ res route-params]]
     (re/dispatch [:set-loading-state! false])
@@ -275,20 +275,20 @@
                   :activities-by-branch activities-by-branch)))))
 
 
-(re/register-handler
+(re/reg-event-db
   :set-loading-state!
   (re/path [:app :loading?])
   (fn [_ [_ state]]
     state))
 
 
-(re/register-handler
+(re/reg-event-db
   :set-activity-in-view
   (fn [db [_ activity-id all-activities]]
     (assoc db :activity-in-view (some #(when (= (get-in % [:sys :id]) activity-id) %)
                                       (or (:activities db) all-activities)))))
 
-(re/register-handler
+(re/reg-event-db
   :set-sidebar-state!
   (fn [db [_ state]]
     (assoc-in db [:app :open-sidebar] state)))
