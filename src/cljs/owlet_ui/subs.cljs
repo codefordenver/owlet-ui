@@ -1,6 +1,5 @@
 (ns owlet-ui.subs
-  (:require [re-frame.core :as re])
-  (:require-macros [reagent.ratom :refer [reaction]]))
+  (:require [re-frame.core :as re]))
 
 
 (defn register-getter-sub
@@ -36,8 +35,7 @@
      (fn [db _ & args]
        (-> db
            (get-in db-path)
-           (#(apply f % args))
-           reaction)))))
+           (#(apply f % args)))))))
 
 (re/reg-sub
   :active-view
