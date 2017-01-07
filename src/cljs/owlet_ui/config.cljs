@@ -29,7 +29,7 @@
          (re-frame/dispatch [:update-sid-and-get-cms-entries-for social-id])
          (.setItem js/localStorage "owlet:user-token" token))))
 
-(def default-header-bg-image
+(defonce default-header-bg-image
   "img/default_background.png")
 
 (defonce owlet-activities-2-space-id "ir2v150dybog")
