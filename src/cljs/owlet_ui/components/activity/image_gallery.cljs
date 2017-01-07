@@ -6,9 +6,10 @@
 
 (defn photoswipe-template [state]
   (when (not (nil? @state))
-    (js/PhotoSwipe. (@state :element)
-                    nil
-                    (@state :items)))
+    (.init
+      (js/PhotoSwipe. (@state :element)
+                      nil
+                      (@state :items))))
   [:div.activity-image-gallery-wrap.box-shadow
    [:div.pswp {:tabIndex "-1" :role "dialog" :aria-hidden "true"}
      [:div.pswp__bg]
