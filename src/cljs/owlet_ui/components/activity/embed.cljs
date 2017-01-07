@@ -8,7 +8,7 @@
 (defn activity-embed [activity-data]
   (let [embed (get-in @activity-data [:fields :embed])
         preview (get-in @activity-data [:fields :preview :sys :url])
-        concepts (get-in @activity-data [:fields :concepts])]
+        skills (get-in @activity-data [:fields :skills])]
     [:div.activity-embed-wrap
      (if (nil? embed)
        [:div.activity-preview
@@ -17,6 +17,6 @@
         {"dangerouslySetInnerHTML"
          #js{:__html (generic-responsive-iframe embed)}}])
      [:div.activity-concept-wrap
-      (for [c concepts]
+      (for [c skills]
         ^{:key (gensym "concept-")}
         [:span.tag.tag-default c])]]))

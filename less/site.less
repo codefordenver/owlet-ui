@@ -411,6 +411,15 @@ mark.white {
 
 /* branch activities view */
 
+.branch-activities-wrap .flexcontainer-wrap {
+  -webkit-align-items: flex-start;
+  align-items: flex-start;
+  div.col-xs-12.col-md-6.col-lg-4 {
+    padding-left: 0;
+    padding-right: 30px;
+  }
+}
+
 .branch-activities-wrap, .no-activities {
   margin-top: 28px;
   h2, .no-activities {
@@ -419,14 +428,13 @@ mark.white {
 }
 
 .activity-thumbnail-wrap {
+  @media (max-width: 1187px) {
+    font-size: 0.9em;
+  }
   background-color: white;
   padding: 10px;
-  margin: 22px 6px 22px 6px;
-  height: 330px;
+  margin: 22px 12px 22px 0;
   overflow-y: auto;
-  @media only screen and (max-width: 768px) {
-    height: 280px;
-  }
   .activity-thumbnail {
     position: relative;
     overflow: hidden;
@@ -434,8 +442,8 @@ mark.white {
       opacity: 0.8;
     }
     height: 250px;
-    @media only screen and (max-width: 768px) {
-      height: 200px;
+    @media only screen and (max-width: 767px) and (min-width: 650px) {
+      height: 400px;
     }
     .title {
       position: absolute;
@@ -510,9 +518,13 @@ mark.white {
   margin-bottom: 15px;
 }
 
-.activity-info-wrap, .activity-inspiration-wrap, .activity-reflection-wrap {
+.activity-info-wrap, .activity-inspiration-wrap, .activity-challenge-wrap {
   background-color: white;
   padding: 10px 12px;
+}
+
+.activity-challenge-wrap {
+  margin-bottom: 2em;
 }
 
 .activity-inspiration-wrap {
