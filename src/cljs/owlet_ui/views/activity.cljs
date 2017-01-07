@@ -5,6 +5,7 @@
             [owlet-ui.components.activity.info :refer [activity-info]]
             [owlet-ui.components.activity.inspiration :refer [activity-inspiration]]
             [owlet-ui.components.activity.challenge :refer [activity-challenge]]
+            [owlet-ui.components.activity.image-gallery :refer [activity-image-gallery]]
             [re-frame.core :as re]))
 
 (defn activity-view []
@@ -16,6 +17,7 @@
        [activity-title activity-data]]
       [:div.activity-content.col-xs-12.col-lg-8
        [activity-embed activity-data]
+       [activity-image-gallery activity-data]
        [:div.hidden-sm-down
         [activity-challenge activity-data]]]
       [:div.activity-content.col-xs-12.col-lg-4
