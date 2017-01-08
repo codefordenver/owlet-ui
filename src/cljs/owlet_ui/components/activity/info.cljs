@@ -14,14 +14,9 @@
            "dangerouslySetInnerHTML"
                   #js{:__html (js/marked (str title field))}}]))
 
-(defn activity-info [activity-data]
-  (let [showing? (reagent/atom false)
-        unplugged (get-in @activity-data [:fields :unplugged])
-        tech-requirements (get-in @activity-data [:fields :techRequirements])
-        summary (get-in @activity-data [:fields :summary])
-        why (get-in @activity-data [:fields :why])
-        pre-reqs (get-in @activity-data [:fields :preRequisites])
-        materials (get-in @activity-data [:fields :materials])]
+(defn activity-info [unplugged techRequirements summary
+                     why preRequisites materials]
+  (let [showing? (reagent/atom false)]
     [:div.activity-info-wrap.box-shadow
      (if unplugged
        [re-com/popover-anchor-wrapper
@@ -37,8 +32,8 @@
                    :close-button? false
                    :title    "What does this mean?"
                    :body     "UNPLUGGED activities do not require a computer or device"]]
-       [set-as-marked "<b>Technology</b><br>" tech-requirements])
+       [set-as-marked "<b>Technology</b><br>" techRequirements])
      [set-as-marked "<b>Summary</b><br>" summary]
      [set-as-marked "<b>Why?</b><br>" why]
-     [set-as-marked "<b>Pre-requisites</b><br>" pre-reqs]
+     [set-as-marked "<b>Pre-requisites</b><br>" preRequisites]
      [set-as-marked "<b>Materials</b>" materials "list-title"]]))
