@@ -5,4 +5,4 @@
   [:div.activity-inspiration-wrap.box-shadow
    [:b "Inspiration"]
    [:div {"dangerouslySetInnerHTML"
-          #js{:__html (js/marked inspiration)}}]])
+          #js{:__html (js/marked (or inspiration ""))}}]])

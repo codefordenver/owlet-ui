@@ -2,8 +2,9 @@
   (:require [cljsjs.marked]))
 
 (defn activity-challenge [challenge]
-  [:div.activity-challenge-wrap.box-shadow
-   [:div.list-title
-    [:p [:b "challenges"]]]
-   [:div {"dangerouslySetInnerHTML"
-          #js{:__html (js/marked (or challenge ""))}}]])
+  (when challenge
+    [:div.activity-challenge-wrap.box-shadow
+        [:div.list-title
+         [:p [:b "challenge"]]]
+        [:div {"dangerouslySetInnerHTML"
+               #js{:__html (js/marked challenge)}}]]))

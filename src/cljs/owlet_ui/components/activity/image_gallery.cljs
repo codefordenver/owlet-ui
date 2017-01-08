@@ -1,19 +1,27 @@
 (ns owlet-ui.components.activity.image-gallery
   (:require [cljsjs.photoswipe]
+            [cljsjs.photoswipe-ui-default]
             [reagent.core :as reagent :refer [atom]]))
 
 (defn prepare-image-items [image-urls]
-  (mapv (fn [url] {:src url :w 400 :h 400}) image-urls))
+  (mapv #(clj->js {:src % :w 400 :h 400}) image-urls))
 
 (defn activity-image-gallery [image-urls]
   (reagent/create-class
     {:component-did-mount
      (fn []
-       (let [pswp-element (js/document.querySelector ".pswp")]
-         (.init (js/PhotoSwipe. pswp-element
-                                nil
-                                (clj->js (prepare-image-items image-urls))))))
-
+       (let [pswp-element (js/document.querySelector ".pswp")
+             pswp-options (js-obj "index" 0 "history" false)
+             pswp-obj (js/PhotoSwipe.
+                        pswp-element
+                        js/PhotoSwipeUI_Default
+                        #js [(js-obj "w" 400 "h" 400 "src" (first image-urls))]
+                        pswp-options)]
+                        ;(apply array (prepare-image-items image-urls)))]
+         (try
+           (.init pswp-obj)
+           (catch :default e
+             (throw (js/Error e))))))
      :reagent-render
      (fn []
        [:div.activity-image-gallery-wrap.box-shadow
@@ -41,5 +49,3 @@
            [:button.pswp__button.pswp__button--arrow--right {:title "Next (arrow right)"}]
            [:div.pswp__caption
             [:div.pswp__caption__center]]]]]])}))
-
-
