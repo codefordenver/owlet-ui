@@ -4,27 +4,65 @@ A [re-frame](https://github.com/Day8/re-frame) application for the Owlet Project
 
 ## Development
 
-### Compile css
-
-Compile css file once.
-
-    lein less once
-
-Automatically recompile css file on change.
-
-    lein less auto
-
-### Run the application
-
 > Henceforth, for clarity and accuracy, we'll assume you're on MacOS. The use
 > of other platforms with these tools is certainly possible, and the process is
 > probably quite similar to the exposition below, but it is currently untested.
 
+### Installation
+
+- Make sure you have a recent version of the Java Development Kit. If not,
+  download the installer from [the Oracle downloads page](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html).
+  Select **Accept License Agreement** at the top of the panel for the
+  latest version, then click the filename for your platform, _e.g._,
+  _jdk-8u112-macosx-x64.dmg_. Go to your Downloads folder, open the .dmg file,
+  and follow the instructions. To verify, enter `java -version` in a terminal.
+  You should see something like the following:
+
+      java version "1.8.0_112"
+      Java(TM) SE Runtime Environment (build 1.8.0_112-b16)
+      Java HotSpot(TM) 64-Bit Server VM (build 25.112-b16, mixed mode)
+
+  Note how the version — in this case "112" — matches the file you
+  downloaded.
+
+- You'll also need the command-line utilities [`git`](https://git-scm.com),
+  [`lein`](https://leiningen.org), and [`rlwrap`](https://github.com/hanslub42/rlwrap)
+  installed on your system. On a Mac, the easiest way to get them is to first
+  [install Homebrew](http://brew.sh), then in a terminal command line,
+  execute this:
+
+      brew install git leiningen rlwrap
+
+- Now, to copy the Owlet UI code onto your machine, first `cd` to where you want
+  the Owlet UI directory to be, then [clone](https://help.github.com/articles/cloning-a-repository/)
+  this repository:
+
+      git clone https://github.com/codefordenver/owlet-ui.git
+
+- Now if you do `ls`, you should see a new directory, `owlet-ui`. Go there:
+
+      cd owlet-ui
+
+### Compile Less to CSS
+
+Compile all the app's [Less](http://lesscss.org) files into CSS.
+
+    lein less once
+
+Alternatively, you can have Leiningen automatically recompile any Less file
+whenever it changes.
+
+    lein less auto
+
+This process will continue to watch for modified files until you stop it with
+Control-c.
+
+### Running the application
+
 To run Owlet UI as a developer, you must start it from the command line in a
 terminal. In what follows, we'll assume the current directory is the Owlet UI
-project directory (the one containing this README.md file), so `cd` there and
-run the following command: (This assumes you have `lein` and `rlwrap`
-installed on your system.)
+project directory (`owlet-ui`, the directory containing this README.md file),
+so `cd` there, if necessary, and run the following command:
 
     script/figwheel-repl.sh
 
@@ -52,14 +90,32 @@ That's it! You're ready to write code in the editor of your choice, save it,
 and see how it changes the app. Enjoy [REPL-Driven Development](http://blog.jayfields.com/2014/01/repl-driven-development.html)
 as you experiment extensively and learn at the REPL.
 
-> The rest of this "Run the application" section expands upon the above to
-> show how you can employ even more powerful development tools.
+> The rest of this "Run the application" section extends the above to show how
+> you can employ even more powerful development tools.
 
 #### Figwheel ClojureScript REPL in Cursive/IntelliJ IDEA
 
-Create a _clojure.main_ Cursive REPL Configuration:
+To work on this project, all you really need is a terminal, a browser, and any
+text editor. However, there is much to be said for using the Cursive plugin in
+[JetBrain's IntelliJ IDEA](https://www.jetbrains.com/idea/).  Since it
+understands how the different parts of your code and its dependencies connect
+together, you can do code refactoring, smart code completion, one-click
+navigation to a variable definition, instantly view docstrings, and catch arity
+and spelling errors. Best of all, out of the box you can run a
+**R**ead-**E**val-**P**rint-**L**oop (REPL) that knows about your code.
+Quickly experiment with your live, running code in the REPL's command line,
+load a small change into the REPL, switch namespaces, or run unit tests — all
+with just a couple keystrokes.
 
-- Click **Run -> Edit** configurations.
+To get started with IntelliJ IDEA and Cursive, follow the
+[Cursive installation instructions](https://cursive-ide.com/userguide/).
+Then [Import an existing Leiningen project](https://cursive-ide.com/userguide/leiningen.html),
+namely owlet-ui.
+
+To configure the Cursive REPL connected to our running app, we need to create a
+[Run/Debug Configuration](https://www.jetbrains.com/help/idea/2016.1/run-debug-configuration.html).
+
+- Open IntelliJ and select menu item **Run -> Edit Configurations...**
 
 - Click the **+** button at the top left and choose **Clojure REPL**.
 
@@ -73,13 +129,13 @@ Create a _clojure.main_ Cursive REPL Configuration:
 
 - Click the **OK** button to save your REPL config.
 
-Now, once you have a Clojure nREPL started in the terminal
+Now, assuming you have a Clojure nREPL started in the terminal
 (see [Run the application](#run-the-application), above),
-you can connect to it in Cursive at any time:
+you can hook in to it from Cursive at any time:
 
 - Go to **Run -> Run...**, then select your REPL config
-  (called "Owlet nRepl" above). The Cursive REPL tool window will appear.
-  You should immediately see just this in the window:
+  (called "Owlet nRepl" above). A new Cursive REPL tool window will appear.
+  You should immediately see just this in the REPL window:
 
       Connecting to remote nREPL server...
       Clojure 1.8.0
@@ -287,9 +343,10 @@ command for you.
 #### More Dirac ClojureScript REPLs
 
 You can connect with the Dirac REPL, just like we did with the Figwheel REPL,
-with just a small difference. Just follow [the directions above](#more-clojurescript-repls),
-until the last step, ensuring that the process you started with `script/figwheel-repl.sh dirac` is
-still running. Instead of the last step, do this one:
+with only a small difference. Of course, first ensure the process you started
+with `script/figwheel-repl.sh dirac` is still running, then just follow [the
+directions above](#more-clojurescript-repls), until the last step. Instead, do
+this one:
 
 - As with Cursive,
   enter the following Clojure code at the prompt:
@@ -306,14 +363,14 @@ still running. Instead of the last step, do this one:
 #### Dirac REPL Caveat
 
 When you evaluate an expression in the Dirac ClojureScript REPL, the result
-will be shown after the `=>` in the terminal or Cursive REPL window as
-expected. However, side effects like printed output or exception stack traces
-will be shown _only in the Dirac DevTools console_.  This can be confusing,
-especially if you've inserted a print statement and you see nothing, or you
-don't realize something broke, since you don't see an exception! You need to
-look in the Dirac DevTools console.  The console will mirror the expression you
-entered, its result, _and_ any printed side effects.  So just keep Chrome
-Canary nearby and the Dirac DevTools window handy.
+will be shown after `=>` in the terminal or Cursive REPL window, as expected.
+However, side effects like printed output or exception stack traces will be
+shown _only in the Dirac DevTools console_.  This can be confusing, especially
+if you've inserted a print statement and you see nothing, or you don't realize
+something broke because you don't see an exception! You need to look in the
+Dirac DevTools console. The console will mirror the expression you entered,
+its result, _and_ any printed side effects.  So just keep Chrome Canary nearby
+and the Dirac DevTools window handy.
 
 ## Run tests
 
