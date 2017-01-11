@@ -28,7 +28,7 @@ A [re-frame](https://github.com/Day8/re-frame) application for the Owlet Project
 - You'll also need the command-line utilities [`git`](https://git-scm.com),
   [`lein`](https://leiningen.org), and [`rlwrap`](https://github.com/hanslub42/rlwrap)
   installed on your system. On a Mac, the easiest way to get them is to first
-  [install Homebrew](http://brew.sh), then in a terminal command line,
+  install [Homebrew](http://brew.sh), then in a terminal command line,
   execute this:
 
       brew install git leiningen rlwrap
@@ -90,7 +90,7 @@ That's it! You're ready to write code in the editor of your choice, save it,
 and see how it changes the app. Enjoy [REPL-Driven Development](http://blog.jayfields.com/2014/01/repl-driven-development.html)
 as you experiment extensively and learn at the REPL.
 
-> The rest of this "Run the application" section extends the above to show how
+> The rest of this "Running the application" section extends the above to show how
 > you can employ even more powerful development tools.
 
 #### Figwheel ClojureScript REPL in Cursive/IntelliJ IDEA
@@ -130,7 +130,7 @@ To configure the Cursive REPL connected to our running app, we need to create a
 - Click the **OK** button to save your REPL config.
 
 Now, assuming you have a Clojure nREPL started in the terminal
-(see [Run the application](#run-the-application), above),
+(see [Running the application](#running-the-application), above),
 you can hook in to it from Cursive at any time:
 
 - Go to **Run -> Run...**, then select your REPL config
@@ -185,7 +185,7 @@ Once you've run `script/figwheel-repl.sh`, a Clojure nREPL is running, and you
 can "jack in" to get another Clojure REPL, then another ClojureScript REPL,
 similar to [how we did it in Cursive](#figwheel-clojurescript-repl-in-cursiveintellij-idea):
 
-- Confirm that your [nREPL started by `script/figwheel-repl.sh`](#run-the-application)
+- Confirm that your [nREPL started by `script/figwheel-repl.sh`](#running-the-application)
   is still running.
 
 - From a terminal, run the following command:
