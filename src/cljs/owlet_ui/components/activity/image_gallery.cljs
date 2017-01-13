@@ -50,8 +50,8 @@
      :reagent-render
      (fn []
        (let [images (prepare-image-items image-urls)]
-         [:div
-           [:h4 [:mark "See what other students made..."]]
+         [:div.activity-gallery-wrap
+           [:h4 [:mark "See what other people made..."]]
            [:div {:class "img-gallery"
                   :item-scope "true"
                   :item-type "http://schema.org/ImageGallery"}

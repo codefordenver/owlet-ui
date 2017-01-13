@@ -10,7 +10,7 @@
     [:div.activity-embed-wrap.box-shadow
      (if (nil? embed)
        [:div.activity-preview
-        [:img {:src preview :width "100%"}]]
+        [:img {:src preview-url :width "100%"}]]
        [:div.embed-container
         {"dangerouslySetInnerHTML"
          #js{:__html (generic-responsive-iframe embed)}}])
