@@ -22,6 +22,7 @@
          [:div.activity-thumbnail {:style {:background-image (str "url('" image "')")
                                            :background-size  "cover"}}
           [:mark.title title]]]
-        [:div.technology.btn
-          [set-as-marked techRequirements]]
+        (when techRequirements
+          [:div.technology.btn
+           [set-as-marked techRequirements]])
         [:div.summary summary]]])))
