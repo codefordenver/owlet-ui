@@ -7,7 +7,7 @@
 
 (defn activity-embed [embed skills preview]
   (let [preview-url (-> preview :sys :url)]
-    [:div.activity-embed-wrap
+    [:div.activity-embed-wrap.box-shadow
      (if (nil? embed)
        [:div.activity-preview
         [:img {:src preview :width "100%"}]]
