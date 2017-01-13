@@ -2,7 +2,7 @@
   (:require [re-frame.core :as re]
             [owlet-ui.components.branch :refer [branch]]))
 
-(defn pair-color [activity-branches]
+(defn- pair-color [activity-branches]
   (let [colors ["#FF563E" "#00cbb2" "#3d8142" "#41bba2" "#e1bb00" "#254e68" "#dd0067" "#d37fe6" "#e00000"]]
     (map vector colors activity-branches)))
 

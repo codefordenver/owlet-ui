@@ -12,7 +12,7 @@
 
 (defn dev-setup []
   (when config/debug?
-    (println "dev mode")
+    (enable-console-print!)
     (devtools/install!)
     (enable-re-frisk!)
     (dirac/install!)))

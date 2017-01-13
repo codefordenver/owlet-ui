@@ -6,13 +6,12 @@
             [cljsjs.jquery]
             [reagent.core :as reagent]))
 
-(defn set-as-marked
+(defn- set-as-marked
   "returns component as markdown"
   [title field & [class]]
-  (when field
-    [:div {:class class
-           "dangerouslySetInnerHTML"
-                  #js{:__html (js/marked (str title field))}}]))
+  [:div {:class class
+         "dangerouslySetInnerHTML"
+                #js{:__html (js/marked (str title field))}}])
 
 (defn activity-info [unplugged techRequirements summary
                      why preRequisites materials]
@@ -22,16 +21,16 @@
        [re-com/popover-anchor-wrapper
         :showing? showing?
         :position :right-below
-        :anchor   [:button
-                   {:class "btn btn-warning"
-                    :style {:margin-bottom "10px"}
-                    :on-mouse-over (handler-fn (reset! showing? true))
-                    :on-mouse-out  (handler-fn (reset! showing? false))}
-                   "UNPLUGGED"]
-        :popover  [re-com/popover-content-wrapper
-                   :close-button? false
-                   :title    "What does this mean?"
-                   :body     "UNPLUGGED activities do not require a computer or device"]]
+        :anchor [:button
+                 {:class         "btn btn-warning"
+                  :style         {:margin-bottom "10px"}
+                  :on-mouse-over (handler-fn (reset! showing? true))
+                  :on-mouse-out  (handler-fn (reset! showing? false))}
+                 "UNPLUGGED"]
+        :popover [re-com/popover-content-wrapper
+                  :close-button? false
+                  :title "What does this mean?"
+                  :body "UNPLUGGED activities do not require a computer or device"]]
        [set-as-marked "<b>Technology</b><br>" techRequirements])
      [set-as-marked "<b>Summary</b><br>" summary]
      [set-as-marked "<b>Why?</b><br>" why]

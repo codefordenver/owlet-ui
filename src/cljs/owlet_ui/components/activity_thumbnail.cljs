@@ -1,7 +1,7 @@
 (ns owlet-ui.components.activity-thumbnail
   (:require [re-frame.core :as rf]))
 
-(defn set-as-marked
+(defn- set-as-marked
   "returns component as markdown"
   [field & [class]]
   (when field
@@ -12,12 +12,11 @@
 (defn activity-thumbnail [fields entry-id]
   (let [preview-image-url (get-in fields [:preview :sys :url])
         image (or preview-image-url "img/default-thumbnail.png")
-        {:keys [title summary unplugged techRequirements]} fields]
-
+        {:keys [title summary techRequirements]} fields]
     (fn []
       [:div.col-xs-12.col-md-6.col-lg-4
        [:div.activity-thumbnail-wrap.box-shadow
-        [:a {:href (str "#/activity/" entry-id)
+        [:a {:href     (str "#/activity/" entry-id)
              :on-click #(rf/dispatch [:set-activity-in-view entry-id])}
          [:div.activity-thumbnail {:style {:background-image (str "url('" image "')")
                                            :background-size  "cover"}}
