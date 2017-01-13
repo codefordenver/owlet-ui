@@ -12,7 +12,7 @@
 (defn activity-thumbnail [fields entry-id]
   (let [preview-image-url (get-in fields [:preview :sys :url])
         image (or preview-image-url "img/default-thumbnail.png")
-        {:keys [title summary techRequirements]} fields]
+        {:keys [title summary unplugged techRequirements]} fields]
 
     (fn []
       [:div.col-xs-12.col-md-6.col-lg-4
@@ -25,4 +25,7 @@
         (when techRequirements
           [:div.technology.btn
            [set-as-marked techRequirements]])
+        (when unplugged
+          [:div.unplugged.btn.btn-warning
+           "UNPLUGGED"])
         [:div.summary summary]]])))
