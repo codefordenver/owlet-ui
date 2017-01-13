@@ -31,8 +31,11 @@
          [activity-title title author]]
         [:div.activity-content.col-xs-12.col-lg-8
          [activity-embed embed skills preview]
-         [activity-image-gallery image-gallery-urls]]
+         (when (not (empty? image-gallery-urls))
+          [activity-image-gallery image-gallery-urls])]
         [:div.activity-content.col-xs-12.col-lg-4
          [activity-info unplugged techRequirements summary why preRequisites materials]
-         [activity-challenge challenge]
-         [activity-inspiration inspiration]]]])))
+         (when challenge
+          [activity-challenge challenge])
+         (when inspiration
+          [activity-inspiration inspiration])]]])))

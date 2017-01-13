@@ -4,6 +4,7 @@
             [reagent.core :as reagent :refer [atom]]))
 
 (defn prepare-image-items [image-urls]
+  ; TODO: pass in image width and height
   (mapv #(hash-map :src % :w 400 :h 400) image-urls))
 
 (defn full-screen-gallery []
@@ -37,16 +38,8 @@
 (defn activity-image-gallery [image-urls]
   (reagent/create-class
     {:component-did-mount
-     (fn [])
-      ;  (let [pswp-element (js/document.querySelector ".pswp")
-      ;        pswp-options (js-obj "index" 0 "history" false)
-      ;        pswp-obj (js/PhotoSwipe.
-      ;                   pswp-element
-      ;                   js/PhotoSwipeUI_Default
-      ;                   #js [(js-obj "w" 400 "h" 400 "src" (first image-urls))]
-      ;                   pswp-options)]
-      ;                   ;(apply array (prepare-image-items image-urls)))]
-      ;   (.init pswp-obj)))
+     (fn []
+      (js/initPhotoSwipeFromDOM ".img-gallery"))
      :reagent-render
      (fn []
        (let [images (prepare-image-items image-urls)]
@@ -56,12 +49,16 @@
                   :item-scope "true"
                   :item-type "http://schema.org/ImageGallery"}
             (for [image images
-                  :let [src (:src image)]]
+                  :let [src (:src image)
+                        w (:w image)
+                        h (:h image)]]
               ^{:key (gensym "img-")}
               [:figure {:item-prop "associatedMedia"
                         :item-scope "true"
                         :item-type "http://schema.org/ImageObject"}
                 [:a {:href src
-                     :item-prop "contentUrl"}
+                     :item-prop "contentUrl"
+                     :data-size (str w "x" h)}
                   [:img {:src src
-                         :item-prop "thumbnail"}]]])]]))}))
+                         :item-prop "thumbnail"}]]])]
+           (full-screen-gallery)]))}))
