@@ -208,11 +208,14 @@
           _db_ (assoc db                                    ; Return new db, adding :url field to its [... :sys] map.
                  :activities
                  (into []
-                   (for [item (:items res)]
-                     (update-in item
-                                [:fields :preview :sys]
-                                (fn [{id :id :as sys}]
-                                  (assoc sys :url (url-for-id id)))))))]
+                       (for [item (:items res)
+                             :let [activity (update-in item [:fields :preview :sys]
+                                                       (fn [{id :id :as sys}]
+                                                         (assoc sys :url (url-for-id id))))
+                                   image-gallery (get-in activity [:fields :imageGallery])
+                                   image-gallery-ids (map #(-> % :sys :id) image-gallery)
+                                   image-gallery-urls (map #(url-for-id %) image-gallery-ids)]]
+                         (update-in activity [:fields] #(assoc % :image-gallery-urls image-gallery-urls)))))]
       _db_)))
 
 
@@ -262,7 +265,7 @@
                                                   branch))))
                                           branches-template)
                                     (into {}))]
-       (if route-params
+      (if route-params
         (let [{:keys [activity branch]} route-params]
           (when activity
             (re/dispatch [:set-activity-in-view activity all-activities]))

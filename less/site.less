@@ -17,6 +17,10 @@ h1 {
   line-height: 1.55em;
 }
 
+h4 {
+  font-weight: lighter;
+}
+
 a:hover {
   text-decoration: none;
 }
@@ -428,8 +432,9 @@ mark.white {
 }
 
 .activity-thumbnail-wrap {
+  font-size: 0.9em;
   @media (max-width: 1187px) {
-    font-size: 0.9em;
+    font-size: 0.8em;
   }
   background-color: white;
   padding: 10px;
@@ -450,23 +455,22 @@ mark.white {
       bottom: 0;
       left: 0;
       text-transform: uppercase;
-      font-size: 1.3em;
+      font-size: 1.1em;
     }
   }
   .summary {
     margin-top: 10px;
     font-size: 0.9em;
   }
+  .unplugged, .technology {
+    margin-top: 10px;
+    padding: 5px 6px;
+    font-size: 0.7em;
+  }
   .technology {
     background-color: #65D2C0;
-    display: inline-block;
-    margin-top: 10px;
-    padding-bottom: none;
-    font-size: 0.9em;
     &:hover {
-      a {
-        color: black;
-      }
+      background-color: #00A79D;
     }
     p {
       margin: 0;
@@ -502,7 +506,7 @@ mark.white {
 
 .activity-content, .activity-header {
   word-wrap: break-word;
-  padding: 0 23px;
+  padding: 0 0 0 23px;
 }
 
 .activity-title-wrap {
@@ -520,15 +524,16 @@ mark.white {
 
 .activity-info-wrap, .activity-inspiration-wrap, .activity-challenge-wrap {
   background-color: white;
-  padding: 10px 12px;
+  padding: 10px 12px 2px 12px;
 }
 
 .activity-challenge-wrap {
-  margin-bottom: 2em;
+  margin: 2em 0;
 }
 
 .activity-inspiration-wrap {
-  border-top: 2px dashed black;
+  // border-top: 2px dashed black;
+  margin: 2em 0;
 }
 
 .activity-concept-wrap {
@@ -540,6 +545,22 @@ mark.white {
     padding: 8px;
     font-weight: normal;
   }
+}
+
+.img-gallery {
+  width: 100%;
+  float: left;
+  margin-bottom: 15px;
+}
+.img-gallery img {
+  width: 100%;
+  height: auto;
+}
+.img-gallery figure {
+  display: block;
+  float: left;
+  margin: 0.5%;
+  width: 32%;
 }
 
 .breadcrumb-wrap {
