@@ -48,7 +48,6 @@
 (re/reg-event-db
   :set-active-view
   (fn [db [_ active-view route-parameter]]
-    ;; TODO: check this return val
     (when (or (:branch route-parameter) (:activity route-parameter))
       (re/dispatch [:get-library-content route-parameter]))
     (re/dispatch [:set-sidebar-state! false])
@@ -186,10 +185,8 @@
 (re/reg-event-db
   :get-library-content
   (fn [db [_ route-params]]
-    (when (empty? (:activity-branches db))
-      (do
-        (re/dispatch [:get-activity-branches route-params]))
-      db)
+    (when-not (seq (:activity-branches db))
+      (re/dispatch [:get-activity-branches route-params]))
     (GET (str config/server-url "/api/content/entries?library-view=true&space-id=" config/owlet-activities-2-space-id)
          {:response-format :json
           :keywords?       true

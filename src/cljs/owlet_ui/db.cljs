@@ -1,5 +1,7 @@
 (ns owlet-ui.db
-  (:require [owlet-ui.config :as config]))
+  (:require [re-frame.core :as rf]
+            [owlet-ui.config :as config]
+            [owlet-ui.routes :refer [library-url]]))
 
 (def default-user-db
   "initial user state"

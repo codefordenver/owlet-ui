@@ -38,8 +38,7 @@
 (defn activity-image-gallery [image-urls]
   (reagent/create-class
     {:component-did-mount
-     (fn []
-      (js/initPhotoSwipeFromDOM ".img-gallery"))
+     #(js/initPhotoSwipeFromDOM ".img-gallery")
      :reagent-render
      (fn []
        (let [images (prepare-image-items image-urls)]

@@ -9,7 +9,7 @@
             [owlet-ui.config :as config]))
 
 
-(def ^:private library-url
+(def library-url
   "URL to obtain JSON containing the list of available activities.
   "
   (str config/server-url
@@ -40,8 +40,6 @@
             (re/dispatch [:set-active-view :about-view]))
 
   (defroute "/branches" []
-            ; Before dispatching to the view, ensure we have current activity library.
-            (get-then-dispatch library-url #(vector :activities-get-successful %))
             (re/dispatch [:set-active-view :branches-view]))
 
   (defroute "/settings" []

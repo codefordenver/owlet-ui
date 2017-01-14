@@ -12,8 +12,8 @@
 
 (defn dev-setup []
   (when config/debug?
-    (enable-console-print!)
     (devtools/install!)
+    (enable-console-print!)
     (enable-re-frisk!)
     (dirac/install!)))
 

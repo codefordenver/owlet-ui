@@ -4,10 +4,9 @@
 (defn- set-as-marked
   "returns component as markdown"
   [field & [class]]
-  (when field
-    [:div {:class class
-           "dangerouslySetInnerHTML"
-                  #js{:__html (js/marked (str field))}}]))
+  [:div {:class class
+         "dangerouslySetInnerHTML"
+                #js{:__html (js/marked (str field))}}])
 
 (defn activity-thumbnail [fields entry-id]
   (let [preview-image-url (get-in fields [:preview :sys :url])

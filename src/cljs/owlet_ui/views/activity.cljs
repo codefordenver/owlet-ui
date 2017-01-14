@@ -10,20 +10,20 @@
 
 (defn activity-view []
   (let [{:keys [fields]} @(re/subscribe [:activity-in-view])]
-    (let [{why                :why
-           title              :title
-           embed              :embed
-           author             :author
-           skills             :skills
-           summary            :summary
-           preview            :preview
-           challenge          :challenge
-           materials          :materials
-           unplugged          :unplugged
-           inspiration        :inspiration
-           preRequisites      :preRequisites
-           techRequirements   :techRequirements
-           image-gallery-urls :image-gallery-urls} fields]
+    (let [{:keys [why
+                  title
+                  embed
+                  author
+                  skills
+                  summary
+                  preview
+                  challenge
+                  materials
+                  unplugged
+                  inspiration
+                  preRequisites
+                  techRequirements
+                  image-gallery-urls]} fields]
       [:div.activity
        [breadcrumb]
        [:div.activity-wrap
@@ -31,7 +31,7 @@
          [activity-title title author]]
         [:div.activity-content.col-xs-12.col-lg-8
          [activity-embed embed skills preview]
-         (when (not (empty? image-gallery-urls))
+         (when (seq image-gallery-urls)
           [activity-image-gallery image-gallery-urls])]
         [:div.activity-content.col-xs-12.col-lg-4
          [activity-info unplugged techRequirements summary why preRequisites materials]
