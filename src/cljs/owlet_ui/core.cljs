@@ -3,7 +3,7 @@
               [re-frame.core :as re-frame]
               [devtools.core :as devtools]
               [dirac.runtime :as dirac]
-              [owlet-ui.handlers]
+              [owlet-ui.events]
               [owlet-ui.subs]
               [owlet-ui.routes :as routes]
               [owlet-ui.app :as app]

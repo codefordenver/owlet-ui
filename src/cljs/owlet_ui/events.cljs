@@ -1,4 +1,4 @@
-(ns owlet-ui.handlers
+(ns owlet-ui.events
   (:require [re-frame.core :as re]
             [owlet-ui.db :as db]
             [owlet-ui.config :as config]
@@ -293,7 +293,9 @@
     (assoc db :activity-in-view (some #(when (= (get-in % [:sys :id]) activity-id) %)
                                       (or (:activities db) all-activities)))))
 
+
 (re/reg-event-db
   :set-sidebar-state!
   (fn [db [_ state]]
     (assoc-in db [:app :open-sidebar] state)))
+
