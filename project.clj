@@ -21,7 +21,8 @@
                  [cljsjs/google-analytics "2015.04.13-0"]
                  [cljsjs/photoswipe "4.1.1-0"]
                  [re-com "1.0.0"]
-                 [re-frisk "0.3.2"]]
+                 [re-frisk "0.3.2"]
+                 [day8.re-frame/http-fx "0.1.3"]]
 
   :plugins [[lein-cljsbuild "1.1.3"]
             [lein-less "1.7.5"]]

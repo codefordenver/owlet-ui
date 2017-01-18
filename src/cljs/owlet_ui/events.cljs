@@ -1,10 +1,29 @@
-(ns owlet-ui.handlers
+(ns owlet-ui.events
   (:require [re-frame.core :as re]
             [owlet-ui.db :as db]
             [owlet-ui.config :as config]
             [owlet-ui.firebase :as fb]
-            [ajax.core :refer [GET POST PUT]]
+            [day8.re-frame.http-fx]
+            [ajax.core :as ajax :refer [GET POST PUT]]
             [camel-snake-kebab.core :refer [->kebab-case]]))
+
+
+(defonce library-content-url
+         (str config/server-url
+              "/api/content/entries?library-view=true&space-id="
+              config/owlet-activities-2-space-id))
+
+
+(defonce get-branches-url
+         (str config/server-url
+              "/api/content/branches/"
+              config/owlet-activities-2-space-id))
+
+
+(re/reg-cofx
+  :set-loading!
+  (fn [cofx val]
+    (assoc-in cofx [:db :app :loading?] val)))
 
 
 (defn register-setter-handler
@@ -47,9 +66,7 @@
 
 (re/reg-event-db
   :set-active-view
-  (fn [db [_ active-view route-parameter]]
-    (when (or (:branch route-parameter) (:activity route-parameter))
-      (re/dispatch [:get-library-content route-parameter]))
+  (fn [db [_ active-view]]
     (re/dispatch [:set-sidebar-state! false])
     (assoc db :active-view active-view)))
 
@@ -182,22 +199,23 @@
     db))
 
 
-(re/reg-event-db
-  :get-library-content
-  (fn [db [_ route-params]]
-    (when (empty? (:activity-branches db))
-      (re/dispatch [:get-activity-branches route-params]))
-    (GET (str config/server-url "/api/content/entries?library-view=true&space-id=" config/owlet-activities-2-space-id)
-         {:response-format :json
-          :keywords?       true
-          :handler         #(re/dispatch [:activities-get-successful %])
-          :error-handler   #(prn %)})
-    db))
+(re/reg-event-fx
+  :get-library-content-from-contentful
+  (fn [{db :db} [_ route-params]]
+    ;; short-circuit xhr request when we have activity data
+    (when-not (seq (:activities db))
+      {:db         (merge (assoc-in db [:app :loading?] true)
+                          (assoc-in db [:app :route-params] route-params))
+       :http-xhrio {:method          :get
+                    :uri             library-content-url
+                    :response-format (ajax/json-response-format {:keywords? true})
+                    :on-success      [:get-library-content-from-contentful-successful]}})))
 
 
 (re/reg-event-db
-  :activities-get-successful
+  :get-library-content-from-contentful-successful
   (fn [db [_ res]]
+    (re/dispatch [:get-activity-branches])
     ; Obtains the URL for each preview image, and adds a :url field next to
     ; its :id field in [:activities :fields :preview :sys] map.
     (let [url-for-id                                        ; Maps preview image IDs to associated URLs.
@@ -220,28 +238,19 @@
 
 
 (re/reg-event-db
-  :set-activities-by-branch-in-view
-  (fn [db [_ branch-name]]
-    (let [activities-by-branch ((keyword branch-name) (:activities-by-branch db))]
-      (assoc-in db [:activities-by-branch-in-view] activities-by-branch))))
-
-
-(re/reg-event-db
   :get-activity-branches
-  (fn [db [_ route-params]]
-    (re/dispatch [:set-loading-state! true])
-    (GET (str config/server-url "/api/content/branches/" config/owlet-activities-2-space-id)
+  (fn [db _]
+    (GET get-branches-url
          {:response-format :json
           :keywords?       true
-          :handler         #(re/dispatch [:get-activity-branches-successful % route-params])
+          :handler         #(re/dispatch [:get-activity-branches-successful %])
           :error-handler   #(prn %)})
     db))
 
-
 (re/reg-event-db
   :get-activity-branches-successful
-  (fn [db [_ res route-params]]
-    (re/dispatch [:set-loading-state! false])
+  [(re/inject-cofx :set-loading! false)]
+  (fn [db [_ res]]
     (let [branches (:branches (:branches res))
           all-activities (:activities db)
 
@@ -265,24 +274,24 @@
                                                   branch))))
                                           branches-template)
                                     (into {}))]
-      (if route-params
+      (when-let [route-params (get-in db [:app :route-params])]
         (let [{:keys [activity branch]} route-params]
           (when activity
             (re/dispatch [:set-activity-in-view activity all-activities]))
           (when branch
             (let [activities-by-branch-in-view ((keyword branch) activities-by-branch)]
-              (assoc db :activities-by-branch-in-view activities-by-branch-in-view
-                        :activity-branches (:branches res)
-                        :activities-by-branch activities-by-branch))))
-        (assoc db :activity-branches (:branches res)
-                  :activities-by-branch activities-by-branch)))))
+              (re/dispatch [:set-activities-by-branch-in-view branch activities-by-branch-in-view])
+              (assoc db :activity-branches (:branches res)
+                        :activities-by-branch activities-by-branch)))))
+      (assoc db :activity-branches (:branches res)
+                :activities-by-branch activities-by-branch))))
 
 
 (re/reg-event-db
-  :set-loading-state!
-  (re/path [:app :loading?])
-  (fn [_ [_ state]]
-    state))
+  :set-activities-by-branch-in-view
+  (fn [db [_ branch-name activities-by-branch]]
+    (let [activities-by-branch ((keyword branch-name) (or (:activities-by-branch db) activities-by-branch))]
+      (assoc db :activities-by-branch-in-view activities-by-branch))))
 
 
 (re/reg-event-db
@@ -291,7 +300,9 @@
     (assoc db :activity-in-view (some #(when (= (get-in % [:sys :id]) activity-id) %)
                                       (or (:activities db) all-activities)))))
 
+
 (re/reg-event-db
   :set-sidebar-state!
   (fn [db [_ state]]
     (assoc-in db [:app :open-sidebar] state)))
+

@@ -1,5 +1,6 @@
 (ns owlet-ui.db
-  (:require [owlet-ui.config :as config]))
+  (:require [owlet-ui.config :as config]
+            [owlet-ui.routes :refer [library-url]]))
 
 (def default-user-db
   "initial user state"
@@ -13,7 +14,8 @@
   "initial app state"
   {:user                         default-user-db
    :app                          {:loading?     nil
-                                  :open-sidebar false}
+                                  :open-sidebar false
+                                  :route-params {}}
    :activities                   []
    :activity-branches            nil
    :activities-by-branch-in-view nil
