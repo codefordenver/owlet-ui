@@ -14,14 +14,14 @@
         [:a {:href "#/branches"}
          [:p "ALL BRANCHES"]]]]
       [:div.container-fluid.branch-activities-wrap
-        (if (nil? display-name)
+       (if-not display-name
          [:h2 [:mark.white.box.box-shadow [:b "This branch does not exist"]]]
          [:h2 [:mark.white.box-shadow [:b display-name]]
           [:div.flexcontainer-wrap
-            (if (empty? activities)
-              [:p.no-activities [:mark "No activities in this branch yet. Check back soon."]]
-              (for [activity activities
-                    :let [fields (:fields activity)
-                          id (get-in fields [:preview :sys :id] (gensym "key-"))
-                          entry-id (get-in activity [:sys :id])]]
-                ^{:key id} [activity-thumbnail fields entry-id]))]])]]]))
+           (if (empty? activities)
+             [:p.no-activities [:mark "No activities in this branch yet. Check back soon."]]
+             (for [activity activities
+                   :let [fields (:fields activity)
+                         id (get-in fields [:preview :sys :id] (gensym "key-"))
+                         entry-id (get-in activity [:sys :id])]]
+               ^{:key id} [activity-thumbnail fields entry-id]))]])]]]))

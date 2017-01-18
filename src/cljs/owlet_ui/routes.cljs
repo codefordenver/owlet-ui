@@ -39,17 +39,20 @@
   (defroute "/about" []
             (re/dispatch [:set-active-view :about-view]))
 
-  (defroute "/branches" []
-            (re/dispatch [:set-active-view :branches-view]))
-
   (defroute "/settings" []
             (re/dispatch [:set-active-view :settings-view]))
 
+  (defroute "/branches" []
+            (re/dispatch [:get-library-content-from-contentful])
+            (re/dispatch [:set-active-view :branches-view]))
+
   (defroute "/:branch" {:as params}
-            (re/dispatch [:set-active-view :branch-activities-view params]))
+            (re/dispatch [:get-library-content-from-contentful params])
+            (re/dispatch [:set-active-view :branch-activities-view]))
 
   (defroute "/activity/:activity" {:as params}
-            (re/dispatch [:set-active-view :activity-view params]))
+            (re/dispatch [:get-library-content-from-contentful params])
+            (re/dispatch [:set-active-view :activity-view]))
 
   ; Ensure browser history uses Secretary to dispatch.
   (doto (History.)
