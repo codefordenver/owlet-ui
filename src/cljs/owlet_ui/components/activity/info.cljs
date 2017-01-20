@@ -31,7 +31,7 @@
                   :close-button? false
                   :title "What does this mean?"
                   :body "UNPLUGGED activities do not require a computer or device"]]
-       [set-as-marked "<b>Technology</b><br>" techRequirements])
+       [set-as-marked "<b>Platform</b><br>" techRequirements])
      [set-as-marked "<b>Summary</b><br>" summary]
      (when why
       [set-as-marked "<b>Why?</b><br>" why])
