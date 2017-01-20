@@ -5,6 +5,8 @@
 (def debug?
   ^boolean js/goog.DEBUG)
 
+(defonce auth0-local-storage-key "owlet:user-token")
+
 (defonce server-url "https://owlet-api.herokuapp.com")
 
 (defonce default-header-bg-image "img/default_background.png")
@@ -31,4 +33,4 @@
              social-id (-> _auth-res_ :idTokenPayload :sub)]
          (re-frame/dispatch [:user-has-logged-in-out! true])
          (re-frame/dispatch [:update-sid-and-get-cms-entries-for social-id])
-         (.setItem js/localStorage "owlet:user-token" token))))
+         (.setItem js/localStorage auth0-local-storage-key token))))
