@@ -1,5 +1,6 @@
 (ns owlet-ui.events
-  (:require [re-frame.core :as re]
+  (:require [clojure.string :as clj-str]
+            [re-frame.core :as re]
             [owlet-ui.db :as db]
             [owlet-ui.config :as config]
             [owlet-ui.firebase :as fb]
@@ -28,7 +29,7 @@
 
 (re/reg-event-db
   :set-active-document-title!
-  (fn [db [_ _]]
+  (fn [db [_ val]]
     (let [active-view (:active-view db)
           titles {:welcome-view           "Welcome"
                   :branches-view          "Branches"
@@ -39,11 +40,10 @@
                   :branch-activities-view (-> (:activities-by-branch-in-view db)
                                               :display-name)}
           default-title (:welcome-view titles)
-          document-title (titles active-view)
+          document-title (or (titles active-view) (clj-str/capitalize val))
           title-template (str document-title " | " config/project-name)
           title (or title-template default-title)]
-      (when document-title
-        (set! (-> js/document .-title) title))
+      (set! (-> js/document .-title) title)
       (assoc-in db [:app :title] title))))
 
 (defn register-setter-handler

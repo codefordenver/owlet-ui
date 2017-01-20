@@ -50,12 +50,11 @@
   (defroute "/:branch" {:as params}
             (re/dispatch [:get-library-content-from-contentful params])
             (re/dispatch [:set-active-view :branch-activities-view])
-            (re/dispatch [:set-active-document-title!]))
+            (re/dispatch [:set-active-document-title! (:branch params)]))
 
   (defroute "/activity/:activity" {:as params}
             (re/dispatch [:get-library-content-from-contentful params])
-            (re/dispatch [:set-active-view :activity-view])
-            (re/dispatch [:set-active-document-title!]))
+            (re/dispatch [:set-active-view :activity-view]))
 
   ; Ensure browser history uses Secretary to dispatch.
   (doto (History.)
