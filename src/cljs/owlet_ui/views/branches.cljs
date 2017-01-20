@@ -12,12 +12,11 @@
 (defn branches-view []
   (let [activity-branches (re/subscribe [:activity-branches])]
     [:div.branches
-     (if @activity-branches
-       [:section
-         [:h1#title [:mark "Get started by choosing a branch below"]]
-         [:br]
-         (let [color-pairs (pair-color (sort (:branches @activity-branches)))]
-           (for [pair color-pairs]
-             ^{:key (gensym "branch-")}
-             [branch pair]))]
-       [:h1#title [:mark "No branches available, come back soon!"]])]))
+     ; TODO: provide error message when branches can't be retrieved
+     [:section
+       [:h1#title [:mark "Get started by choosing a branch below"]]
+       [:br]
+       (let [color-pairs (pair-color (sort (:branches @activity-branches)))]
+         (for [pair color-pairs]
+           ^{:key (gensym "branch-")}
+           [branch pair]))]]))
