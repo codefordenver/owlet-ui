@@ -25,8 +25,8 @@
       (when unplugged
         [:div.unplugged.btn.btn-warning
          "UNPLUGGED"])
-      [:div.summary summary
+      [:div.summary summary]
       (when skills
         (for [c skills]
           ^{:key (gensym "skill-")}
-          [:span.tag c]))]]]))
+          [:span.tag c]))]]))
