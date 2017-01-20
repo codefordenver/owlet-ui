@@ -16,4 +16,6 @@
          (when (<= 1 (count name-line2))
            [:span
             [:br]
-            [:mark (str/join " " name-line2)]])]]]]]))
+            [:mark (str/join " " name-line2)]])]]
+       [:div.counter
+        [:p "2"]]]]]))
