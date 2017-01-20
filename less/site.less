@@ -87,7 +87,7 @@ a:hover {
   top: 0;
   bottom: 0;
   height: 100vh;
-  width: 80px;
+  overflow: hidden;
   a {
     margin-left: auto;
     margin-right: auto;
@@ -132,64 +132,15 @@ a:hover {
   right: 0;
   bottom: 0;
   left: 0;
-  z-index: 0;
-}
-
-#lpsidebar-trigger {
-  position: fixed;
-  clip: rect(0, 0, 0, 0);
-}
-
-label[for="lpsidebar-trigger"] {
-  cursor: pointer;
-  position: fixed;
-  top: 1px;
-  left: 0;
   z-index: 2;
-  width: 30px;
+}
+
+#lpsidebar-open, #lpsidebar-close {
+  border-left: 1px solid black;
+  position: fixed;
+  top: 2px;
   height: 86px;
-  border-right: 1px solid transparent;
-  border-top-right-radius: 20px;
-  border-bottom-right-radius: 20px;
-  background-image: url( "../img/owlet-tab-closed.png" );
-  background-color: transparent;
-}
-
-#lpsidebar-trigger:checked + label {
-  @media(max-width: 767px) {
-    left: 80px;
-    border-left: 1px solid #000;
-  }
-    cursor: pointer;
-    position: fixed;
-    top: 1px;
-    left: 0;
-    z-index: 2;
-    width: 30px;
-    height: 86px;
-    border-right: 1px solid transparent;
-    border-top-right-radius: 20px;
-    border-bottom-right-radius: 20px;
-    background-image: url( "../img/owlet-tab-opened.png" );
-    background-color: transparent;
-}
-
-#lpsidebar-trigger:checked ~ .content {
-  @media(max-width: 767px) {
-    left: 80px;
-  }
-}
-
-#lpsidebar-trigger:checked ~ .content .branchwrapper {
-  @media(max-width: 767px) {
-    padding-right: 80px;
-  }
-}
-
-#lpsidebar-trigger:checked ~ .content .activity-thumbnail-wrap {
-  @media(max-width: 767px) {
-    margin-right: 76px;
-  }
+  z-index: 2;
 }
 
 mark {

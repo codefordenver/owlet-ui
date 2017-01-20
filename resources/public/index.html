@@ -26,5 +26,32 @@
 <script src="js/compiled/app.js"></script>
 <script>owlet_ui.core.init();</script>
 <script src="js/vendor/initPhotoSwipeFromDOM.js"></script>
+<script>
+  function openSidebar() {
+    var content = document.getElementsByClassName("content");
+    var sidebarWrap = document.getElementById("lpsidebar-wrap");
+    var sidebar = document.getElementById("lpsidebar");
+    var open = document.getElementById("lpsidebar-open");
+    var close = document.getElementById("lpsidebar-close");
+    sidebarWrap.style.width = "80px";
+    sidebar.style.width = "80px";
+    open.style.display = "none";
+    close.style.display = "";
+    open.style.marginLeft = "80px";
+    close.style.marginLeft = "80px";
+  }
+  function closeSidebar() {
+    var sidebarWrap = document.getElementById("lpsidebar-wrap");
+    var sidebar = document.getElementById("lpsidebar");
+    var open = document.getElementById("lpsidebar-open");
+    var close = document.getElementById("lpsidebar-close");
+    sidebarWrap.style.width = "0px";
+    sidebar.style.width = "0px";
+    open.style.display = "";
+    close.style.display = "none";
+    open.style.marginLeft = "0px";
+    close.style.marginleft = "0px";
+  }
+</script>
 </body>
 </html>

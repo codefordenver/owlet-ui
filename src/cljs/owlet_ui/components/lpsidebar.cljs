@@ -18,4 +18,3 @@
     [:br]
     [:a {:href "#/settings"}
      [:img {:src "img/icon3.png"}]]]])
-

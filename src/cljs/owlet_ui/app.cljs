@@ -41,14 +41,15 @@
          (if (= @active-view :welcome-view)
            [show-view @active-view]
            [:div#main
-            [:div#lpsidebar-wrap.hidden-md-up
+            [:div#lpsidebar-wrap.hidden-md-up {:style {:width "0px"}}
              [lpsidebar-component]]
-            [:input#lpsidebar-trigger.hidden-md-up
-             {:type      "checkbox"
-              :on-change #(re/dispatch [:set-sidebar-state! (not @open-sidebar?)])
-              :checked   @(re/subscribe [:open-sidebar?])}]
-            [:label.hidden-md-up {:for      "lpsidebar-trigger"
-                                  :on-click #(re/dispatch [:set-sidebar-state! (not @open-sidebar?)])}]
+            [:img#lpsidebar-open.hidden-md-up {:src "img/owlet-tab-closed.png"
+                                               :on-click #(js/openSidebar)}]
+            [:img#lpsidebar-close.hidden-md-up {:src "img/owlet-tab-opened.png"
+                                                :on-click #(js/closeSidebar)
+                                                :style {:display "none"}}]
+
+
             [:div#sidebar-wrap.hidden-sm-down
              [sidebar-component]]
             [:div.content {:style {:width            "100%"
