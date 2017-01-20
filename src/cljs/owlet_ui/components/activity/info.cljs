@@ -22,8 +22,9 @@
         :showing? showing?
         :position :right-below
         :anchor [:button
-                 {:class         "btn btn-warning"
-                  :style         {:margin-bottom "10px"}
+                 {:class         "btn btn-warning unplugged"
+                  :style         {:margin-bottom "10px"
+                                  :padding "5px 6px"};
                   :on-mouse-over (handler-fn (reset! showing? true))
                   :on-mouse-out  (handler-fn (reset! showing? false))}
                  "UNPLUGGED"]

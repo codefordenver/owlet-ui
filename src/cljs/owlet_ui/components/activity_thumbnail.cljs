@@ -11,7 +11,7 @@
 (defn activity-thumbnail [fields entry-id]
   (let [preview-image-url (get-in fields [:preview :sys :url])
         image (or preview-image-url "img/default-thumbnail.png")
-        {:keys [title summary unplugged techRequirements]} fields]
+        {:keys [title summary unplugged techRequirements skills]} fields]
     [:div.col-xs-12.col-md-6.col-lg-4
      [:div.activity-thumbnail-wrap.box-shadow
       [:a {:href     (str "#/activity/" entry-id)
@@ -20,9 +20,13 @@
                                          :background-size  "cover"}}
         [:mark.title title]]]
       (when techRequirements
-        [:div.technology.btn
+        [:div.platform.btn
          [set-as-marked techRequirements]])
       (when unplugged
         [:div.unplugged.btn.btn-warning
          "UNPLUGGED"])
-      [:div.summary summary]]]))
+      [:div.summary summary
+      (when skills
+        (for [c skills]
+          ^{:key (gensym "skill-")}
+          [:span.tag c]))]]]))
