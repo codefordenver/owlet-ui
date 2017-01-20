@@ -257,7 +257,8 @@
           branches-template (->> (mapv (fn [branch]
                                          (hash-map (keyword (->kebab-case branch))
                                                    {:activities   []
-                                                    :display-name branch})) branches)
+                                                    :display-name branch
+                                                    :count        0})) branches)
                                  (into {}))
 
           activities-by-branch (->> (mapv (fn [branch]
@@ -270,7 +271,8 @@
                                                 (if (seq matches)
                                                   (hash-map branch-key
                                                             {:activities   matches
-                                                             :display-name display-name})
+                                                             :display-name display-name
+                                                             :count        (count matches)})
                                                   branch))))
                                           branches-template)
                                     (into {}))]
