@@ -3,7 +3,7 @@
             [clojure.string :as str]
             [camel-snake-kebab.core :refer [->kebab-case]]))
 
-(defn branch [[color branch]]
+(defn branch [[color branch] counter]
   (let [name (str/upper-case branch)
         name-line1 (first (str/split name " "))
         name-line2 (rest (str/split name " "))]
@@ -18,4 +18,4 @@
             [:br]
             [:mark (str/join " " name-line2)]])]]
        [:div.counter
-        [:p "2"]]]]]))
+        [:p counter]]]]]))
