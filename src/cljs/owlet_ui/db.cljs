@@ -12,10 +12,12 @@
 
 (def default-db
   "initial app state"
-  {:user                         default-user-db
+  {:active-view                  nil
+   :user                         default-user-db
    :app                          {:loading?     nil
                                   :open-sidebar false
-                                  :route-params {}}
+                                  :route-params {}
+                                  :title        (str config/project-name " " "^OvO^")}
    :activities                   []
    :activity-branches            nil
    :activities-by-branch-in-view nil

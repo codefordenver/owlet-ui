@@ -19,8 +19,7 @@
 (defmethod views :settings-view [] [settings-view])
 (defmethod views :default [] [:div])
 
-(defn show-view
-  [view-name]
+(defn show-view [view-name]
   [views view-name])
 
 (def show? (reagent/atom false))

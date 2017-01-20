@@ -5,6 +5,8 @@
 (def debug?
   ^boolean js/goog.DEBUG)
 
+(defonce project-name "OWLET")
+
 (defonce auth0-local-storage-key "owlet:user-token")
 
 (defonce server-url "https://owlet-api.herokuapp.com")

@@ -24,6 +24,7 @@
                   preRequisites
                   techRequirements
                   image-gallery-urls]} fields]
+      (re/dispatch [:set-active-document-title! title])
       [:div.activity
        [breadcrumb]
        [:div.activity-wrap
