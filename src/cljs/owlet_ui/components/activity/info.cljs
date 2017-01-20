@@ -33,6 +33,9 @@
                   :body "UNPLUGGED activities do not require a computer or device"]]
        [set-as-marked "<b>Technology</b><br>" techRequirements])
      [set-as-marked "<b>Summary</b><br>" summary]
-     [set-as-marked "<b>Why?</b><br>" why]
-     [set-as-marked "<b>Pre-requisites</b><br>" preRequisites]
-     [set-as-marked "<b>Materials</b>" materials "list-title"]]))
+     (when why
+      [set-as-marked "<b>Why?</b><br>" why])
+     (when preRequisites
+      [set-as-marked "<b>Pre-requisites</b><br>" preRequisites])
+     (when materials
+      [set-as-marked "<b>Materials</b>" materials "list-title"])]))

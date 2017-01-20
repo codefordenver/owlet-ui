@@ -419,8 +419,10 @@ mark.white {
   -webkit-align-items: flex-start;
   align-items: flex-start;
   div.col-xs-12.col-md-6.col-lg-4 {
-    padding-left: 0;
-    padding-right: 30px;
+    padding: 0;
+    @media screen and (min-width: 48em) {
+      padding-right: 30px;
+    }
   }
 }
 
