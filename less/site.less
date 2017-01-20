@@ -347,8 +347,6 @@ mark.white {
   bottom: 100%;
   left: 0;
   z-index: 1;
-  padding-left: 10px;
-  padding-right: 10px;
 }
 
 .outer-height-wrap {
@@ -450,13 +448,25 @@ mark.white {
   }
 }
 
+.tag {
+  border-radius: 25px;
+  margin: 5px;
+  padding: 7px;
+  font-weight: normal;
+  font-size: 11px;
+  background-color: #564B82;
+  &:hover {
+    background-color: #483C6C;
+  }
+}
+
 .activity-thumbnail-wrap {
   font-size: 0.9em;
   @media (max-width: 1187px) {
     font-size: 0.8em;
   }
   background-color: white;
-  padding: 10px;
+  padding: 10px 10px 9px 10px;
   margin: 22px 12px 22px 0;
   overflow-y: auto;
   .activity-thumbnail {
@@ -481,12 +491,12 @@ mark.white {
     margin-top: 10px;
     font-size: 0.9em;
   }
-  .unplugged, .technology {
+  .unplugged, .platform {
     margin-top: 10px;
-    padding: 5px 6px;
-    font-size: 0.7em;
+    padding: 5px 6px 4px 6px;
+    font-size: 0.65em;
   }
-  .technology {
+  .platform {
     background-color: #65D2C0;
     &:hover {
       background-color: #00A79D;
@@ -498,6 +508,10 @@ mark.white {
       text-decoration: none;
       color: white;
     }
+  }
+  .tag {
+    margin: 10px 10px 0px 0px;
+    font-size: 0.55em;
   }
 }
 
@@ -551,18 +565,27 @@ mark.white {
 }
 
 .activity-inspiration-wrap {
-  // border-top: 2px dashed black;
   margin: 2em 0;
 }
 
-.activity-concept-wrap {
-  margin: 0 0 30px 0;
-  background-color: white;
-  .tag {
-    border-radius: 25px;
-    margin: 5px;
-    padding: 8px;
-    font-weight: normal;
+.activity-embed-wrap {
+  margin-bottom: 30px;
+}
+
+.activity-skills-wrap {
+  padding: 5px 0;
+  background-color: black;
+  color: white;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-flex-flow: row nowrap;
+  flex-flow: row nowrap;
+  .skills {
+    padding: 2px 5px 0 12px;
+    letter-spacing: 2px;
+    font-weight: 400;
   }
 }
 

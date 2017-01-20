@@ -14,7 +14,10 @@
        [:div.embed-container
         {"dangerouslySetInnerHTML"
          #js{:__html (generic-responsive-iframe embed)}}])
-     [:div.activity-concept-wrap
-      (for [c skills]
-        ^{:key (gensym "concept-")}
-        [:span.tag.tag-default c])]]))
+     (when skills
+       [:div.activity-skills-wrap
+        [:div.skills
+          "SKILLS: "]
+        (for [c skills]
+          ^{:key (gensym "skill-")}
+          [:span.tag c])])]))
