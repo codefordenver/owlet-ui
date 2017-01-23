@@ -1,6 +1,5 @@
 (ns owlet-ui.subs
-  (:require [re-frame.core :as re])
-  (:require-macros [reagent.ratom :refer [reaction]]))
+  (:require [re-frame.core :as re]))
 
 
 (defn register-getter-sub
@@ -31,19 +30,18 @@
    (register-getter-sub query-key db-path identity))
 
   ([query-key db-path f]
-   (re/register-sub
+   (re/reg-sub
      query-key
      (fn [db _ & args]
-       (-> @db
+       (-> db
            (get-in db-path)
-           (#(apply f % args))
-           reaction)))))
+           (#(apply f % args)))))))
 
 
-(re/register-sub
- :active-view
- (fn [db _]
-   (reaction (:active-view @db))))
+(re/reg-sub
+  :active-view
+  (fn [db _]
+    (:active-view db)))
 
 
 (register-getter-sub :my-user-id [:my-user-id])
@@ -51,45 +49,47 @@
 
 (register-getter-sub :change-fb-users [:users] prn)
 
+(re/reg-sub
+  :social-id-subscription
+  (fn [db]
+    (get-in db [:user :social-id])))
 
-(re/register-sub
- :social-id-subscription
- (fn [db]
-   (reaction (get-in @db [:user :social-id]))))
+(re/reg-sub
+  :user-has-background-image?
+  (fn [db]
+    (get-in db [:user :background-image])))
 
-
-(re/register-sub
- :user-has-background-image?
- (fn [db]
-     (reaction (get-in @db [:user :background-image]))))
-
-
-(re/register-sub
+(re/reg-sub
   :library-activities
   (fn [db]
-    (reaction (get-in @db [:activities]))))
+    (get-in db [:activities])))
 
-(re/register-sub
-  :library-activity-models
+(re/reg-sub
+  :activity-branches
   (fn [db]
-    (reaction (get-in @db [:activity-models]))))
+    (get-in db [:activity-branches])))
 
-(re/register-sub
-  :activities-by-track
+(re/reg-sub
+  :activities-by-branch
   (fn [db]
-    (reaction (get-in @db [:activities-by-track]))))
+    (get-in db [:activities-by-branch])))
 
-(re/register-sub
-  :activities-by-track-in-view
+(re/reg-sub
+  :activities-by-branch-in-view
   (fn [db]
-    (reaction (get-in @db [:activities-by-track-in-view]))))
+    (get-in db [:activities-by-branch-in-view])))
 
-(re/register-sub
+(re/reg-sub
   :activity-in-view
   (fn [db]
-    (reaction (get-in @db [:activity-in-view]))))
+    (get-in db [:activity-in-view])))
 
-(re/register-sub
+(re/reg-sub
   :set-loading-state?
   (fn [db]
-    (reaction (get-in @db [:app :loading?]))))
+    (get-in db [:app :loading?])))
+
+(re/reg-sub
+  :open-sidebar?
+  (fn [db]
+    (get-in db [:app :open-sidebar])))

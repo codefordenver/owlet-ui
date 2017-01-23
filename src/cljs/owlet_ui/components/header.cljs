@@ -1,10 +1,9 @@
 (ns owlet-ui.components.header
-  (:require
-    [reagent.core :as reagent]
-    [owlet-ui.components.upload-image-modal :refer [upload-image-component]]
-    [re-frame.core :as re-frame]))
+  (:require [reagent.core :as reagent]
+            [owlet-ui.components.upload-image-modal :refer [upload-image-component]]
+            [re-frame.core :as re-frame]))
 
-(def show? (reagent/atom false))
+(defonce show? (reagent/atom false))
 
 (defn header-component []
   (let [src (re-frame/subscribe [:user-has-background-image?])

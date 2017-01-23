@@ -9,12 +9,12 @@
             [owlet-ui.config :as config]))
 
 
-(def ^:private library-url
+(def library-url
   "URL to obtain JSON containing the list of available activities.
   "
   (str config/server-url
        "/api/content/entries?library-view=true&space-id="
-       config/library-space-id))
+       config/owlet-activities-2-space-id))
 
 
 (defn get-then-dispatch
@@ -39,19 +39,22 @@
   (defroute "/about" []
             (re/dispatch [:set-active-view :about-view]))
 
-  (defroute "/tracks" []
-            ; Before dispatching to the view, ensure we have current activity library.
-            (get-then-dispatch library-url #(vector :activities-get-successful %))
-            (re/dispatch [:set-active-view :tracks-view]))
-
   (defroute "/settings" []
             (re/dispatch [:set-active-view :settings-view]))
 
-  (defroute "/tracks/:track" {:as params}
-            (re/dispatch [:set-active-view :track-activities-view params]))
+  (defroute "/branches" []
+            (re/dispatch [:get-library-content-from-contentful])
+            (re/dispatch [:set-active-view :branches-view])
+            (re/dispatch [:set-active-document-title!]))
 
-  (defroute "/tracks/:track/:activity" {:as params}
-            (re/dispatch [:set-active-view :activity-view params]))
+  (defroute "/:branch" {:as params}
+            (re/dispatch [:get-library-content-from-contentful params])
+            (re/dispatch [:set-active-view :branch-activities-view])
+            (re/dispatch [:set-active-document-title! (:branch params)]))
+
+  (defroute "/activity/:activity" {:as params}
+            (re/dispatch [:get-library-content-from-contentful params])
+            (re/dispatch [:set-active-view :activity-view]))
 
   ; Ensure browser history uses Secretary to dispatch.
   (doto (History.)

@@ -1,8 +1,8 @@
 (ns owlet-ui.components.loading)
 
-(defn loading-component
-  "Author: https://codepen.io/jonmilner/pen/hDHuo"
-  []
+;; Author: https://codepen.io/jonmilner/pen/hDHuo"
+
+(defn loading-component []
   [:div.loading.container
    [:div.loading__ring
     [:svg {:version "1.1", :x "0px", :y "0px", :viewBox "0 0 100 100", :style {:enable-background "new 0 0 100 100"}}, :xmlSpace "preserve"

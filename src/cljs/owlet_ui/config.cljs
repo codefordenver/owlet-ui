@@ -16,6 +16,11 @@
   "https://owlet-api.herokuapp.com")
 
 
+(defonce project-name "OWLET")
+
+
+(defonce auth0-local-storage-key "owlet:user-token")
+
 (def auth0-init
   "Credentials for instantiating Auth0 and Auth0Lock objects.
   "
@@ -41,10 +46,10 @@
 
 
 (def library-space-id "c7i369745nqp")
+(def owlet-activities-2-space-id "ir2v150dybog")
 
 
-(def default-header-bg-image
-  "http://apod.nasa.gov/apod/image/1607/OrionNebula_ESO_4000.jpg")
+(def default-header-bg-image "mg/default_background.png")
 
 
 (def default-user-db
@@ -52,18 +57,21 @@
   {:logged-in?                false
    :social-id                 nil
    :content-entries           []
-   :background-image          default-header-bg-image
+   :background-image          config/default-header-bg-image
    :background-image-entry-id nil})
-
-
 (def default-db
   "initial app state"
-  {:user                        default-user-db
-   :app                         {:loading? nil}
-   :activities                  []
-   :activity-models             nil
-   :activities-by-track-in-view {:track-id nil :display-name nil}
-   :activities-by-track         {}
-   :activities-in-view          nil
-   :activity-in-view            nil})
+  {:active-view                  nil
+   :user                         default-user-db
+   :app                          {:loading?     nil
+                                  :open-sidebar false
+                                  :route-params {}
+                                  :title        (str config/project-name " " "^OvO^")}
+   :activities                   []
+   :activity-branches            nil
+   :activities-by-branch-in-view nil
+   :activities-by-branch         {}
+   :active-branch-activities     nil
+   :id                           nil
+   :activity-in-view             nil})
 

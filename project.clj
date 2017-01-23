@@ -2,8 +2,9 @@
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.clojure/clojurescript "1.8.51"]
                  [reagent "0.6.0"]
-                 [binaryage/devtools "0.6.1"]
-                 [re-frame "0.7.0"]
+                 [binaryage/devtools "RELEASE"]
+                 [binaryage/dirac "RELEASE"]
+                 [re-frame "0.9.1"]
                  [secretary "1.2.3"]
                  [compojure "1.5.0"]
                  [yogthos/config "0.8"]
@@ -13,13 +14,16 @@
                  [cljsjs/auth0 "7.0.4-0"]
                  [cljsjs/auth0-lock "10.4.0-0"]
                  [reagent-utils "0.1.7"]
-                 [figwheel-sidecar "0.5.4-7"]
                  [cljsjs/bootstrap "3.3.6-1"]
                  [cljsjs/firebase "3.2.1-0"]
                  [cljsjs/marked "0.3.5-0"]
                  [org.clojure/core.async "0.2.385"]
                  [camel-snake-kebab "0.4.0"]
-                 [re-com "1.0.0"]]
+                 [cljsjs/google-analytics "2015.04.13-0"]
+                 [cljsjs/photoswipe "4.1.1-0"]
+                 [re-com "1.0.0"]
+                 [re-frisk "0.3.2"]
+                 [day8.re-frame/http-fx "0.1.3"]]
 
   :plugins [[lein-cljsbuild "1.1.3"]
             [lein-less "1.7.5"]]
@@ -40,10 +44,53 @@
 
   :profiles
   {:dev
-   {:dependencies []
+   {:dependencies [[figwheel-sidecar "0.5.8"]]
+    :source-paths ["src/cljs" "test/cljs"]  ; Needed to run Figwheel from nrepl.
+    :plugins      [[lein-doo "0.1.6"]]}
 
-    :plugins      [[lein-doo "0.1.6"]]}}
+   :repl
+   {:repl-options {:port 8230}}
 
+   :figwheel    ; Abitrary key, used in `lein with-profile +figwheel repl`.
+   {:dependencies [[com.cemerick/piggieback "0.2.1"]]  ; Needed by cljs-repl
+    :repl-options {:nrepl-middleware
+                   [cemerick.piggieback/wrap-cljs-repl]
+
+                   :timeout
+                   180000
+
+                   :init
+                   (do (require 'figwheel-sidecar.repl-api)
+                       (figwheel-sidecar.repl-api/start-figwheel!))
+
+                   :welcome
+                   (do (println "\n\n                --- Using the Figwheel REPL --\n")
+                       (println "This is a ClojureScript REPL, not Clojure. For a Clojure REPL, enter :cljs/quit")
+                       (println "\n                ---          Enjoy!         --\n\n")
+                       (figwheel-sidecar.repl-api/cljs-repl))}}
+
+   :dirac       ; Abitrary key, used in `lein with-profile +dirac repl`.
+   {:repl-options {:nrepl-middleware
+                   [dirac.nrepl/middleware]
+
+                   :timeout
+                   180000
+
+                   :init
+                   (do (require 'figwheel-sidecar.repl-api)
+                       (figwheel-sidecar.repl-api/start-figwheel!)
+                       (require 'dirac.agent)
+                       (dirac.agent/boot!))
+
+                   :welcome
+                   (do (println "\n\n                --- Using the Dirac DevTools REPL --\n")
+                       (println "This is a Clojure REPL, not ClojureScript. For a ClojureScript REPL, open")
+                       (println "http://localhost:4000/ in Chrome Canary with extension Dirac DevTools installed.")
+                       (println "Now click the Dirac DevTools icon to the right of the address bar.")
+                       (println "Do NOT use the regular Chrome DevTools (\"Developer Tools\", Cmd-Opt-I).")
+                       (println "You can then also join that browser REPL session here at this command line")
+                       (println "by evaluating (dirac! :join) at the prompt below.")
+                       (println "\n                ---             Enjoy!            --\n\n"))}}}
 
   :cljsbuild
   {:builds

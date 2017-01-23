@@ -1,8 +1,8 @@
-(ns owlet-ui.components.sidebar
+(ns owlet-ui.components.lpsidebar
   (:require [owlet-ui.components.login :refer [login-component]]))
 
-(defn sidebar-component []
-  [:div#sidebar
+(defn lpsidebar-component []
+  [:div#lpsidebar
    [:div#owlet-wrap
     [:a {:href "#"}
      [:img#owlet-image {:src "img/owlet-logo.png"}]
