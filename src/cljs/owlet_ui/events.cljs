@@ -43,7 +43,6 @@
           document-title (or (titles active-view) (clj-str/capitalize val))
           title-template (str document-title " | " config/project-name)
           title (or title-template default-title)]
-      (set! (-> js/document .-title) title)
       (assoc-in db [:app :title] title))))
 
 (defn register-setter-handler

@@ -37,6 +37,7 @@
        #(re/dispatch [:get-auth0-profile])
        :reagent-render
        (fn []
+         (set! (-> js/document .-title) @(re/subscribe [:app-title]))
          (if (= @active-view :welcome-view)
            [show-view @active-view]
            [:div#main
