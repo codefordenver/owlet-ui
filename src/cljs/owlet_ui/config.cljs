@@ -8,6 +8,9 @@
   (enable-console-print!))
 
 
+(def project-name "OWLET")
+
+
 ;; TODO:
 ;; Use a lein env var like the one above
 ;; to toggle this during development
@@ -16,10 +19,8 @@
   "https://owlet-api.herokuapp.com")
 
 
-(defonce project-name "OWLET")
-
-
 (defonce auth0-local-storage-key "owlet:user-token")
+
 
 (def auth0-init
   "Credentials for instantiating Auth0 and Auth0Lock objects.
@@ -57,7 +58,7 @@
   {:logged-in?                false
    :social-id                 nil
    :content-entries           []
-   :background-image          config/default-header-bg-image
+   :background-image          default-header-bg-image
    :background-image-entry-id nil})
 (def default-db
   "initial app state"
@@ -66,7 +67,7 @@
    :app                          {:loading?     nil
                                   :open-sidebar false
                                   :route-params {}
-                                  :title        (str config/project-name " " "^OvO^")}
+                                  :title        (str project-name " ^OvO^")}
    :activities                   []
    :activity-branches            nil
    :activities-by-branch-in-view nil

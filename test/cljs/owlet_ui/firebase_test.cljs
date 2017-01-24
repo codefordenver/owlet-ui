@@ -69,8 +69,8 @@
      (print "Done with repeatedly-running."))})
 
 
-(subs/register-getter-sub :status-sub [:tests :status])
-(events/register-setter-handler :change-status [:tests :status])
+(subs/reg-getter :status-sub [:tests :status])
+(events/reg-setter :change-status [:tests :status])
 
 
 (deftest status-test
@@ -97,8 +97,8 @@
     (is (= "tests" (-> @test-ref .-parent .-key)))))
 
 
-(subs/register-getter-sub :notification-sub [:tests :notification])
-(events/register-setter-handler
+(subs/reg-getter :notification-sub [:tests :notification])
+(events/reg-setter
   :test-notify
   [:tests :notification]
   (fn [new-data ch]
@@ -152,7 +152,7 @@
         (done)))))
 
 
-(subs/register-getter-sub :upload-sub [:tests :upload])
+(subs/reg-getter :upload-sub [:tests :upload])
 
 
 (deftest change-on-test

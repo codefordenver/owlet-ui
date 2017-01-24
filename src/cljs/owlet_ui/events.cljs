@@ -1,12 +1,12 @@
 (ns owlet-ui.events
   (:require [clojure.string :as clj-str]
-            [re-frame.core :as re]
-            [owlet-ui.db :as db]
-            [owlet-ui.config :as config]
-            [owlet-ui.firebase :as fb]
+            [re-frame.core :as rf]
             [day8.re-frame.http-fx]
             [ajax.core :as ajax :refer [GET POST PUT]]
-            [camel-snake-kebab.core :refer [->kebab-case]]))
+            [camel-snake-kebab.core :refer [->kebab-case]]
+            [owlet-ui.config :as config]
+            [owlet-ui.firebase :as fb]
+            [owlet-ui.auth0 :as auth0]))
 
 
 (defonce library-content-url
@@ -21,13 +21,13 @@
               config/owlet-activities-2-space-id))
 
 
-(re/reg-cofx
+(rf/reg-cofx
   :set-loading!
   (fn [cofx val]
     (assoc-in cofx [:db :app :loading?] val)))
 
 
-(re/reg-event-db
+(rf/reg-event-db
   :set-active-document-title!
   (fn [db [_ val]]
     (let [active-view (:active-view db)
@@ -46,7 +46,7 @@
       (set! (-> js/document .-title) title)
       (assoc-in db [:app :title] title))))
 
-(defn register-setter-handler
+(defn reg-setter
   "Provides an easy way to register a new handler returning a map that differs
   from the given one only at the location at the given path vector. Simply
   provide the event-key keyword and the db-path vector. Optionally, the new
@@ -69,69 +69,69 @@
   "
 
   ([event-key db-path]
-   (register-setter-handler event-key db-path identity))
+   (reg-setter event-key db-path identity))
 
   ([event-key db-path f]
-   (re/reg-event-db
+   (rf/reg-event-db
      event-key
      (fn [db [_ new-data & args]]
        (assoc-in db db-path (apply f new-data args))))))
 
 
-(re/reg-event-db
+(rf/reg-event-db
   :initialize-db
   (fn [_ _]
-    db/default-db))
+    config/default-db))
 
 
-(re/reg-event-db
+(rf/reg-event-db
   :set-active-view
   (fn [db [_ active-view]]
-    (re/dispatch [:set-sidebar-state! false])
+    (rf/dispatch [:set-sidebar-state! false])
     (assoc db :active-view active-view)))
 
 
-(re/reg-event-db
+(rf/reg-event-db
   :user-has-logged-in-out!
-  (re/path [:user])
+  (rf/path [:user])
   (fn [db [_ val]]
     ;; reset user-bg-image on logout
     (when (false? val)
       (do
-        (re/dispatch [:reset-user-bg-image! config/default-header-bg-image])
-        (re/dispatch [:reset-user-db!])))
+        (rf/dispatch [:reset-user-bg-image! config/default-header-bg-image])
+        (rf/dispatch [:reset-user-db!])))
     (assoc db :logged-in? val)))
 
 
-(re/reg-event-db
+(rf/reg-event-db
   :reset-user-db!
-  (re/path [:user])
+  (rf/path [:user])
   (fn [_ [_ _]]
-    db/default-user-db))
+    config/default-user-db))
 
 
-(re/reg-event-db
+(rf/reg-event-db
   :update-sid-and-get-cms-entries-for
-  (re/path [:user])
+  (rf/path [:user])
   (fn [db [_ sid]]
     (GET (str config/server-url "/api/content/entries?social-id=" sid)
          {:response-format :json
           :keywords?       true
-          :handler         #(re/dispatch [:process-fetch-entries-success! %1])})
+          :handler         #(rf/dispatch [:process-fetch-entries-success! %1])})
     (assoc db :social-id sid)))
 
 
-(re/reg-event-db
+(rf/reg-event-db
   :process-fetch-entries-success!
-  (re/path [:user :content-entries])
+  (rf/path [:user :content-entries])
   (fn [db [_ entries]]
-    (re/dispatch [:set-user-background-image! entries])
+    (rf/dispatch [:set-user-background-image! entries])
     (conj db entries)))
 
 
-(re/reg-event-db
+(rf/reg-event-db
   :set-user-background-image!
-  (re/path [:user :background-image])
+  (rf/path [:user :background-image])
   (fn [_ [_ coll]]
     (let [filter-user-bg-image (fn [c]
                                  (filterv #(= (get-in % [:sys :contentType :sys :id])
@@ -139,18 +139,18 @@
           user-bg-image-entries (last (filter-user-bg-image coll))
           entry-id (get-in user-bg-image-entries [:sys :id])]
       ;; set :background-image-entry-id
-      (re/dispatch [:set-backround-image-entry-id! entry-id])
+      (rf/dispatch [:set-backround-image-entry-id! entry-id])
       (get-in user-bg-image-entries [:fields :url :en-US]))))
 
 
-(re/reg-event-db
+(rf/reg-event-db
   :set-backround-image-entry-id!
-  (re/path [:user :background-image-entry-id])
+  (rf/path [:user :background-image-entry-id])
   (fn [_ [_ id]]
     id))
 
 
-(re/reg-event-db
+(rf/reg-event-db
   :update-user-background!
   (fn [db [_ url]]
     ;; if we have a url and an entry-id, aka existing entry for *userBgImage*
@@ -165,7 +165,7 @@
                              :fields       {:url      {"en-US" url}
                                             :socialid {"en-US" (get-in db [:user :social-id])}}
                              :entry-id     entry-id}
-           :handler         #(re/dispatch [:update-user-background-after-successful-post! %1])
+           :handler         #(rf/dispatch [:update-user-background-after-successful-post! %1])
            :error-handler   #(prn %)})
         (POST
           (str config/server-url "/api/content/entries")
@@ -175,32 +175,32 @@
                              :fields        {:url      {"en-US" url}
                                              :socialid {"en-US" (get-in db [:user :social-id])}}
                              :auto-publish? true}
-           :handler         #(re/dispatch [:update-user-background-after-successful-post! %1])
+           :handler         #(rf/dispatch [:update-user-background-after-successful-post! %1])
            :error-handler   #(prn %)})))
     db))
 
 
-(re/reg-event-db
+(rf/reg-event-db
   :update-user-background-after-successful-post!
-  (re/path [:user :background-image])
+  (rf/path [:user :background-image])
   (fn [_ [_ res]]
-    (re/dispatch [:set-backround-image-entry-id! (get-in res [:sys :id])])
+    (rf/dispatch [:set-backround-image-entry-id! (get-in res [:sys :id])])
     (get-in res [:fields :url :en-US])))
 
 
-(re/reg-event-db
+(rf/reg-event-db
   :reset-user-bg-image!
-  (re/path [:user :background-image])
+  (rf/path [:user :background-image])
   (fn [_ [_ url]]
     url))
 
 
-(re/reg-event-db
+(rf/reg-event-db
   :get-auth0-profile
   (fn [db [_ _]]
     (when-let [user-token (.getItem js/localStorage "owlet:user-token")]
       (.getProfile
-        config/lock
+        auth0/lock
         user-token
         (fn [err profile]
           (if (some? err)
@@ -208,18 +208,18 @@
             (when user-token
               (.removeItem js/localStorage "owlet:user-token"))
             (let [user-id (.-user_id profile)]
-              (re/dispatch [:user-has-logged-in-out! true])
-              (re/dispatch [:update-sid-and-get-cms-entries-for user-id])
+              (rf/dispatch [:user-has-logged-in-out! true])
+              (rf/dispatch [:update-sid-and-get-cms-entries-for user-id])
               (fb/on-presence-change
                 (fb/db-ref-for-path (str "users/" user-id))
                 :user-presence-changed)
-              (register-setter-handler
+              (reg-setter
                 :user-presence-changed
                 [:users (keyword user-id)]))))))
     db))
 
 
-(re/reg-event-fx
+(rf/reg-event-fx
   :get-library-content-from-contentful
   (fn [{db :db} [_ route-params]]
     ;; short-circuit xhr request when we have activity data
@@ -232,10 +232,10 @@
                     :on-success      [:get-library-content-from-contentful-successful]}})))
 
 
-(re/reg-event-db
+(rf/reg-event-db
   :get-library-content-from-contentful-successful
   (fn [db [_ res]]
-    (re/dispatch [:get-activity-branches])
+    (rf/dispatch [:get-activity-branches])
     ; Obtains the URL for each preview image, and adds a :url field next to
     ; its :id field in [:activities :fields :preview :sys] map.
     (let [url-for-id                                        ; Maps preview image IDs to associated URLs.
@@ -257,19 +257,19 @@
       _db_)))
 
 
-(re/reg-event-db
+(rf/reg-event-db
   :get-activity-branches
   (fn [db _]
     (GET get-branches-url
          {:response-format :json
           :keywords?       true
-          :handler         #(re/dispatch [:get-activity-branches-successful %])
+          :handler         #(rf/dispatch [:get-activity-branches-successful %])
           :error-handler   #(prn %)})
     db))
 
-(re/reg-event-db
+(rf/reg-event-db
   :get-activity-branches-successful
-  [(re/inject-cofx :set-loading! false)]
+  [(rf/inject-cofx :set-loading! false)]
   (fn [db [_ res]]
     (let [branches (:branches (:branches res))
           all-activities (:activities db)
@@ -299,31 +299,31 @@
       (when-let [route-params (get-in db [:app :route-params])]
         (let [{:keys [activity branch]} route-params]
           (when activity
-            (re/dispatch [:set-activity-in-view activity all-activities]))
+            (rf/dispatch [:set-activity-in-view activity all-activities]))
           (when branch
             (let [activities-by-branch-in-view ((keyword branch) activities-by-branch)]
-              (re/dispatch [:set-activities-by-branch-in-view branch activities-by-branch-in-view])
+              (rf/dispatch [:set-activities-by-branch-in-view branch activities-by-branch-in-view])
               (assoc db :activity-branches (:branches res)
                         :activities-by-branch activities-by-branch)))))
       (assoc db :activity-branches (:branches res)
                 :activities-by-branch activities-by-branch))))
 
 
-(re/reg-event-db
+(rf/reg-event-db
   :set-activities-by-branch-in-view
   (fn [db [_ branch-name activities-by-branch]]
     (let [activities-by-branch ((keyword branch-name) (or (:activities-by-branch db) activities-by-branch))]
       (assoc db :activities-by-branch-in-view activities-by-branch))))
 
 
-(re/reg-event-db
+(rf/reg-event-db
   :set-activity-in-view
   (fn [db [_ activity-id all-activities]]
     (assoc db :activity-in-view (some #(when (= (get-in % [:sys :id]) activity-id) %)
                                       (or (:activities db) all-activities)))))
 
 
-(re/reg-event-db
+(rf/reg-event-db
   :set-sidebar-state!
   (fn [db [_ state]]
     (assoc-in db [:app :open-sidebar] state)))

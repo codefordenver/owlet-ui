@@ -6,6 +6,7 @@ out
 *.DS_Store
 /resources/public/css/site.css
 .idea/
+.nightlight.edn
 .dirac-chrome-profile/
 .lein-repl-history
 .nrepl-port
