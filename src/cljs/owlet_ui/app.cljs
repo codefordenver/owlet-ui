@@ -41,13 +41,13 @@
          (if (= @active-view :welcome-view)
            [show-view @active-view]
            [:div#main
-            [:div#lpsidebar-wrap.hidden-md-up {:style {:width "0px"}}
+            [:div#lpsidebar-wrap.hidden-md-up
              [lpsidebar-component]]
             [:img#lpsidebar-open.hidden-md-up {:src "img/owlet-tab-closed.png"
                                                :on-click #(js/openSidebar)}]
             [:img#lpsidebar-close.hidden-md-up {:src "img/owlet-tab-opened.png"
                                                 :on-click #(js/closeSidebar)
-                                                :style {:display "none"}}]
+                                                :style {:z-index "-1"}}]
 
 
             [:div#sidebar-wrap.hidden-sm-down

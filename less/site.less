@@ -45,7 +45,7 @@ a:hover {
     margin-right: auto;
   }
   img {
-    margin-top: 30px;
+    margin-top: 10px;
   }
   #owlet-wrap {
     background-color: #65D2C0;
@@ -55,14 +55,7 @@ a:hover {
   }
   #owlet-image {
     margin-top: 0;
-    width: 100%;
-  }
-  #owlet-text {
-    padding-left: 3px;
-    font-weight: 400;
-    letter-spacing: 3px;
-    color: white;
-    margin-bottom: 5px;
+    width: 80px;
   }
   .menu {
     padding-top: 10px;
@@ -81,6 +74,8 @@ a:hover {
 }
 
 #lpsidebar {
+  width: 0px;
+  transition: all 0.3s;
   text-align: center;
   background-color: @purple;
   color: #cffffd;
@@ -93,24 +88,11 @@ a:hover {
     margin-right: auto;
   }
   img {
-    margin-top: 30px;
-  }
-  #owlet-wrap {
-    background-color: #65D2C0;
-    border: 1px solid #65D2C0;
-    border-bottom-right-radius: 20px;
-    border-bottom-left-radius: 20px;
+    margin-top: 10px;
   }
   #owlet-image {
     margin-top: 0;
-    width: 100%;
-  }
-  #owlet-text {
-    padding-left: 3px;
-    font-weight: 400;
-    letter-spacing: 3px;
-    color: white;
-    margin-bottom: 5px;
+    width: 80px;
   }
   .menu {
     height: 100%;
@@ -136,9 +118,11 @@ a:hover {
 }
 
 #lpsidebar-open, #lpsidebar-close {
+  transition: left 0.3s;
   border-left: 1px solid black;
   position: fixed;
   top: 2px;
+  left: 0px;
   height: 86px;
   z-index: 2;
 }
@@ -608,6 +592,8 @@ button {
 .login {
   margin-top: 10px;
   z-index: 1;
+  margin-left: 15px;
+  margin-right: 15px;
 }
 
 .login-landing {

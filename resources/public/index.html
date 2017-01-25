@@ -35,10 +35,10 @@
     var close = document.getElementById("lpsidebar-close");
     sidebarWrap.style.width = "80px";
     sidebar.style.width = "80px";
-    open.style.display = "none";
-    close.style.display = "";
-    open.style.marginLeft = "80px";
-    close.style.marginLeft = "80px";
+    open.style.left = "80px";
+    open.style.zIndex = "0";
+    close.style.left = "80px";
+    close.style.zIndex = "2";
   }
   function closeSidebar() {
     var sidebarWrap = document.getElementById("lpsidebar-wrap");
@@ -47,10 +47,10 @@
     var close = document.getElementById("lpsidebar-close");
     sidebarWrap.style.width = "0px";
     sidebar.style.width = "0px";
-    open.style.display = "";
-    close.style.display = "none";
-    open.style.marginLeft = "0px";
-    close.style.marginleft = "0px";
+    open.style.left = "0px";
+    open.style.zIndex = "2";
+    close.style.left = "0px";
+    close.style.zIndex = "0";
   }
 </script>
 </body>
