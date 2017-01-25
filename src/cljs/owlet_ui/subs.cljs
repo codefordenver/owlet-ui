@@ -94,3 +94,5 @@
   :open-sidebar?
   (fn [db]
     (get-in db [:app :open-sidebar])))
+
+(register-getter-sub :app-title [:app :title])

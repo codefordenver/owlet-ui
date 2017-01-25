@@ -43,7 +43,6 @@
           document-title (or (titles active-view) (clj-str/capitalize val))
           title-template (str document-title " | " config/project-name)
           title (or title-template default-title)]
-      (set! (-> js/document .-title) title)
       (assoc-in db [:app :title] title))))
 
 (defn reg-setter
@@ -271,7 +270,8 @@
   :get-activity-branches-successful
   [(rf/inject-cofx :set-loading! false)]
   (fn [db [_ res]]
-    (let [branches (:branches (:branches res))
+    (let [branches (:branches res)
+          ;; skills (:skills res) ;; TODO: FEAT-149
           all-activities (:activities db)
 
           branches-template (->> (mapv (fn [branch]
@@ -302,10 +302,10 @@
             (rf/dispatch [:set-activity-in-view activity all-activities]))
           (when branch
             (let [activities-by-branch-in-view ((keyword branch) activities-by-branch)]
-              (rf/dispatch [:set-activities-by-branch-in-view branch activities-by-branch-in-view])
-              (assoc db :activity-branches (:branches res)
+              (re/dispatch [:set-activities-by-branch-in-view branch activities-by-branch-in-view])
+              (assoc db :activity-branches branches
                         :activities-by-branch activities-by-branch)))))
-      (assoc db :activity-branches (:branches res)
+      (assoc db :activity-branches branches
                 :activities-by-branch activities-by-branch))))
 
 
