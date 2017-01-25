@@ -15,9 +15,9 @@
               config/owlet-activities-2-space-id))
 
 
-(defonce get-branches-url
+(defonce get-metadata-url
          (str config/server-url
-              "/api/content/branches/"
+              "/api/content/metadata/"
               config/owlet-activities-2-space-id))
 
 
@@ -234,7 +234,7 @@
 (rf/reg-event-db
   :get-library-content-from-contentful-successful
   (fn [db [_ res]]
-    (rf/dispatch [:get-activity-branches])
+    (rf/dispatch [:get-activity-metadata])
     ; Obtains the URL for each preview image, and adds a :url field next to
     ; its :id field in [:activities :fields :preview :sys] map.
     (let [url-for-id                                        ; Maps preview image IDs to associated URLs.
@@ -257,17 +257,17 @@
 
 
 (rf/reg-event-db
-  :get-activity-branches
+  :get-activity-metadata
   (fn [db _]
-    (GET get-branches-url
+    (GET get-metadata-url
          {:response-format :json
           :keywords?       true
-          :handler         #(rf/dispatch [:get-activity-branches-successful %])
+          :handler         #(rf/dispatch [:get-activity-metadata-successful %])
           :error-handler   #(prn %)})
     db))
 
 (rf/reg-event-db
-  :get-activity-branches-successful
+  :get-activity-metadata-successful
   [(rf/inject-cofx :set-loading! false)]
   (fn [db [_ res]]
     (let [branches (:branches res)
