@@ -50,7 +50,7 @@
 (def owlet-activities-2-space-id "ir2v150dybog")
 
 
-(def default-header-bg-image "mg/default_background.png")
+(def default-header-bg-image "img/default_background.png")
 
 
 (def default-user-db

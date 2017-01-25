@@ -302,7 +302,7 @@
             (rf/dispatch [:set-activity-in-view activity all-activities]))
           (when branch
             (let [activities-by-branch-in-view ((keyword branch) activities-by-branch)]
-              (re/dispatch [:set-activities-by-branch-in-view branch activities-by-branch-in-view])
+              (rf/dispatch [:set-activities-by-branch-in-view branch activities-by-branch-in-view])
               (assoc db :activity-branches branches
                         :activities-by-branch activities-by-branch)))))
       (assoc db :activity-branches branches
