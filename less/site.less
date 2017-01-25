@@ -318,7 +318,6 @@ mark.white {
   margin: 2.5em 1.5em 2em 1.5em;
   a {
     display: block;
-    height: 100%;
     padding: 25px 15px;
   }
   .branchwrap {
@@ -327,20 +326,23 @@ mark.white {
     .branch-bg {
       height: 100%;
     }
-    a:hover {
-      mark {
-        background-color: rgba(0, 0, 0, 0);
-      }
+    .branch-color {
+      width: 100%;
+      height: 117px;
     }
-
+    .branch-link {
+      position: absolute;
+      top: 25px; }
+    .branch {
+      top: 15px;
+      position: absolute;
+      height: 117px;
+      width: 94%;
+    }
     h2 {
       font-weight: 300;
       font-size: 1.3em;
       line-height: 1.4em;
-    }
-    .branch {
-      color: #cffffd;
-      text-decoration: none;
     }
   }
   #title {
@@ -353,8 +355,8 @@ mark.white {
 
 .counter {
   position: absolute;
-  right: 25px;
-  bottom: 25px;
+  right: 17px;
+  bottom: 11px;
   height: 40px;
   width: 40px;
   background-color: black;

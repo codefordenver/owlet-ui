@@ -21,11 +21,14 @@
        (let [color-pairs (pair-color (sort @activity-branches))]
          (doall
            (for [pair color-pairs
-                 :let [count-key (->kebab-case (-> pair
+                 :let [branch-key (->kebab-case (-> pair
                                                    second
                                                    keyword))
                        counter (-> @activities-by-branch
-                                   count-key
-                                   :count)]]
+                                   branch-key
+                                   :count)
+                       hover-image (-> @activities-by-branch
+                                       branch-key
+                                       :preview-url)]]
              ^{:key (gensym "branch-")}
-             [branch pair counter])))]]))
+             [branch pair counter hover-image])))]]))
