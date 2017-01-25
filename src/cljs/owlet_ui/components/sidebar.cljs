@@ -3,10 +3,9 @@
 
 (defn sidebar-component []
   [:div#sidebar
-   [:div#owlet-wrap
+   [:div
     [:a {:href "#"}
-     [:img#owlet-image {:src "img/owlet-logo.png"}]
-     [:p#owlet-text "OWLET"]]]
+     [:img#owlet-image {:src "img/owlet-logo.png"}]]]
    [:div.menu
     [:div.login
      [login-component]]
