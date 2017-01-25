@@ -13,7 +13,7 @@
    {:type     "button"
     :on-click #(do
                  (rf/dispatch [:user-has-logged-in-out! false])
-                 (.removeItem js/localStorage "userToken"))}
+                 (.removeItem js/localStorage config/auth0-local-storage-key))}
    "Log out"])
 
 (defn login-component []

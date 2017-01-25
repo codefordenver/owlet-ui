@@ -1,5 +1,6 @@
 (ns owlet-ui.views.branches
   (:require [re-frame.core :as re]
+            [camel-snake-kebab.core :refer [->kebab-case]]
             [owlet-ui.components.branch :refer [branch]]))
 
 ;; TODO: (hayden, david) remove branch coloring logic from component
@@ -10,14 +11,21 @@
     (map vector colors activity-branches)))
 
 (defn branches-view []
-  (let [activity-branches (re/subscribe [:activity-branches])]
+  (let [activity-branches (re/subscribe [:activity-branches])
+        activities-by-branch (re/subscribe [:activities-by-branch])]
     [:div.branches
-     (if @activity-branches
-       [:section
-         [:h1#title [:mark "Get started by choosing a branch below"]]
-         [:br]
-         (let [color-pairs (pair-color (sort (:branches @activity-branches)))]
-           (for [pair color-pairs]
+     ; TODO: provide error message when branches can't be retrieved
+     [:section
+       [:h1#title [:mark "Get started by choosing a branch below"]]
+       [:br]
+       (let [color-pairs (pair-color (sort @activity-branches))]
+         (doall
+           (for [pair color-pairs
+                 :let [count-key (->kebab-case (-> pair
+                                                   second
+                                                   keyword))
+                       counter (-> @activities-by-branch
+                                   count-key
+                                   :count)]]
              ^{:key (gensym "branch-")}
-             [branch pair]))]
-       [:h1#title [:mark "No branches available, come back soon!"]])]))
+             [branch pair counter])))]]))

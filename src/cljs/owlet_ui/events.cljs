@@ -1,5 +1,6 @@
 (ns owlet-ui.events
-  (:require [re-frame.core :as re]
+  (:require [clojure.string :as clj-str]
+            [re-frame.core :as re]
             [owlet-ui.db :as db]
             [owlet-ui.config :as config]
             [owlet-ui.firebase :as fb]
@@ -14,9 +15,9 @@
               config/owlet-activities-2-space-id))
 
 
-(defonce get-branches-url
+(defonce get-metadata-url
          (str config/server-url
-              "/api/content/branches/"
+              "/api/content/metadata/"
               config/owlet-activities-2-space-id))
 
 
@@ -25,6 +26,24 @@
   (fn [cofx val]
     (assoc-in cofx [:db :app :loading?] val)))
 
+
+(re/reg-event-db
+  :set-active-document-title!
+  (fn [db [_ val]]
+    (let [active-view (:active-view db)
+          titles {:welcome-view           "Welcome"
+                  :branches-view          "Branches"
+                  :activity-view          (-> db
+                                              :activity-in-view
+                                              :fields
+                                              :title)
+                  :branch-activities-view (-> (:activities-by-branch-in-view db)
+                                              :display-name)}
+          default-title (:welcome-view titles)
+          document-title (or (titles active-view) (clj-str/capitalize val))
+          title-template (str document-title " | " config/project-name)
+          title (or title-template default-title)]
+      (assoc-in db [:app :title] title))))
 
 (defn register-setter-handler
   "Provides an easy way to register a new handler returning a map that differs
@@ -215,7 +234,7 @@
 (re/reg-event-db
   :get-library-content-from-contentful-successful
   (fn [db [_ res]]
-    (re/dispatch [:get-activity-branches])
+    (re/dispatch [:get-activity-metadata])
     ; Obtains the URL for each preview image, and adds a :url field next to
     ; its :id field in [:activities :fields :preview :sys] map.
     (let [url-for-id                                        ; Maps preview image IDs to associated URLs.
@@ -238,26 +257,28 @@
 
 
 (re/reg-event-db
-  :get-activity-branches
+  :get-activity-metadata
   (fn [db _]
-    (GET get-branches-url
+    (GET get-metadata-url
          {:response-format :json
           :keywords?       true
-          :handler         #(re/dispatch [:get-activity-branches-successful %])
+          :handler         #(re/dispatch [:get-activity-metadata-successful %])
           :error-handler   #(prn %)})
     db))
 
 (re/reg-event-db
-  :get-activity-branches-successful
+  :get-activity-metadata-successful
   [(re/inject-cofx :set-loading! false)]
   (fn [db [_ res]]
-    (let [branches (:branches (:branches res))
+    (let [branches (:branches res)
+          ;; skills (:skills res) ;; TODO: FEAT-149
           all-activities (:activities db)
 
           branches-template (->> (mapv (fn [branch]
                                          (hash-map (keyword (->kebab-case branch))
                                                    {:activities   []
-                                                    :display-name branch})) branches)
+                                                    :display-name branch
+                                                    :count        0})) branches)
                                  (into {}))
 
           activities-by-branch (->> (mapv (fn [branch]
@@ -270,7 +291,8 @@
                                                 (if (seq matches)
                                                   (hash-map branch-key
                                                             {:activities   matches
-                                                             :display-name display-name})
+                                                             :display-name display-name
+                                                             :count        (count matches)})
                                                   branch))))
                                           branches-template)
                                     (into {}))]
@@ -281,9 +303,9 @@
           (when branch
             (let [activities-by-branch-in-view ((keyword branch) activities-by-branch)]
               (re/dispatch [:set-activities-by-branch-in-view branch activities-by-branch-in-view])
-              (assoc db :activity-branches (:branches res)
+              (assoc db :activity-branches branches
                         :activities-by-branch activities-by-branch)))))
-      (assoc db :activity-branches (:branches res)
+      (assoc db :activity-branches branches
                 :activities-by-branch activities-by-branch))))
 
 

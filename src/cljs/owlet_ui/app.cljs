@@ -19,8 +19,7 @@
 (defmethod views :settings-view [] [settings-view])
 (defmethod views :default [] [:div])
 
-(defn show-view
-  [view-name]
+(defn show-view [view-name]
   [views view-name])
 
 (def show? (reagent/atom false))
@@ -38,6 +37,7 @@
        #(re/dispatch [:get-auth0-profile])
        :reagent-render
        (fn []
+         (set! (-> js/document .-title) @(re/subscribe [:app-title]))
          (if (= @active-view :welcome-view)
            [show-view @active-view]
            [:div#main

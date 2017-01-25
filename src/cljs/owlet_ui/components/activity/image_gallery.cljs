@@ -8,7 +8,7 @@
   (mapv #(hash-map :src % :w 400 :h 400) image-urls))
 
 (defn full-screen-gallery []
-  [:div.activity-image-gallery-wrap.box-shadow
+  [:div.activity-image-gallery-wrap
    [:div.pswp {:tabIndex "-1" :role "dialog" :aria-hidden "true"}
     [:div.pswp__bg]
     [:div.pswp__scroll-wrap
@@ -58,6 +58,6 @@
                 [:a {:href src
                      :item-prop "contentUrl"
                      :data-size (str w "x" h)}
-                  [:img {:src src
-                         :item-prop "thumbnail"}]]])]
+                  [:img.box-shadow {:src src
+                                    :item-prop "thumbnail"}]]])]
            (full-screen-gallery)]))}))

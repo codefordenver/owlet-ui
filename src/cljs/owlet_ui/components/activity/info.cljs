@@ -22,8 +22,9 @@
         :showing? showing?
         :position :right-below
         :anchor [:button
-                 {:class         "btn btn-warning"
-                  :style         {:margin-bottom "10px"}
+                 {:class         "btn btn-warning unplugged"
+                  :style         {:margin-bottom "10px"
+                                  :padding "5px 6px"};
                   :on-mouse-over (handler-fn (reset! showing? true))
                   :on-mouse-out  (handler-fn (reset! showing? false))}
                  "UNPLUGGED"]
@@ -31,8 +32,11 @@
                   :close-button? false
                   :title "What does this mean?"
                   :body "UNPLUGGED activities do not require a computer or device"]]
-       [set-as-marked "<b>Technology</b><br>" techRequirements])
+       [set-as-marked "<b>Platform</b><br>" techRequirements])
      [set-as-marked "<b>Summary</b><br>" summary]
-     [set-as-marked "<b>Why?</b><br>" why]
-     [set-as-marked "<b>Pre-requisites</b><br>" preRequisites]
-     [set-as-marked "<b>Materials</b>" materials "list-title"]]))
+     (when why
+      [set-as-marked "<b>Why?</b><br>" why])
+     (when preRequisites
+      [set-as-marked "<b>Pre-requisites</b><br>" preRequisites])
+     (when materials
+      [set-as-marked "<b>Materials</b>" materials "list-title"])]))
