@@ -56,17 +56,19 @@
             [:div.content {:style {:width            "100%"
                                    :background-image (str "url(" @src ")")
                                    :background-size  "cover"}}
-             [upload-image-component show? close-modal]
-             [:button#change-header-btn
-              {:type     "button"
-               :class    "btn btn-secondary"
-               :style    {:font-size "1em"
-                          :padding   "6px"
-                          :display   (if @is-user-logged-in?
-                                       "block"
-                                       "none")}
-               :on-click open-modal}
-              [:i.fa.fa-pencil-square-o]]
-             (when @loading?
-               [loading-component])
-             [show-view @active-view]]]))})))
+             [:div.outer-height-wrap
+              [:div.inner-height-wrap
+               [upload-image-component show? close-modal]
+               [:button#change-header-btn
+                {:type     "button"
+                 :class    "btn btn-secondary"
+                 :style    {:font-size "1em"
+                            :padding   "6px"
+                            :display   (if @is-user-logged-in?
+                                         "block"
+                                         "none")}
+                 :on-click open-modal}
+                [:i.fa.fa-pencil-square-o]]
+               (when @loading?
+                 [loading-component])
+               [show-view @active-view]]]]]))})))

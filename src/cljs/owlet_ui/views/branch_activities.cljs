@@ -4,8 +4,7 @@
 
 (defn branch-activities-view []
   (let [{:keys [display-name activities]} @(rf/subscribe [:activities-by-branch-in-view])]
-    [:div.outer-height-wrap
-     [:div.inner-height-wrap
+    [:div
       [:div.breadcrumb-wrap
        [:div
         [:a {:href "#/branches"}
@@ -24,5 +23,4 @@
                          id (get-in fields [:preview :sys :id] (gensym "key-"))
                          entry-id (get-in activity [:sys :id])]]
                ^{:key id} [activity-thumbnail fields entry-id])
-             [:p.no-activities [:mark "No activities in this branch yet. Check back soon."]])]])]]]))
-
+             [:p.no-activities [:mark "No activities in this branch yet. Check back soon."]])]])]]))
