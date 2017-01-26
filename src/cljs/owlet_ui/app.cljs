@@ -41,7 +41,7 @@
          (if (= @active-view :welcome-view)
            [show-view @active-view]
            [:div#main
-            [:div#lpsidebar-overlay {:on-click #(js/closeSidebar)}]
+            [:div#lpsidebar-overlay.hidden-md-up {:on-click #(js/closeSidebar)}]
             [:div#lpsidebar-wrap.hidden-md-up
              [lpsidebar-component]]
             [:img#lpsidebar-open.hidden-md-up {:src "img/owlet-tab-closed.png"
