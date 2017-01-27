@@ -47,20 +47,14 @@ a:hover {
   img {
     margin-top: 10px;
   }
-  #owlet-wrap {
-    background-color: #65D2C0;
-    border: 1px solid #65D2C0;
-    border-bottom-right-radius: 20px;
-    border-bottom-left-radius: 20px;
-  }
   #owlet-image {
     margin-top: 0;
     width: 80px;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
   }
   .menu {
     padding-top: 10px;
-    margin-bottom: -9999px;
-    padding-bottom: 9999px;
     overflow: hidden;
     background-color: @purple;
     a {
@@ -93,9 +87,11 @@ a:hover {
   #owlet-image {
     margin-top: 0;
     width: 80px;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
   }
   .menu {
-    height: 100%;
+    padding-top: 10px;
     overflow: hidden;
     background-color: @purple;
     a {
@@ -109,7 +105,7 @@ a:hover {
 }
 
 #lpsidebar-overlay {
-  position: absolute;
+  position: fixed;
   min-width: 100%;
   min-height: 100%;
   z-index: 0;
@@ -123,6 +119,7 @@ a:hover {
   right: 0;
   bottom: 0;
   left: 0;
+  width: 0;
   z-index: 2;
 }
 
@@ -285,12 +282,6 @@ mark.white {
   overflow-y: auto;
   overflow-x: hidden;
   height: 100%;
-  width: 100%;
-  position: relative;
-  top: 0;
-  bottom: 100%;
-  left: 0;
-  z-index: 1;
 }
 
 .outer-height-wrap {
@@ -374,15 +365,13 @@ mark.white {
 
 /* branch activities view */
 
+.container-fluid {
+  padding: 0;
+}
+
 .branch-activities-wrap .flexcontainer-wrap {
   -webkit-align-items: flex-start;
   align-items: flex-start;
-  div.col-xs-12.col-md-6.col-lg-4 {
-    padding: 0;
-    @media screen and (min-width: 48em) {
-      padding-right: 30px;
-    }
-  }
 }
 
 .branch-activities-wrap, .no-activities {
@@ -411,7 +400,7 @@ mark.white {
   }
   background-color: white;
   padding: 10px 10px 9px 10px;
-  margin: 22px 12px 22px 0;
+  margin-top: 22px;
   overflow-y: auto;
   .activity-thumbnail {
     position: relative;
@@ -550,13 +539,13 @@ mark.white {
 }
 
 .breadcrumb-wrap {
-  width: 100vw;
+  width: 100%;
   height: 50px;
   text-decoration: none;
   text-align: left;
   text-transform: uppercase;
   background-color: @primary-color;
-  padding-left: 8px;
+  padding-left: 15px;
   display: -webkit-flex;
   display: flex;
   -webkit-flex-flow: row nowrap;
