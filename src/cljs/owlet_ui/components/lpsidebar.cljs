@@ -10,7 +10,8 @@
    [:div.menu
     [:div.login
      [login-component]]
-    [:a.navigation {:on-click #(re/dispatch [:set-active-view :branches-view])}
+    [:a.navigation {:href "#/branches"
+                    :on-click #(re/dispatch [:set-active-view :branches-view])}
      [:img {:src "img/icon1.png"}]]]])
     ; [:br]
     ; [:a {:href "#/"}
