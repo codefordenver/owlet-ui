@@ -32,6 +32,10 @@ a:hover {
   }
 }
 
+.navigation {
+  cursor: pointer;
+}
+
 #sidebar {
   text-align: center;
   background-color: @purple;
@@ -108,7 +112,7 @@ a:hover {
   position: fixed;
   min-width: 100%;
   min-height: 100%;
-  z-index: 0;
+  z-index: -1;
   background-color: transparent;
   transition: background-color 0.3s;
 }
@@ -124,6 +128,7 @@ a:hover {
 }
 
 #lpsidebar-open, #lpsidebar-close {
+  cursor: pointer;
   transition: left 0.3s;
   border-left: 1px solid black;
   position: fixed;
@@ -153,6 +158,8 @@ mark.white {
 }
 
 .flexcontainer-wrap {
+  font-size: 2rem;
+  font-weight: 500;
   display: -webkit-flex;
   display: flex;
   -webkit-flex-flow: row wrap;
@@ -307,8 +314,6 @@ mark.white {
   padding-left: inherit;
 }
 
-
-
 .branches {
   margin: 2.5em 1.5em 2em 1.5em;
   a {
@@ -374,11 +379,27 @@ mark.white {
   align-items: flex-start;
 }
 
-.branch-activities-wrap, .no-activities {
-  margin-top: 28px;
-  h2, .no-activities {
-    margin-left: 21px;
+.branch-activities-wrap {
+  margin: 28px 20px 0 25px;
+  h2 {
+    font-size: 2.4rem;
+    margin: 1.2em 0;
   }
+  @media (max-width: 500px) {
+    .col-xs-12.col-md-6.col-lg-4 {
+      padding: 0;
+    }
+  }
+}
+
+.no-activities {
+  margin-left: 21px;
+}
+
+img.back {
+  width: 35px;
+  padding-bottom: .1em;
+  margin-right: 12px;
 }
 
 .tag {
@@ -400,7 +421,7 @@ mark.white {
   }
   background-color: white;
   padding: 10px 10px 9px 10px;
-  margin-top: 22px;
+  margin-bottom: 1.5em;
   overflow-y: auto;
   .activity-thumbnail {
     position: relative;
@@ -478,7 +499,7 @@ mark.white {
 .activity-title-wrap {
   h1 {
     font-weight: 700;
-    font-size: 1.7em;
+    font-size: 2.4rem;
     margin-bottom: 5px;
   }
   .author {
@@ -541,17 +562,9 @@ mark.white {
 .breadcrumb-wrap {
   width: 100%;
   height: 50px;
-  text-decoration: none;
   text-align: left;
-  text-transform: uppercase;
   background-color: @primary-color;
   padding-left: 15px;
-  display: -webkit-flex;
-  display: flex;
-  -webkit-flex-flow: row nowrap;
-  flex-flow: row nowrap;
-  -webkit-align-items: center;
-  align-items: center;
   a {
     text-decoration: none;
     color: white;
@@ -561,11 +574,6 @@ mark.white {
     font-size: 1.4em;
     margin-left: 5px;
     margin-bottom: 0;
-  }
-  img {
-    margin-left: 9px;
-    height: 23px;
-    padding-bottom: 2px;
   }
 }
 

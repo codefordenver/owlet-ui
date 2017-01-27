@@ -26,6 +26,14 @@
   (fn [cofx val]
     (assoc-in cofx [:db :app :loading?] val)))
 
+(re/reg-cofx
+  :close-sidebar!
+  (fn [cofx]
+    (let [db (:db cofx)]
+      (when-not (= (db :active-view) :welcome-view)
+        (js/closeSidebar))
+      (assoc-in cofx [:db :app :open-sidebar] true))))
+
 
 (re/reg-event-db
   :set-active-document-title!
@@ -85,6 +93,7 @@
 
 (re/reg-event-db
   :set-active-view
+  [(re/inject-cofx :close-sidebar!)]
   (fn [db [_ active-view]]
     (re/dispatch [:set-sidebar-state! false])
     (assoc db :active-view active-view)))
@@ -327,4 +336,3 @@
   :set-sidebar-state!
   (fn [db [_ state]]
     (assoc-in db [:app :open-sidebar] state)))
-

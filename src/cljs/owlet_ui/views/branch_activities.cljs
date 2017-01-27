@@ -7,12 +7,13 @@
   (let [{:keys [display-name activities]} @(rf/subscribe [:activities-by-branch-in-view])]
       [:div
         [breadcrumb]
-        [:div.container-fluid.branch-activities-wrap
+        [:div.branch-activities-wrap
          (if-not display-name
-           [:div {:style {:width "100%"}}
+           [:div
             [:h2 [:mark.white.box.box-shadow [:b "This branch does not exist"]]]]
-           [:div {:style {:width "100%"}}
-            [:h2 [:mark.white.box-shadow [:b display-name]]]
+           [:div
+            [:h2 [:a {:href "#/branches"} [:img.back {:src "img/back-filled.png"}]]
+                 [:mark.white.box-shadow [:b display-name]]]
             [:div.flexcontainer-wrap
              (if (seq activities)
                (for [activity activities
