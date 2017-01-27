@@ -95,7 +95,6 @@
   :set-active-view
   [(re/inject-cofx :close-sidebar!)]
   (fn [db [_ active-view]]
-    (re/dispatch [:set-sidebar-state! false])
     (assoc db :active-view active-view)))
 
 
@@ -330,9 +329,3 @@
   (fn [db [_ activity-id all-activities]]
     (assoc db :activity-in-view (some #(when (= (get-in % [:sys :id]) activity-id) %)
                                       (or (:activities db) all-activities)))))
-
-
-(re/reg-event-db
-  :set-sidebar-state!
-  (fn [db [_ state]]
-    (assoc-in db [:app :open-sidebar] state)))
