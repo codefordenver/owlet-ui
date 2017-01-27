@@ -9,9 +9,9 @@
         [breadcrumb]
         [:div.container-fluid.branch-activities-wrap
          (if-not display-name
-           [:div {:style {:width "100%"}}
+           [:div.activity-wrapper
             [:h2 [:mark.white.box.box-shadow [:b "This branch does not exist"]]]]
-           [:div {:style {:width "100%"}}
+           [:div.activity-wrapper
             [:h2 [:mark.white.box-shadow [:b display-name]]]
             [:div.flexcontainer-wrap
              (if (seq activities)
