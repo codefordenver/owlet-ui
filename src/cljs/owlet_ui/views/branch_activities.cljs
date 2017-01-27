@@ -9,10 +9,11 @@
         [breadcrumb]
         [:div.container-fluid.branch-activities-wrap
          (if-not display-name
-           [:div.activity-wrapper
+           [:div.activities-wrap
             [:h2 [:mark.white.box.box-shadow [:b "This branch does not exist"]]]]
-           [:div.activity-wrapper
-            [:h2 [:mark.white.box-shadow [:b display-name]]]
+           [:div.activities-wrap
+            [:h2 [:a {:href "#/branches"} [:img.back {:src "img/back-filled.png"}]]
+                 [:mark.white.box-shadow [:b display-name]]]
             [:div.flexcontainer-wrap
              (if (seq activities)
                (for [activity activities
