@@ -30,8 +30,7 @@
         src (re/subscribe [:user-has-background-image?])
         is-user-logged-in? (re/subscribe [:is-user-logged-in?])
         open-modal (fn [] (reset! show? true))
-        close-modal (fn [] (reset! show? false))
-        open-sidebar? (re/subscribe [:open-sidebar?])]
+        close-modal (fn [] (reset! show? false))]
     (reagent/create-class
       {:component-will-mount
        #(re/dispatch [:get-auth0-profile])
