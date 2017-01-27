@@ -4,9 +4,4 @@
 (defn breadcrumb []
   [:div.breadcrumb-wrap
    [:div
-    [:a {:href "#/branches"}
-     [:img {:src "img/back.png"}]]]
-   [:div
-    [:a {:href "#/branches"}
-     [:p "all activities"]]]])
-
+     [:p ""]]])
