@@ -90,9 +90,4 @@
   (fn [db]
     (get-in db [:app :loading?])))
 
-(rf/reg-sub
-  :open-sidebar?
-  (fn [db]
-    (get-in db [:app :open-sidebar])))
-
 (reg-getter :app-title [:app :title])

@@ -42,8 +42,7 @@
         src (re/subscribe [:user-has-background-image?])
         is-user-logged-in? (re/subscribe [:my-user-id])
         open-modal (fn [] (reset! show? true))
-        close-modal (fn [] (reset! show? false))
-        open-sidebar? (re/subscribe [:open-sidebar?])]
+        close-modal (fn [] (reset! show? false))]
     (reagent/create-class
       {:component-will-mount
        #(re/dispatch [:get-auth0-profile])
@@ -53,7 +52,7 @@
          (if (= @active-view :welcome-view)
            [show-view @active-view]
            [:div#main
-            [:div#lpsidebar-overlay {:on-click #(js/closeSidebar)}]
+            [:div#lpsidebar-overlay.hidden-md-up {:on-click #(js/closeSidebar)}]
             [:div#lpsidebar-wrap.hidden-md-up
              [lpsidebar-component]]
             [:img#lpsidebar-open.hidden-md-up {:src "img/owlet-tab-closed.png"
@@ -65,20 +64,21 @@
 
             [:div#sidebar-wrap.hidden-sm-down
              [sidebar-component]]
-            [:div.content {:style {:width            "100%"
-                                   :background-image (str "url(" @src ")")
-                                   :background-size  "cover"}}
-             [upload-image-component show? close-modal]
-             [:button#change-header-btn
-              {:type     "button"
-               :class    "btn btn-secondary"
-               :style    {:font-size "1em"
-                          :padding   "6px"
-                          :display   (if @is-user-logged-in?
-                                       "block"
-                                       "none")}
-               :on-click open-modal}
-              [:i.fa.fa-pencil-square-o]]
-             (when @loading?
-               [loading-component])
-             [show-view @active-view]]]))})))
+            [:div.outer-height-wrap
+              [:div.inner-height-wrap
+                [:div.content {:style {:background-image (str "url(" @src ")")
+                                       :background-size  "cover"}}
+                   [upload-image-component show? close-modal]
+                   [:button#change-header-btn
+                    {:type     "button"
+                     :class    "btn btn-secondary"
+                     :style    {:font-size "1em"
+                                :padding   "6px"
+                                :display   (if @is-user-logged-in?
+                                             "block"
+                                             "none")}
+                     :on-click open-modal}
+                    [:i.fa.fa-pencil-square-o]]
+                   (when @loading?
+                     [loading-component])
+                   [show-view @active-view]]]]]))})))
