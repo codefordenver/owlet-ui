@@ -36,19 +36,25 @@ a:hover {
   cursor: pointer;
 }
 
-#owlet-owl {
-  position: absolute;
-  top: 0;
-  left: 1px;
-  border-radius: 50%;
+#owlet-image {
+  display: block;
+  height: 108px;
+  width: 80px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
 }
 
-#owlet-owl:hover {
-  -ms-transform: rotate(360deg); /* IE 9 */
-  -webkit-transform: rotate(360deg); /* Safari */
-  transform: rotate(360deg);
+#owlet-owl, #lp-owlet-owl {
+  transform: rotate(0deg);
   transition: transform 1s;
   transition-timing-function: ease;
+  -webkit-transform: rotate(0deg);
+  -webkit-transition: -webkit-transform 0.5s;
+  -webkit-transition-timing-function: ease;
+  -ms-transform: rotate(0deg);
+  -ms-transition: -ms-transform 0.5s;
+  -ms-transition-timing-function: ease;
+  border-radius: 50%;
 }
 
 #sidebar {
@@ -63,12 +69,22 @@ a:hover {
     margin-left: auto;
     margin-right: auto;
   }
-  #owlet-image {
+  #owlet-logo-div {
     margin-top: 0;
-    height: 108px;
-    width: 80px;
     border-bottom-left-radius: 20px;
     border-bottom-right-radius: 20px;
+    background: url("../img/owlet-text.png");
+    &:hover {
+      #owlet-owl, #lp-owlet-owl {
+        -ms-transform: rotate(360deg);
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+        transition: transform 1s;
+        transition-timing-function: ease;
+        -webkit-transition: -webkit-transform 0.5s;
+        -webkit-transition-timing-function: ease;
+      }
+    }
   }
   .menu {
     padding-top: 10px;
@@ -99,10 +115,22 @@ a:hover {
     margin-left: auto;
     margin-right: auto;
   }
-  #owlet-image {
+  #owlet-logo-div {
     margin-top: 0;
-    height: 108px;
-    width: 80px;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    background: url("../img/owlet-text.png");
+    &:hover {
+      #owlet-owl, #lp-owlet-owl {
+        -ms-transform: rotate(360deg);
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+        transition: transform 1s;
+        transition-timing-function: ease;
+        -webkit-transition: -webkit-transform 0.5s;
+        -webkit-transition-timing-function: ease;
+      }
+    }
   }
   .menu {
     padding-top: 10px;
