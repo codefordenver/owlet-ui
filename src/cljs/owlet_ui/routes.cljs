@@ -36,6 +36,9 @@
   (defroute "/" []
             (re/dispatch [:set-active-view :welcome-view]))
 
+  (defroute "/404" []
+            (re/dispatch [:set-active-view :not-found-view]))
+
   (defroute "/about" []
             (re/dispatch [:set-active-view :about-view]))
 
@@ -57,7 +60,7 @@
             (re/dispatch [:set-active-view :activity-view]))
 
   (defroute "*" []
-            (set! (.-location js/window) "http://owlet.codefordenver.org/#/branches"))
+            (set! (.-location js/window) "http://localhost:4000/#/404"))
 
   ; Ensure browser history uses Secretary to dispatch.
   (doto (History.)

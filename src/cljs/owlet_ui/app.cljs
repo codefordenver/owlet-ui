@@ -6,6 +6,7 @@
             [owlet-ui.components.lpsidebar :refer [lpsidebar-component]]
             [owlet-ui.components.loading :refer [loading-component]]
             [owlet-ui.views.welcome :refer [welcome-view]]
+            [owlet-ui.views.not-found :refer [not-found-view]]
             [owlet-ui.views.activity :refer [activity-view]]
             [owlet-ui.views.branches :refer [branches-view]]
             [owlet-ui.views.settings :refer [settings-view]]
@@ -13,6 +14,7 @@
 
 (defmulti views identity)
 (defmethod views :welcome-view [] [welcome-view])
+(defmethod views :not-found-view [] [not-found-view])
 (defmethod views :activity-view [] [activity-view])
 (defmethod views :branches-view [] [branches-view])
 (defmethod views :branch-activities-view [] [branch-activities-view])
