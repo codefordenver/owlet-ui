@@ -56,6 +56,9 @@
             (re/dispatch [:get-library-content-from-contentful params])
             (re/dispatch [:set-active-view :activity-view]))
 
+  (defroute "*" []
+            (set! (.-location js/window) "http://owlet.codefordenver.org/#/branches"))
+
   ; Ensure browser history uses Secretary to dispatch.
   (doto (History.)
     (events/listen
