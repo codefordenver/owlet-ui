@@ -4,9 +4,10 @@
 
 (defn lpsidebar-component []
   [:div#lpsidebar
-   [:div
-    [:a {:href "#"}
-     [:img#owlet-image {:src "img/owlet-logo.png"}]]]
+   [:div#owlet-logo-div
+    [:a#owlet-image {:href "#"}
+      [:img#owlet-text {:src "../img/owlet-text.png"}]
+      [:img#owlet-owl {:src "../img/owlet-owl.png"}]]]
    [:div.menu
     [:div.login
      [login-component]]

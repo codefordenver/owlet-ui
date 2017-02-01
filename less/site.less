@@ -36,6 +36,21 @@ a:hover {
   cursor: pointer;
 }
 
+#owlet-owl {
+  position: absolute;
+  top: 0;
+  right: 0;
+  border-radius: 50%;
+}
+
+#owlet-owl:hover {
+  -ms-transform: rotate(360deg); /* IE 9 */
+  -webkit-transform: rotate(360deg); /* Safari */
+  transform: rotate(360deg);
+  transition: transform 1s;
+  transition-timing-function: ease;
+}
+
 #sidebar {
   text-align: center;
   background-color: @purple;
@@ -48,11 +63,9 @@ a:hover {
     margin-left: auto;
     margin-right: auto;
   }
-  img {
-    margin-top: 10px;
-  }
   #owlet-image {
     margin-top: 0;
+    height: 108px;
     width: 80px;
     border-bottom-left-radius: 20px;
     border-bottom-right-radius: 20px;
@@ -66,6 +79,7 @@ a:hover {
       text-decoration: none;
     }
     img {
+      margin-top: 10px;
       width: 80px;
     }
   }
@@ -85,14 +99,10 @@ a:hover {
     margin-left: auto;
     margin-right: auto;
   }
-  img {
-    margin-top: 10px;
-  }
   #owlet-image {
     margin-top: 0;
+    height: 108px;
     width: 80px;
-    border-bottom-left-radius: 20px;
-    border-bottom-right-radius: 20px;
   }
   .menu {
     padding-top: 10px;
@@ -103,6 +113,7 @@ a:hover {
       text-decoration: none;
     }
     img {
+      margin-top: 10px;
       width: 80px;
     }
   }
