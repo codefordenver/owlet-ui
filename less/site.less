@@ -36,6 +36,27 @@ a:hover {
   cursor: pointer;
 }
 
+#owlet-image {
+  display: block;
+  height: 108px;
+  width: 80px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
+#owlet-owl, #lp-owlet-owl {
+  transform: rotate(0deg);
+  transition: transform 1s;
+  transition-timing-function: ease;
+  -webkit-transform: rotate(0deg);
+  -webkit-transition: -webkit-transform 0.5s;
+  -webkit-transition-timing-function: ease;
+  -ms-transform: rotate(0deg);
+  -ms-transition: -ms-transform 0.5s;
+  -ms-transition-timing-function: ease;
+  border-radius: 50%;
+}
+
 #sidebar {
   text-align: center;
   background-color: @purple;
@@ -48,14 +69,22 @@ a:hover {
     margin-left: auto;
     margin-right: auto;
   }
-  img {
-    margin-top: 10px;
-  }
-  #owlet-image {
+  #owlet-logo-div {
     margin-top: 0;
-    width: 80px;
     border-bottom-left-radius: 20px;
     border-bottom-right-radius: 20px;
+    background: url("../img/owlet-text.png");
+    &:hover {
+      #owlet-owl, #lp-owlet-owl {
+        -ms-transform: rotate(360deg);
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+        transition: transform 1s;
+        transition-timing-function: ease;
+        -webkit-transition: -webkit-transform 0.5s;
+        -webkit-transition-timing-function: ease;
+      }
+    }
   }
   .menu {
     padding-top: 10px;
@@ -66,6 +95,7 @@ a:hover {
       text-decoration: none;
     }
     img {
+      margin-top: 10px;
       width: 80px;
     }
   }
@@ -85,14 +115,22 @@ a:hover {
     margin-left: auto;
     margin-right: auto;
   }
-  img {
-    margin-top: 10px;
-  }
-  #owlet-image {
+  #owlet-logo-div {
     margin-top: 0;
-    width: 80px;
     border-bottom-left-radius: 20px;
     border-bottom-right-radius: 20px;
+    background: url("../img/owlet-text.png");
+    &:hover {
+      #owlet-owl, #lp-owlet-owl {
+        -ms-transform: rotate(360deg);
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+        transition: transform 1s;
+        transition-timing-function: ease;
+        -webkit-transition: -webkit-transform 0.5s;
+        -webkit-transition-timing-function: ease;
+      }
+    }
   }
   .menu {
     padding-top: 10px;
@@ -103,12 +141,14 @@ a:hover {
       text-decoration: none;
     }
     img {
+      margin-top: 10px;
       width: 80px;
     }
   }
 }
 
 #lpsidebar-overlay {
+  cursor: pointer;
   position: fixed;
   min-width: 100%;
   min-height: 100%;
@@ -130,7 +170,7 @@ a:hover {
 #lpsidebar-open, #lpsidebar-close {
   cursor: pointer;
   transition: left 0.3s;
-  border-left: 1px solid black;
+  border-left: 1px solid #6A2569;
   position: fixed;
   top: 2px;
   left: 0px;
@@ -202,6 +242,14 @@ mark.white {
   right: 0;
   width: 50%;
   height: 100%;
+}
+
+.not-found {
+  margin-left: 40px;
+  h2 {
+    font-size: 2.4rem;
+    margin: 1.2em 0;
+  }
 }
 
 .welcome-text {
