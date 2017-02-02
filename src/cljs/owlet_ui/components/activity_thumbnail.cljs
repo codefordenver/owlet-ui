@@ -16,8 +16,7 @@
      [:div.activity-thumbnail-wrap.box-shadow
       [:a {:href     (str "#/activity/" entry-id)
            :on-click #(rf/dispatch [:set-activity-in-view entry-id])}
-       [:div.activity-thumbnail {:style {:background-image (str "url('" image "')")
-                                         :background-size  "cover"}}
+       [:div.activity-thumbnail {:style {:background-image (str "url('" image "')")}}
         [:mark.title title]]]
       (when techRequirements
         [:div.platform.btn
