@@ -60,7 +60,7 @@
             (re/dispatch [:set-active-view :activity-view]))
 
   (defroute "*" []
-            (set! (.-location js/window) "http://localhost:4000/#/404"))
+            (set! (.-location js/window) "/#/404"))
 
   ; Ensure browser history uses Secretary to dispatch.
   (doto (History.)
