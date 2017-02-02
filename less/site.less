@@ -372,15 +372,29 @@ mark.white {
   .branchwrap {
     margin: 15px 0;
     height: 117px;
+    background-size: 100%;
+    background-position: center;
+    transition: background-size 1s ease;
+    -moz-transition: background-size 1s ease;
+    -ms-transition: background-size 1s ease;
+    -webkit-transition: background-size 1s ease;
+    -o-transition: background-size 1s ease;
+    &:hover {
+      background-size: 125% !important;
+    }
     .branch-bg {
       height: 100%;
-    }
-    a:hover {
-      mark {
-        background-color: rgba(0, 0, 0, 0);
+      background-size: 225% 100%;
+      background-repeat: no-repeat;
+      background-position: bottom left;
+      -webkit-transition: all 0.25s ease-in;
+      -moz-transition: all 0.25s ease-in;
+      transition: all 0.25s ease-in;
+      &:hover {
+        background-color: rgba(0, 0, 0, 0) !important;
+        background-position: bottom right !important;
       }
     }
-
     h2 {
       font-weight: 300;
       font-size: 1.3em;
@@ -474,8 +488,16 @@ img.back {
   .activity-thumbnail {
     position: relative;
     overflow: hidden;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 100%;
+    transition: background-size 0.5s ease;
+    -moz-transition: background-size 0.5s ease;
+    -ms-transition: background-size 0.5s ease;
+    -webkit-transition: background-size 0.5s ease;
+    -o-transition: background-size 0.5s ease;
     &:hover {
-      opacity: 0.8;
+      background-size: 130% !important;
     }
     height: 250px;
     @media only screen and (max-width: 767px) and (min-width: 650px) {
@@ -564,6 +586,7 @@ img.back {
 
 .activity-challenge-wrap {
   margin: 2em 0;
+  width: 100%;
 }
 
 .activity-inspiration-wrap {

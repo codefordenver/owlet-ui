@@ -286,7 +286,8 @@
                                          (hash-map (keyword (->kebab-case branch))
                                                    {:activities   []
                                                     :display-name branch
-                                                    :count        0})) branches)
+                                                    :count        0
+                                                    :preview-url  ""})) branches)
                                  (into {}))
 
           activities-by-branch (->> (mapv (fn [branch]
@@ -295,12 +296,15 @@
                                                     matches (filterv (fn [activity]
                                                                        (some #(= display-name %)
                                                                              (get-in activity [:fields :branch])))
-                                                                     all-activities)]
+                                                                     all-activities)
+                                                    random-match (get matches (rand-int (count matches)))
+                                                    preview-url (get-in random-match [:fields :preview :sys :url])]
                                                 (if (seq matches)
                                                   (hash-map branch-key
                                                             {:activities   matches
                                                              :display-name display-name
-                                                             :count        (count matches)})
+                                                             :count        (count matches)
+                                                             :preview-url  preview-url})
                                                   branch))))
                                           branches-template)
                                     (into {}))]

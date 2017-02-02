@@ -11,21 +11,16 @@
     (map vector colors activity-branches)))
 
 (defn branches-view []
-  (let [activity-branches (re/subscribe [:activity-branches])
-        activities-by-branch (re/subscribe [:activities-by-branch])]
+  (let [activity-branches (re/subscribe [:activity-branches])]
     [:div.branches
-     ; TODO: provide error message when branches can't be retrieved
      [:section
        [:h1#title [:mark "Get started by choosing a branch below"]]
        [:br]
        (let [color-pairs (pair-color (sort @activity-branches))]
          (doall
            (for [pair color-pairs
-                 :let [count-key (->kebab-case (-> pair
+                 :let [branch-key (->kebab-case (-> pair
                                                    second
-                                                   keyword))
-                       counter (-> @activities-by-branch
-                                   count-key
-                                   :count)]]
+                                                   keyword))]]
              ^{:key (gensym "branch-")}
-             [branch pair counter])))]]))
+             [branch pair branch-key])))]]))
