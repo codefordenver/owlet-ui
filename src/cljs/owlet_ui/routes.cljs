@@ -48,7 +48,7 @@
   (defroute "/branches" []
             (re/dispatch [:get-library-content-from-contentful])
             (re/dispatch [:set-active-view :branches-view])
-            (re/dispatch [:set-active-document-title!]))
+            (re/dispatch [:set-active-document-title! "Branches"]))
 
   (defroute "/:branch" {:as params}
             (re/dispatch [:get-library-content-from-contentful params])
