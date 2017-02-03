@@ -465,11 +465,12 @@ img.back {
 }
 
 .tag {
+  text-transform: uppercase;
   border-radius: 25px;
   margin: 5px;
-  padding: 7px;
+  padding: 7px 7px 6px 7px;
   font-weight: normal;
-  font-size: 11px;
+  font-size: 12px;
   background-color: #564B82;
   &:hover {
     background-color: #483C6C;
@@ -566,6 +567,10 @@ img.back {
   padding: 0 0 0 23px;
 }
 
+.activity-content {
+  font-size: 1.2em;
+}
+
 .activity-title-wrap {
   h1 {
     font-weight: 700;
@@ -587,6 +592,9 @@ img.back {
 .activity-challenge-wrap {
   margin: 2em 0;
   width: 100%;
+  img {
+    max-width: 100%;
+  }
 }
 
 .activity-inspiration-wrap {
@@ -598,8 +606,8 @@ img.back {
 }
 
 .activity-skills-wrap {
-  padding: 5px 0;
-  background-color: black;
+  padding: 5px;
+  background-color: rgb(12, 23, 27);
   color: white;
   display: -webkit-flex;
   display: flex;
@@ -616,8 +624,11 @@ img.back {
 
 .img-gallery {
   width: 100%;
-  float: left;
-  margin-bottom: 15px;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-flow: row wrap;
+  flex-flow: row wrap;
+  margin-bottom: 1.5em;
 }
 .img-gallery img {
   width: 100%;
@@ -626,7 +637,7 @@ img.back {
 .img-gallery figure {
   display: block;
   float: left;
-  margin: 0.5%;
+  margin: 0.66%;
   width: 32%;
 }
 
