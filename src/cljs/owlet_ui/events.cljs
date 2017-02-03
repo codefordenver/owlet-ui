@@ -48,7 +48,7 @@
                   :branch-activities-view (-> (:activities-by-branch-in-view db)
                                               :display-name)}
           default-title (:welcome-view titles)
-          document-title (or (titles active-view) (clj-str/capitalize val))
+          document-title (or (titles active-view) (clj-str/capitalize (or val "")))
           title-template (str document-title " | " config/project-name)
           title (or title-template default-title)]
       (assoc-in db [:app :title] title))))
