@@ -1,12 +1,12 @@
 (ns owlet-ui.views.branch-activities
   (:require [re-frame.core :as rf]
-            [owlet-ui.components.activity-thumbnail :refer [activity-thumbnail]]
-            [owlet-ui.components.activity.breadcrumb :refer [breadcrumb]]))
+            [owlet-ui.components.search-bar :refer [search-bar]]
+            [owlet-ui.components.activity-thumbnail :refer [activity-thumbnail]]))
 
 (defn branch-activities-view []
   (let [{:keys [display-name activities]} @(rf/subscribe [:activities-by-branch-in-view])]
       [:div
-        [breadcrumb]
+        [search-bar]
         [:div.branch-activities-wrap
          (if-not display-name
            [:div
