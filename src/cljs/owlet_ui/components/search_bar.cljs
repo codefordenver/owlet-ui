@@ -7,7 +7,7 @@
   (let [search-model (reagent/atom {})
         branches (rf/subscribe [:activity-branches])
         skills (rf/subscribe [:skills])
-        result-formatter #(-> {:term % :active-view @(rf/subscribe [:active-view])})
+        result-formatter #(-> {:term %})
         suggestions-for-search
         (fn [s]
           (into []
@@ -15,8 +15,7 @@
                       (for [n (concat @skills @branches)
                             :when (re-find (re-pattern (str "(?i)" s)) n)]
                         (result-formatter n)))))
-        change-handler (fn [{:keys [term]}]
-                         (rf/dispatch [:filter-activities-by-search-term term]))]
+        change-handler #(rf/dispatch [:filter-activities-by-search-term (:term %)])]
     [:div.search-bar-wrap
      [typeahead
       :width "100%"
