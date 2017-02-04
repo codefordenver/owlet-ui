@@ -24,7 +24,7 @@
       :class "form-control"
       :on-change change-handler
       :suggestion-to-string #(:term %)
-      :debounce-delay 500
+      :debounce-delay 100
       :change-on-blur? true
       :rigid? true
       :data-source suggestions-for-search
