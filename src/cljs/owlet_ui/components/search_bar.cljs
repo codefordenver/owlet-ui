@@ -1,7 +1,30 @@
-(ns owlet-ui.components.search-bar)
+(ns owlet-ui.components.search-bar
+  (:require [re-com.core :refer [typeahead]]
+            [re-frame.core :as rf]
+            [reagent.core :as reagent]))
+
+(defn suggestion-render [{:keys [search-term]}]
+  [:span {:style {:color "white"
+                  :background "black"}} search-term])
 
 (defn search-bar []
-  [:div.search-bar-wrap
-    [:input.form-control {:type "search"
-                          :placeholder "Search..."}]
-    [:img#search-icon {:src "img/search.png"}]])
+  (let [search-model (reagent/atom {})
+        result-formatter #(-> {:search-term % :current-view @(rf/subscribe [:active-view])})
+        ;; simulate a search feature by scanning the baked-in constant collection
+        suggestions-for-search
+        (fn [s]
+          (into []
+                (take 16
+                      (for [n @(rf/subscribe [:activity-branches])
+                            :when (re-find (re-pattern (str "(?i)" s)) n)]
+                        (result-formatter n)))))]
+    [:div.search-bar-wrap
+     [typeahead
+      :width "100%"
+      :class "form-control"
+      :suggestion-to-string #(:search-term %)
+      :data-source suggestions-for-search
+      :model search-model
+      :placeholder "Search..."
+      :render-suggestion suggestion-render]
+     [:img#search-icon {:src "img/search.png"}]]))
