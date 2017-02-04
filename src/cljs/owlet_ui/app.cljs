@@ -6,6 +6,7 @@
             [owlet-ui.components.lpsidebar :refer [lpsidebar-component]]
             [owlet-ui.components.loading :refer [loading-component]]
             [owlet-ui.views.welcome :refer [welcome-view]]
+            [owlet-ui.components.search-bar :refer [search-bar]]
             [owlet-ui.views.not-found :refer [not-found-view]]
             [owlet-ui.views.activity :refer [activity-view]]
             [owlet-ui.views.branches :refer [branches-view]]
@@ -50,12 +51,11 @@
             [:img#lpsidebar-close.hidden-md-up {:src "img/owlet-tab-opened.png"
                                                 :on-click #(js/closeSidebar)
                                                 :style {:z-index "0"}}]
-
-
             [:div#sidebar-wrap.hidden-sm-down
              [sidebar-component]]
             [:div.outer-height-wrap
-              [:div.inner-height-wrap
+             [search-bar]
+             [:div.inner-height-wrap
                 [:div.content {:style {:background-image (str "url(" @src ")")
                                        :background-size  "cover"}}
                    [upload-image-component show? close-modal]

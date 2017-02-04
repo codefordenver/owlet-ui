@@ -8,7 +8,6 @@
         branches (rf/subscribe [:activity-branches])
         skills (rf/subscribe [:skills])
         result-formatter #(-> {:term % :active-view @(rf/subscribe [:active-view])})
-        ;; simulate a search feature by scanning the baked-in constant collection
         suggestions-for-search
         (fn [s]
           (into []
