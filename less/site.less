@@ -32,10 +32,16 @@ a:hover {
   }
 }
 
+.rc-typeahead-suggestion, .rc-typeahead-suggestion.active {
+  background-color: #3B3B3B;
+  &:hover {
+    background-color: black;
+  }
+}
+
 .search-bar-wrap {
   color: white;
   input {
-    text-indent: 40px;
     border-color: black;
     background-color: black;
     height: 50px;
@@ -50,17 +56,6 @@ a:hover {
   }
   @media(max-width: 767px) {
     margin-left: 31px;
-  }
-}
-
-#search-icon {
-  margin-top: 10px;
-  width: 30px;
-  position: absolute;
-  top: 0;
-  left: 92px;
-  @media(max-width: 768px) {
-    left: 42px;
   }
 }
 

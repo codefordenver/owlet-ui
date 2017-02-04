@@ -4,8 +4,7 @@
             [reagent.core :as reagent]))
 
 (defn suggestion-render [{:keys [term]}]
-  [:span {:style {:color "white"
-                  :background "black"}} term])
+  term)
 
 (defn search-bar []
   (let [search-model (reagent/atom {})
@@ -34,5 +33,4 @@
       :data-source suggestions-for-search
       :model search-model
       :placeholder "Search..."
-      :render-suggestion suggestion-render]
-     [:img#search-icon {:src "img/search.png"}]]))
+      :render-suggestion suggestion-render]]))
