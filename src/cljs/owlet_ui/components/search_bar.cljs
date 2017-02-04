@@ -3,9 +3,6 @@
             [re-frame.core :as rf]
             [reagent.core :as reagent]))
 
-(defn suggestion-render [{:keys [term]}]
-  term)
-
 (defn search-bar []
   (let [search-model (reagent/atom {})
         branches (rf/subscribe [:activity-branches])
@@ -28,9 +25,9 @@
       :on-change change-handler
       :suggestion-to-string #(:term %)
       :debounce-delay 500
-      :change-on-blur? false
+      :change-on-blur? true
       :rigid? true
       :data-source suggestions-for-search
       :model search-model
       :placeholder "Search..."
-      :render-suggestion suggestion-render]]))
+      :render-suggestion (fn [{:keys [term]}] term)]]))
