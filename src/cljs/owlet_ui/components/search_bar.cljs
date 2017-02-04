@@ -3,15 +3,15 @@
             [re-frame.core :as rf]
             [reagent.core :as reagent]))
 
-(defn suggestion-render [{:keys [search-term]}]
+(defn suggestion-render [{:keys [term]}]
   [:span {:style {:color "white"
-                  :background "black"}} search-term])
+                  :background "black"}} term])
 
 (defn search-bar []
   (let [search-model (reagent/atom {})
         branches (rf/subscribe [:activity-branches])
         skills (rf/subscribe [:skills])
-        result-formatter #(-> {:search-term % :current-view @(rf/subscribe [:active-view])})
+        result-formatter #(-> {:term % :active-view @(rf/subscribe [:active-view])})
         ;; simulate a search feature by scanning the baked-in constant collection
         suggestions-for-search
         (fn [s]
@@ -19,12 +19,18 @@
                 (take 16
                       (for [n (concat @skills @branches)
                             :when (re-find (re-pattern (str "(?i)" s)) n)]
-                        (result-formatter n)))))]
+                        (result-formatter n)))))
+        change-handler (fn [{:keys [term]}]
+                         (prn term))]
     [:div.search-bar-wrap
      [typeahead
       :width "100%"
       :class "form-control"
-      :suggestion-to-string #(:search-term %)
+      :on-change change-handler
+      :suggestion-to-string #(:term %)
+      :debounce-delay 500
+      :change-on-blur? false
+      :rigid? true
       :data-source suggestions-for-search
       :model search-model
       :placeholder "Search..."
