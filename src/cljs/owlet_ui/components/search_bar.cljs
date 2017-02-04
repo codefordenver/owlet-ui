@@ -16,7 +16,7 @@
                             :when (re-find (re-pattern (str "(?i)" s)) n)]
                         (result-formatter n)))))
         change-handler (fn [{:keys [term]}]
-                         (prn term))]
+                         (rf/dispatch [:filter-activities-by-search-term term]))]
     [:div.search-bar-wrap
      [typeahead
       :width "100%"

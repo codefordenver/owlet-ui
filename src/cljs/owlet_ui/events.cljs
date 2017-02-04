@@ -26,6 +26,7 @@
   (fn [cofx val]
     (assoc-in cofx [:db :app :loading?] val)))
 
+
 (re/reg-cofx
   :close-sidebar!
   (fn [cofx]
@@ -33,6 +34,12 @@
       (when-not (= (db :active-view) :welcome-view)
         (js/closeSidebar))
       (assoc-in cofx [:db :app :open-sidebar] true))))
+
+
+(re/reg-cofx
+  :navigate-to-view!
+  (fn [cofx new-view]
+    (assoc-in cofx [:db :active-view] new-view)))
 
 
 (re/reg-event-db
@@ -334,3 +341,16 @@
   (fn [db [_ activity-id all-activities]]
     (assoc db :activity-in-view (some #(when (= (get-in % [:sys :id]) activity-id) %)
                                       (or (:activities db) all-activities)))))
+
+
+(re/reg-event-db
+  :filter-activities-by-search-term
+  [(re/inject-cofx :navigate-to-view! :branch-activities-view)]
+  (fn [db [_ search-term]]
+    ;; by branch
+    (let [lookup (-> (->kebab-case search-term)
+                     keyword)]
+      (if-let [filtered-set (lookup (:activities-by-branch db))]
+        (assoc db :activities-by-branch-in-view filtered-set)
+        db))))
+    ;; by skill ,,,
