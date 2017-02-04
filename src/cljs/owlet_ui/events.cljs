@@ -279,7 +279,7 @@
   [(re/inject-cofx :set-loading! false)]
   (fn [db [_ res]]
     (let [branches (:branches res)
-          ;; skills (:skills res) ;; TODO: FEAT-149
+          skills (:skills res)
           all-activities (:activities db)
 
           branches-template (->> (mapv (fn [branch]
@@ -315,8 +315,10 @@
             (let [activities-by-branch-in-view ((keyword branch) activities-by-branch)]
               (re/dispatch [:set-activities-by-branch-in-view branch activities-by-branch-in-view])
               (assoc db :activity-branches branches
+                        :skills skills
                         :activities-by-branch activities-by-branch)))))
       (assoc db :activity-branches branches
+                :skills skills
                 :activities-by-branch activities-by-branch))))
 
 

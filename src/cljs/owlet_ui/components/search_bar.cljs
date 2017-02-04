@@ -9,13 +9,15 @@
 
 (defn search-bar []
   (let [search-model (reagent/atom {})
+        branches (rf/subscribe [:activity-branches])
+        skills (rf/subscribe [:skills])
         result-formatter #(-> {:search-term % :current-view @(rf/subscribe [:active-view])})
         ;; simulate a search feature by scanning the baked-in constant collection
         suggestions-for-search
         (fn [s]
           (into []
                 (take 16
-                      (for [n @(rf/subscribe [:activity-branches])
+                      (for [n (concat @skills @branches)
                             :when (re-find (re-pattern (str "(?i)" s)) n)]
                         (result-formatter n)))))]
     [:div.search-bar-wrap

@@ -88,3 +88,5 @@
     (get-in db [:app :loading?])))
 
 (register-getter-sub :app-title [:app :title])
+
+(register-getter-sub :skills [:skills])
