@@ -14,6 +14,13 @@
            [:div
             [:h2 [:a {:href "#/branches"} [:img.back {:src "img/back-filled.png"}]]
                  [:mark.white.box-shadow [:b display-name]]]
+            [:div {:style {:text-align "right"}}
+              [:mark.white {:style {:background-color "rgba(255,255,255,0.65)"
+                                    :margin-right "15px"
+                                    :padding ".15em .35em .15em .4em"
+                                    :font-weight "500"
+                                    :font-size "1.02em"}}
+                "* = software required"]]
             [:div.flexcontainer-wrap
              (if (seq activities)
                (for [activity activities

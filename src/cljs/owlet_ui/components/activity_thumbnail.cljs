@@ -18,12 +18,14 @@
            :on-click #(rf/dispatch [:set-activity-in-view entry-id])}
        [:div.activity-thumbnail {:style {:background-image (str "url('" image "')")}}
         [:mark.title title]]]
-      (when techRequirements
+      (if techRequirements
+       [:div.platform-wrap
+        [:span "Platform: "]
         [:div.platform.btn
-         [set-as-marked techRequirements]])
-      (when unplugged
-        [:div.unplugged.btn.btn-warning
-         "UNPLUGGED"])
+         [set-as-marked techRequirements]]]
+       [:div.platform-wrap
+        [:div.unplugged.btn
+         "UNPLUGGED"]])
       [:div.summary summary]
       (when skills
         (for [c skills]
