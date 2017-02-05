@@ -11,7 +11,7 @@
 
 (defn set-hover [images]
   (let [image (get-random images)]
-    (if (> 1 (count images))
+    (if (> (count images) 1)
       ; prevent the same image twice in a row
       (if (== image @hover-image)
         (set-hover images)
@@ -27,8 +27,8 @@
                     branch-key
                     :count)
         preview-images (-> @activities-by-branch
-                         branch-key
-                         :preview-urls)]
+                           branch-key
+                           :preview-urls)]
     [:div.branchwrapper.col-xs-12.col-md-6.col-lg-4
      [:div.branchwrap {:style {:background-image (str "url('" @hover-image "')")}
                        :on-mouse-enter #(set-hover preview-images)}
