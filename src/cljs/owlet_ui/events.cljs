@@ -4,9 +4,9 @@
             [owlet-ui.db :as db]
             [owlet-ui.config :as config]
             [owlet-ui.firebase :as fb]
+            [owlet-ui.helpers :refer [keywordize-name]]
             [day8.re-frame.http-fx]
-            [ajax.core :as ajax :refer [GET POST PUT]]
-            [camel-snake-kebab.core :refer [->kebab-case]]))
+            [ajax.core :as ajax :refer [GET POST PUT]]))
 
 
 (defonce library-content-url
@@ -52,7 +52,8 @@
                                               :activity-in-view
                                               :fields
                                               :title)
-                  :branch-activities-view (-> (:activities-by-branch-in-view db)
+                  :branch-activities-view (-> db
+                                              :activities-by-branch-in-view
                                               :display-name)}
           default-title (:welcome-view titles)
           document-title (or (titles active-view) (clj-str/capitalize (or val "")))
@@ -290,7 +291,7 @@
           all-activities (:activities db)
 
           branches-template (->> (mapv (fn [branch]
-                                         (hash-map (keyword (->kebab-case branch))
+                                         (hash-map (keywordize-name branch)
                                                    {:activities   []
                                                     :display-name branch
                                                     :count        0
@@ -306,11 +307,19 @@
                                                                      all-activities)
                                                     preview-urls (mapv #(get-in % [:fields :preview :sys :url]) matches)]
                                                 (if (seq matches)
-                                                  (hash-map branch-key
-                                                            {:activities   matches
-                                                             :display-name display-name
-                                                             :count        (count matches)
-                                                             :preview-urls  preview-urls})
+                                                  (let [skills (mapv #(-> % :fields :skills)
+                                                                     matches)
+                                                        nil-removed-coll (remove nil? skills)
+                                                        concat-coll (reduce concat nil-removed-coll)
+                                                        normalize-coll (mapv keywordize-name concat-coll)
+                                                        skill-coll (->> normalize-coll
+                                                                        (mapv (comp first vector)))]
+                                                    (hash-map branch-key
+                                                              {:activities   matches
+                                                               :display-name display-name
+                                                               :count        (count matches)
+                                                               :preview-urls preview-urls
+                                                               :skill-set    (set skill-coll)}))
                                                   branch))))
                                           branches-template)
                                     (into {}))]
@@ -346,11 +355,31 @@
 (re/reg-event-db
   :filter-activities-by-search-term
   [(re/inject-cofx :navigate-to-view! :branch-activities-view)]
-  (fn [db [_ search-term]]
+  (fn [db [_ term]]
+
     ;; by branch
-    (let [lookup (-> (->kebab-case search-term)
-                     keyword)]
-      (if-let [filtered-set (lookup (:activities-by-branch db))]
+    ;; ---------
+
+    (let [search-term (keywordize-name term)]
+      (if-let [filtered-set (search-term (:activities-by-branch db))]
         (assoc db :activities-by-branch-in-view filtered-set)
-        db))))
-    ;; by skill ,,,
+
+        ;; by skill
+        ;; --------
+
+        (if-let [all-filtered-set
+                 (filterv #(let [[_ branch-vals] %]
+                             (let [skills-set (:skill-set branch-vals)]
+                               (when (contains? skills-set search-term)
+                                 %))) (:activities-by-branch db))]
+          (let [all-filtered-activities (mapv #(:activities (second %)) all-filtered-set)
+                concat-activities (reduce concat all-filtered-activities)]
+            (assoc db :activities-by-branch-in-view (hash-map :activities concat-activities
+                                                              :display-name term)))
+          ;; by activity name (title)
+          ;; ----------------
+          db)))))
+
+
+
+
