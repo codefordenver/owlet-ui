@@ -198,7 +198,6 @@ mark.white {
 }
 
 .flexcontainer-wrap {
-  margin-top: 0.6em;
   font-size: 2rem;
   font-weight: 500;
   display: -webkit-flex;
@@ -388,6 +387,9 @@ mark.white {
       background-size: 225% 100%;
       background-repeat: no-repeat;
       background-position: bottom left;
+      -webkit-transition: all 0.25s ease-in;
+      -moz-transition: all 0.25s ease-in;
+      transition: all 0.25s ease-in;
       &:hover {
         background-color: rgba(0, 0, 0, 0) !important;
         background-position: bottom right !important;
@@ -440,10 +442,10 @@ mark.white {
 }
 
 .branch-activities-wrap {
-  margin: 15px 20px 0 25px;
+  margin: 28px 20px 0 25px;
   h2 {
     font-size: 2.4rem;
-    margin: 1.2em 0 0 0;
+    margin: 1.2em 0;
   }
   @media (max-width: 500px) {
     .col-xs-12.col-md-6.col-lg-4 {
@@ -514,34 +516,22 @@ img.back {
     margin-top: 10px;
     font-size: 0.9em;
   }
-  .platform-wrap {
-    margin-top: 5px;
-    font-size: 0.6em;
-    text-align: right;
-  }
   .unplugged, .platform {
-    margin-top: 3px;
+    margin-top: 10px;
     padding: 5px 6px 4px 6px;
-    font-size: 1.1em;
-    p {
-      margin: 0;
-    }
+    font-size: 0.65em;
   }
   .platform {
-    background-color: #00A79D;
+    background-color: #65D2C0;
     &:hover {
-      background-color: #65D2C0;
+      background-color: #00A79D;
+    }
+    p {
+      margin: 0;
     }
     a {
       text-decoration: none;
       color: white;
-    }
-  }
-  .unplugged {
-    color: white;
-    background-color: #ec971f;
-    &:hover {
-      background-color: #f0ad4e;
     }
   }
   .tag {
@@ -632,36 +622,23 @@ img.back {
   }
 }
 
-.activity-gallery-wrap {
-  margin-bottom: 2em;
-}
-
 .img-gallery {
   width: 100%;
   display: -webkit-flex;
   display: flex;
   -webkit-flex-flow: row wrap;
   flex-flow: row wrap;
-  margin-bottom: 2em;
+  margin-bottom: 1.5em;
 }
 .img-gallery img {
-  height: 100%;
-  width: auto;
+  width: 100%;
+  height: auto;
 }
 .img-gallery figure {
   display: block;
   float: left;
   margin: 0.66%;
-  height: 205px;
-  @media (max-width: 1200px) {
-    height: 140px;
-  }
-  @media (max-width: 642px) {
-    height: 89px;
-  }
-  @media (max-width: 375px) {
-    height: 76px;
-  }
+  width: 32%;
 }
 
 .breadcrumb-wrap {
