@@ -13,18 +13,17 @@
   (:require [owlet-ui.config :refer [firebase-app-init]]
             [owlet-ui.async :refer [repeatedly-running]]
             [reagent.ratom :refer-macros [reaction]]
-            [re-frame.core :as re]
+            [re-frame.core :as rf]
 
             ; Adds <script src="https://www.gstatic.com/firebasejs/3.4.0/firebase.js"></script>
             ; to index.html . This is required for def. of js/firebase, etc.
             [cljsjs.firebase]))
 
 
-(def firebase-app
-  "The global firebase.app.App instance for use by this application.
-  There must be only one with a particular name.
-  See https://firebase.google.com/docs/reference/js/firebase.app.App.html .
-  "
+(defonce firebase-app
+  ; The global firebase.app.App instance for use by this application.
+  ; There must be only one with a particular name.
+  ; See https://firebase.google.com/docs/reference/js/firebase.app.App.html .
   (.initializeApp js/firebase
                   (clj->js firebase-app-init)         ; Options.
                   "owlet-ui.firebase/firebase-app"))  ; Just a name.
@@ -41,10 +40,15 @@
 
 
 (def firebase-auth-object
+  "The firebase.auth.Auth instance to authenticate users of this firebase-app.
+  "
   (.auth firebase-app))
 
 
 (def firebase-db-ref
+  "A Firebase ref (a firebase.database.Reference instance) referring to the
+  root of the database of this firebase-app.
+  "
   (-> firebase-app .database .ref))
 
 
@@ -57,10 +61,16 @@
 
 
 (def firebase-storage-ref
+  "A Firebase ref (a firebase.storage.Reference instance) referring to the
+  \"bucket\" root of the storage for this firebase-app.
+  "
   (-> firebase-app .storage .ref))
 
 
 (defn storage-ref-for-url
+  "Returns a Firebase ref (a firebase.storage.Reference instance) referring to
+  the storage in this firebase-app at the given URL.
+  "
   [url]
   (-> firebase-app .storage (.refFromURL url)))
 
@@ -87,8 +97,13 @@
   (-> auth-obj
       (.signInWithCustomToken fb-token)
       (.catch (fn [fb-error]
-                (re/dispatch
+                (rf/dispatch
                   (apply vector fail-event-id (js->clj fb-error) args))))))
+
+
+(rf/reg-fx
+  ::sign-in
+  (partial apply sign-in))
 
 
 (defn on-auth-change
@@ -102,7 +117,7 @@
   [auth-obj event-id & args]
   (.onAuthStateChanged auth-obj
                        (fn [fb-user]
-                         (re/dispatch
+                         (rf/dispatch
                            (apply vector event-id (js->clj fb-user) args)))))
 
 
@@ -184,7 +199,7 @@
        "value"
        (fn [snapshot]
          (let [snap-as-clj (-> snapshot .val (js->clj :keywordize-keys true))]
-           (re/dispatch (apply vector event-id snap-as-clj args))))
+           (rf/dispatch (apply vector event-id snap-as-clj args))))
        #(.log js/console
               (str "owlet-ui.firebase/on-change"
                    "calling firebase.database.Reference's .on():\n"
@@ -275,7 +290,7 @@
       (swap! owlet-ui.async/repeatedly-running disj the-returned-fn)
   "
   [db-ref & subscription-args]
-  (let [sub-reaction     (re/subscribe (vec subscription-args))
+  (let [sub-reaction     (rf/subscribe (vec subscription-args))
         sending-reaction (reaction (set-ref db-ref @sub-reaction))
         repeated-fn      (fn [] @sending-reaction)]
     (swap! repeatedly-running conj repeated-fn)

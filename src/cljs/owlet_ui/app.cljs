@@ -1,5 +1,5 @@
 (ns owlet-ui.app
-  (:require [re-frame.core :as re]
+  (:require [re-frame.core :as rf]
             [reagent.core :as reagent]
             [owlet-ui.components.upload-image-modal :refer [upload-image-component]]
             [owlet-ui.components.sidebar :refer [sidebar-component]]
@@ -12,6 +12,7 @@
             [owlet-ui.views.branch-activities :refer [branch-activities-view]]
             [owlet-ui.async :as async]
             [owlet-ui.auth0 :as auth0]
+            [owlet-ui.config :as config]
             [owlet-ui.firebase :as fb]))
 
 (defmulti views identity)
@@ -28,27 +29,29 @@
 (def show? (reagent/atom false))
 
 (defn main-view []
-  (async/repeatedly-run)    ; Needed to poll subscriptions to update Firebase DB.
 
-  (auth0/on-authenticated auth0/lock :authenticated)
+  (auth0/on-authenticated auth0/lock
+                          config/auth0-del-opts-for-firebase
+                          :authenticated)
   (fb/on-auth-change fb/firebase-auth-object :firebase-user)
 
   (let [users-db-path (fb/db-ref-for-path "users")]
-    (fb/on-change users-db-path :fb-users-change)
-    (fb/change-on users-db-path :change-fb-users))
+    (fb/on-change users-db-path :fb-users-change))
+    ;(fb/change-on users-db-path :change-fb-users))
+  ;(async/repeatedly-run)    ; Needed to poll subscriptions to update Firebase DB.
 
-  (let [active-view (re/subscribe [:active-view])
-        loading? (re/subscribe [:set-loading-state?])
-        src (re/subscribe [:user-has-background-image?])
-        is-user-logged-in? (re/subscribe [:my-user-id])
+  (let [active-view (rf/subscribe [:active-view])
+        loading? (rf/subscribe [:set-loading-state?])
+        src (rf/subscribe [:user-has-background-image?])
+        is-user-logged-in? (rf/subscribe [:my-user-id])
         open-modal (fn [] (reset! show? true))
         close-modal (fn [] (reset! show? false))]
     (reagent/create-class
       {:component-will-mount
-       #(re/dispatch [:get-auth0-profile])
+       #(rf/dispatch [:get-auth0-profile])
        :reagent-render
        (fn []
-         (set! (-> js/document .-title) @(re/subscribe [:app-title]))
+         (set! (-> js/document .-title) @(rf/subscribe [:app-title]))
          (if (= @active-view :welcome-view)
            [show-view @active-view]
            [:div#main
@@ -82,3 +85,17 @@
                    (when @loading?
                      [loading-component])
                    [show-view @active-view]]]]]))})))
+
+
+(rf/reg-fx
+  :set-local-storage
+  (fn [clj-map]
+    (doseq [[k v] clj-map]
+      (.setItem js/localStorage (clj->js k) (clj->js v)))))
+
+
+(rf/reg-cofx
+  :get-local-storage
+  (fn [cofx k]
+    (.getItem js/localStorage (clj->js k))))
+

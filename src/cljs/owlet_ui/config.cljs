@@ -25,11 +25,11 @@
 (def auth0-init
   "Credentials for instantiating Auth0 and Auth0Lock objects.
   "
-  {:clientID "aCHybcxZ3qE6nWta60psS0An1jHUlgMm"
+  {:clientID "W1JzCkUXk2F2cey55eziGm3k99232tmU"
    :domain   "codefordenver.auth0.com"})
 
 
-(def auth0-delegation-options
+(def auth0-del-opts-for-firebase
   "The options needed by function Auth0.getDelegationToken. Omit key :id_token,
   since it will be provided by owlet-ui.auth0/on-authenticated. See
   https://auth0.com/docs/libraries/auth0js#delegation-token-request
@@ -39,11 +39,14 @@
    :target   (:clientID auth0-init)})
 
 
-(def firebase-app-init
+(defonce firebase-app-init
+  ; Used only by owlet-ui.firebase/firebase-app, which may not be redefined
+  ; while the app is running. So for clarity, we make this var defonce as well.
+  ;
   {:apiKey        "AIzaSyAbs6wXxPGX-8XEWR6nyj7iCETOL6dZjzY"
-   :authDomain    "owlet-users.firebaseapp.com"
-   :databaseURL   "https://owlet-users.firebaseio.com"
-   :storageBucket "owlet-users.appspot.com"})
+   :authDomain    "owlet-ui-dev.firebaseapp.com"
+   :databaseURL   "https://owlet-ui-dev.firebaseio.com"
+   :storageBucket "owlet-ui-dev.appspot.com"})
 
 
 (def library-space-id "c7i369745nqp")

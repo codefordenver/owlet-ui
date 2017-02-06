@@ -330,3 +330,29 @@
   (fn [db [_ activity-id all-activities]]
     (assoc db :activity-in-view (some #(when (= (get-in % [:sys :id]) activity-id) %)
                                       (or (:activities db) all-activities)))))
+
+
+(rf/reg-event-fx
+  :authenticated
+  (fn [_ [_ {:keys [auth0-token delegation-token]}]]
+    {:fb/sign-in        [fb/firebase-auth-object
+                         delegation-token
+                         :firebase-sign-in-failed]
+
+     :set-local-storage {:auth0-token    auth0-token
+                         :firebase-token delegation-token}}))
+
+
+(rf/reg-event-fx
+  :firebase-sign-in-failed
+  (fn [_ [_ fb-error]]
+    (js/console.log "Error signing into Firebase: ", fb-error)
+    {}))
+
+
+(rf/reg-event-db
+  :firebase-user
+  (fn [db [_ fb-user]]
+    (js/console.log "Firebase user: " fb-user)
+    db))
+
