@@ -287,7 +287,7 @@
                                                    {:activities   []
                                                     :display-name branch
                                                     :count        0
-                                                    :preview-urls  ""})) branches)
+                                                    :preview-urls  []})) branches)
                                  (into {}))
 
           activities-by-branch (->> (mapv (fn [branch]
