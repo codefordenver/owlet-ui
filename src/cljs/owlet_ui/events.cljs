@@ -287,7 +287,7 @@
                                                    {:activities   []
                                                     :display-name branch
                                                     :count        0
-                                                    :preview-url  ""})) branches)
+                                                    :preview-urls  []})) branches)
                                  (into {}))
 
           activities-by-branch (->> (mapv (fn [branch]
@@ -297,14 +297,13 @@
                                                                        (some #(= display-name %)
                                                                              (get-in activity [:fields :branch])))
                                                                      all-activities)
-                                                    random-match (get matches (rand-int (count matches)))
-                                                    preview-url (get-in random-match [:fields :preview :sys :url])]
+                                                    preview-urls (mapv #(get-in % [:fields :preview :sys :url]) matches)]
                                                 (if (seq matches)
                                                   (hash-map branch-key
                                                             {:activities   matches
                                                              :display-name display-name
                                                              :count        (count matches)
-                                                             :preview-url  preview-url})
+                                                             :preview-urls  preview-urls})
                                                   branch))))
                                           branches-template)
                                     (into {}))]
