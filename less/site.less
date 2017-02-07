@@ -45,10 +45,10 @@ a:hover {
 }
 
 .search-bar-wrap {
-  color: white;
   position: fixed;
+  color: white;
   width: 100%;
-  z-index: 100;
+  z-index: 1;
   input {
     border-color: black;
     background-color: black;
@@ -93,6 +93,7 @@ a:hover {
 }
 
 #sidebar {
+  z-index: 3;
   text-align: center;
   background-color: @purple;
   color: #cffffd;
@@ -137,6 +138,8 @@ a:hover {
 }
 
 #lpsidebar {
+  position: fixed;
+  z-index: 3;
   width: 0px;
   transition: all 0.3s;
   text-align: center;
