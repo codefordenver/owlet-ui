@@ -36,6 +36,9 @@
   (defroute "/" []
             (re/dispatch [:set-active-view :welcome-view]))
 
+  (defroute "/404" []
+            (re/dispatch [:set-active-view :not-found-view]))
+
   (defroute "/about" []
             (re/dispatch [:set-active-view :about-view]))
 
@@ -45,7 +48,7 @@
   (defroute "/branches" []
             (re/dispatch [:get-library-content-from-contentful])
             (re/dispatch [:set-active-view :branches-view])
-            (re/dispatch [:set-active-document-title!]))
+            (re/dispatch [:set-active-document-title! "Branches"]))
 
   (defroute "/:branch" {:as params}
             (re/dispatch [:get-library-content-from-contentful params])
@@ -55,6 +58,9 @@
   (defroute "/activity/:activity" {:as params}
             (re/dispatch [:get-library-content-from-contentful params])
             (re/dispatch [:set-active-view :activity-view]))
+
+  (defroute "*" []
+            (set! (.-location js/window) "/#/404"))
 
   ; Ensure browser history uses Secretary to dispatch.
   (doto (History.)

@@ -5,7 +5,7 @@
 
 (defn prepare-image-items [image-urls]
   ; TODO: pass in image width and height
-  (mapv #(hash-map :src % :w 400 :h 400) image-urls))
+  (mapv #(hash-map :src % :w 800 :h 600) image-urls))
 
 (defn full-screen-gallery []
   [:div.activity-image-gallery-wrap

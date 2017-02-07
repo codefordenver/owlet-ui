@@ -49,7 +49,7 @@
                   :branch-activities-view (-> (:activities-by-branch-in-view db)
                                               :display-name)}
           default-title (:welcome-view titles)
-          document-title (or (titles active-view) (clj-str/capitalize val))
+          document-title (or (titles active-view) (clj-str/capitalize (or val "")))
           title-template (str document-title " | " config/project-name)
           title (or title-template default-title)]
       (assoc-in db [:app :title] title))))
@@ -287,7 +287,8 @@
                                          (hash-map (keyword (->kebab-case branch))
                                                    {:activities   []
                                                     :display-name branch
-                                                    :count        0})) branches)
+                                                    :count        0
+                                                    :preview-urls  []})) branches)
                                  (into {}))
 
           activities-by-branch (->> (mapv (fn [branch]
@@ -296,12 +297,14 @@
                                                     matches (filterv (fn [activity]
                                                                        (some #(= display-name %)
                                                                              (get-in activity [:fields :branch])))
-                                                                     all-activities)]
+                                                                     all-activities)
+                                                    preview-urls (mapv #(get-in % [:fields :preview :sys :url]) matches)]
                                                 (if (seq matches)
                                                   (hash-map branch-key
                                                             {:activities   matches
                                                              :display-name display-name
-                                                             :count        (count matches)})
+                                                             :count        (count matches)
+                                                             :preview-urls  preview-urls})
                                                   branch))))
                                           branches-template)
                                     (into {}))]
