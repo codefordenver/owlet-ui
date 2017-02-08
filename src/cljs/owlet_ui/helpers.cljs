@@ -3,3 +3,5 @@
 
 (defn keywordize-name [name]
   (-> name ->kebab-case keyword))
+
+(def without-nils (partial remove nil?))

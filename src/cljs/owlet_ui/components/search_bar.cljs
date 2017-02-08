@@ -12,6 +12,7 @@
         (fn [s]
           (into []
                 (take 16
+                      ;; TODO: (david) concat activity titles, platform
                       (for [n (concat @skills @branches)
                             :when (re-find (re-pattern (str "(?i)" s)) n)]
                         (result-formatter n)))))

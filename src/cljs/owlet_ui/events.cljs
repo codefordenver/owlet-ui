@@ -4,7 +4,7 @@
             [owlet-ui.db :as db]
             [owlet-ui.config :as config]
             [owlet-ui.firebase :as fb]
-            [owlet-ui.helpers :refer [keywordize-name]]
+            [owlet-ui.helpers :refer [keywordize-name without-nils]]
             [day8.re-frame.http-fx]
             [ajax.core :as ajax :refer [GET POST PUT]]))
 
@@ -268,8 +268,15 @@
                                    image-gallery (get-in activity [:fields :imageGallery])
                                    image-gallery-ids (map #(-> % :sys :id) image-gallery)
                                    image-gallery-urls (map #(url-for-id %) image-gallery-ids)]]
-                         (update-in activity [:fields] #(assoc % :image-gallery-urls image-gallery-urls)))))]
-      _db_)))
+                         (update-in activity [:fields] #(assoc % :image-gallery-urls image-gallery-urls)))))
+
+          __db__ (update _db_
+                         :activities                        ; Return new db, adding :skills-set
+                         #(mapv (fn [activity]
+                                  (let [skills (without-nils (-> activity :fields :skills))]
+                                    (when (seq skills)
+                                      (assoc activity :skill-set (set (map keywordize-name skills)))))) %))]
+      __db__)))
 
 
 (re/reg-event-db
@@ -307,19 +314,11 @@
                                                                      all-activities)
                                                     preview-urls (mapv #(get-in % [:fields :preview :sys :url]) matches)]
                                                 (if (seq matches)
-                                                  (let [skills (mapv #(-> % :fields :skills)
-                                                                     matches)
-                                                        nil-removed-coll (remove nil? skills)
-                                                        concat-coll (reduce concat nil-removed-coll)
-                                                        normalize-coll (mapv keywordize-name concat-coll)
-                                                        skill-coll (->> normalize-coll
-                                                                        (mapv (comp first vector)))]
-                                                    (hash-map branch-key
-                                                              {:activities   matches
-                                                               :display-name display-name
-                                                               :count        (count matches)
-                                                               :preview-urls preview-urls
-                                                               :skill-set    (set skill-coll)}))
+                                                  (hash-map branch-key
+                                                            {:activities   matches
+                                                             :display-name display-name
+                                                             :count        (count matches)
+                                                             :preview-urls preview-urls})
                                                   branch))))
                                           branches-template)
                                     (into {}))]
@@ -367,15 +366,10 @@
         ;; by skill
         ;; --------
 
-        (if-let [all-filtered-set
-                 (filterv #(let [[_ branch-vals] %]
-                             (let [skills-set (:skill-set branch-vals)]
-                               (when (contains? skills-set search-term)
-                                 %))) (:activities-by-branch db))]
-          (let [all-filtered-activities (mapv #(:activities (second %)) all-filtered-set)
-                concat-activities (reduce concat all-filtered-activities)]
-            (assoc db :activities-by-branch-in-view (hash-map :activities concat-activities
-                                                              :display-name term)))
+        (if-let [filtered-set (filterv #(when (contains? (:skill-set %) search-term) %) (:activities db))]
+          (assoc db :activities-by-branch-in-view (hash-map :activities filtered-set
+                                                            :display-name term))
+
           ;; by activity name (title)
           ;; ----------------
           db)))))
