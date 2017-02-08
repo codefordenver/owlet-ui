@@ -7,13 +7,14 @@
   (let [search-model (reagent/atom {})
         branches (rf/subscribe [:activity-branches])
         skills (rf/subscribe [:skills])
+        activity-titles (rf/subscribe [:activity-titles])
         result-formatter #(-> {:term %})
         suggestions-for-search
         (fn [s]
           (into []
                 (take 16
-                      ;; TODO: (david) concat activity titles, platform
-                      (for [n (concat @skills @branches)
+                      ;; TODO: (david) concat platform
+                      (for [n (concat @skills @branches @activity-titles)
                             :when (re-find (re-pattern (str "(?i)" s)) n)]
                         (result-formatter n)))))
         change-handler #(rf/dispatch [:filter-activities-by-search-term (:term %)])]

@@ -296,13 +296,14 @@
     (let [branches (:branches res)
           skills (:skills res)
           all-activities (:activities db)
-
+          activity-titles (without-nils
+                            (map #(get-in % [:fields :title]) all-activities))
           branches-template (->> (mapv (fn [branch]
                                          (hash-map (keywordize-name branch)
                                                    {:activities   []
                                                     :display-name branch
                                                     :count        0
-                                                    :preview-urls  []})) branches)
+                                                    :preview-urls []})) branches)
                                  (into {}))
 
           activities-by-branch (->> (mapv (fn [branch]
@@ -331,10 +332,12 @@
               (re/dispatch [:set-activities-by-branch-in-view branch activities-by-branch-in-view])
               (assoc db :activity-branches branches
                         :skills skills
-                        :activities-by-branch activities-by-branch)))))
+                        :activities-by-branch activities-by-branch
+                        :activity-titles activity-titles)))))
       (assoc db :activity-branches branches
                 :skills skills
-                :activities-by-branch activities-by-branch))))
+                :activities-by-branch activities-by-branch
+                :activity-titles activity-titles))))
 
 
 (re/reg-event-db
@@ -366,14 +369,18 @@
         ;; by skill
         ;; --------
 
-        (if-let [filtered-set (filterv #(when (contains? (:skill-set %) search-term) %) (:activities db))]
-          (assoc db :activities-by-branch-in-view (hash-map :activities filtered-set
-                                                            :display-name term))
+        (let [filtered-set (filterv #(when (contains? (:skill-set %) search-term) %) (:activities db))]
+          (if (seq filtered-set)
+            (assoc db :activities-by-branch-in-view (hash-map :activities filtered-set
+                                                              :display-name term))
 
-          ;; by activity name (title)
-          ;; ----------------
-          db)))))
+            ;; by activity name (title)
+            ;; ------------------------
 
+            (if-let [filtered-set (filterv #(when (= (get-in % [:fields :title]) term) %) (:activities db))]
+              (assoc db :activities-by-branch-in-view (hash-map :activities filtered-set
+                                                                  :display-name term))
+              db)))))))
 
-
-
+              ;; by platform
+              ;; -----------

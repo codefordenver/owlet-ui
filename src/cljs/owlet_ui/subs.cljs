@@ -90,3 +90,5 @@
 (register-getter-sub :app-title [:app :title])
 
 (register-getter-sub :skills [:skills])
+
+(register-getter-sub :activity-titles [:activity-titles])
