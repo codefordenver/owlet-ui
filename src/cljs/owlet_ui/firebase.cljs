@@ -93,16 +93,16 @@
   To obtain the user object, it is preferable to define a handler and use
   function on-auth-change to set up an event that triggers it.
   "
-  [auth-obj fb-token fail-event-id & args]
+  [auth-obj fb-token fail-event-id & fail-args]
   (-> auth-obj
       (.signInWithCustomToken fb-token)
       (.catch (fn [fb-error]
                 (rf/dispatch
-                  (apply vector fail-event-id (js->clj fb-error) args))))))
+                  (apply vector fail-event-id (js->clj fb-error) fail-args))))))
 
 
 (rf/reg-fx
-  ::sign-in
+  :firebase-sign-in
   (partial apply sign-in))
 
 

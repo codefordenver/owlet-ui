@@ -336,9 +336,9 @@
 
 
 (re/reg-event-fx
-  :authenticated
+  :auth0-authenticated
   (fn [_ [_ {:keys [auth0-token delegation-token]}]]
-    {:fb/sign-in        [fb/firebase-auth-object
+    {:firebase-sign-in  [fb/firebase-auth-object
                          delegation-token
                          :firebase-sign-in-failed]
 
@@ -347,9 +347,15 @@
 
 
 (re/reg-event-fx
+  :auth0-error
+  (fn [_ [_ error]]
+    (js/console.log "*** Error from Auth0: " error)))
+
+
+(re/reg-event-fx
   :firebase-sign-in-failed
   (fn [_ [_ fb-error]]
-    (js/console.log "Error signing into Firebase: ", fb-error)
+    (js/console.log "*** Error signing into Firebase: ", fb-error)
     {}))
 
 

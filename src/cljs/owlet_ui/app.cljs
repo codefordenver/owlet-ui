@@ -34,11 +34,12 @@
 
   (auth0/on-authenticated auth0/lock
                           config/auth0-del-opts-for-firebase
-                          :authenticated)
+                          :auth0-authenticated
+                          :auth0-error)
   (fb/on-auth-change fb/firebase-auth-object :firebase-user)
 
   (let [users-db-path (fb/db-ref-for-path "users")]
-    (fb/on-change users-db-path :fb-users-change))
+    (fb/on-change users-db-path :firebase-users-change))
     ;(fb/change-on users-db-path :change-fb-users))
   ;(async/repeatedly-run)    ; Needed to poll subscriptions to update Firebase DB.
 

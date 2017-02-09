@@ -19,8 +19,8 @@
     (:domain auth0-init)
     ; Here are configuration options for Auth0Lock. See
     ; https://auth0.com/docs/libraries/lock/v10/customization
-    (clj->js {:auth {:connectionScopes {:google-oauth2 ["openid" "profile"]}}})))
-
+    (clj->js {:auth {:connectionScopes {:google-oauth2 ["openid" "profile"]}
+                     :redirect         false}})))
 
 ;           [token     (:idToken auth-result)
 ;            social-id (-> auth-result :idTokenPayload :sub)]
@@ -37,24 +37,43 @@
   any. The delegation token will be the token returned to the Auth0 server
   from the authentication provider, e.g. Google.
   "
-  [lock-obj auth0-delegation-options event-id & args]
+  [lock-obj auth0-delegation-options event-id error-event-id & args]
   (.on lock-obj
        "authenticated"
        (fn [auth-result]
+         (.hide lock-obj)
          (let [idToken (aget auth-result "idToken")
                options (assoc auth0-delegation-options :id_token idToken)]
+
            (.getDelegationToken
              auth0-instance
              (clj->js options)
              (fn [err delegation-result]
-               ; Finally, this callback dispatches the re-frame event, event-id
-               ; along with the two tokens. Note that while "id_token" in
-               ; options refers to the Auth0 token, "id_token" in
-               ; delegation-result refers to the delegation token.
-               (rf/dispatch
-                 (apply vector
-                        event-id
-                        {:auth0-token      idToken
-                         :delegation-token (aget delegation-result "id_token")}
-                        args))))))))
+
+               (if err
+                 ; There was an error, so dispatch to the handler for it.
+                 (rf/dispatch [error-event-id {:error              err
+                                               :delegation-options options}])
+
+                 ; Finally, this callback dispatches the re-frame event,
+                 ; event-id along with the two tokens. Note that while
+                 ; "id_token" in options refers to the Auth0 token, "id_token"
+                 ; in delegation-result refers to the delegation token.
+                 (rf/dispatch
+                   (apply vector
+                          event-id
+                          {:auth0-token       idToken
+                           :delegation-token  (aget delegation-result
+                                                    "id_token")}
+                          args))))))))
+
+  (.on lock-obj
+       "authorization_error"
+       (fn [err]
+         (rf/dispatch [error-event-id err])))
+
+  (.on lock-obj
+       "unrecoverable_error"
+       (fn [err]
+         (rf/dispatch [error-event-id err]))))
 

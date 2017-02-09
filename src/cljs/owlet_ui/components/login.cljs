@@ -8,7 +8,7 @@
   []
   [:button.btn.btn-login.btn-sm
    {:type     "button"
-    :on-click #(.show auth0/lock #js {:popup true})}
+    :on-click #(.show auth0/lock)}
    "Log in"])
 
 
