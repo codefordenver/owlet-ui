@@ -274,8 +274,10 @@
                          :activities                        ; Return new db, adding :skills-set
                          #(mapv (fn [activity]
                                   (let [skills (without-nils (-> activity :fields :skills))]
-                                    (when (seq skills)
-                                      (assoc activity :skill-set (set (map keywordize-name skills)))))) %))]
+                                    (if (seq skills)
+                                      (assoc activity :skill-set (set (map keywordize-name skills)))
+                                      activity))) %))]
+
       __db__)))
 
 
