@@ -16,7 +16,7 @@
                  [reagent-utils "0.1.7"]
                  [cljsjs/bootstrap "3.3.6-1"]
                  [cljsjs/firebase "3.2.1-0"]
-                 [cljsjs/marked "0.3.5-0"]
+                 [cljsjs/showdown "1.4.2-0"]
                  [org.clojure/core.async "0.2.385"]
                  [camel-snake-kebab "0.4.0"]
                  [cljsjs/google-analytics "2015.04.13-0"]

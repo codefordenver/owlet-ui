@@ -1,9 +1,10 @@
 (ns owlet-ui.components.activity.challenge
-  (:require [cljsjs.marked]))
+  (:require [cljsjs.showdown]))
 
 (defn activity-challenge [challenge]
+ (let [showdown (js/showdown.Converter.)]
   [:div.activity-challenge-wrap.box-shadow
     [:div.list-title
      [:p [:b "⚡⚡ challenge⚡⚡"]]]
     [:div {"dangerouslySetInnerHTML"
-           #js{:__html (js/marked challenge)}}]])
+           #js{:__html (.makeHtml showdown challenge)}}]]))

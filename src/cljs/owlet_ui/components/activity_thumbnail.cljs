@@ -1,17 +1,19 @@
 (ns owlet-ui.components.activity-thumbnail
-  (:require [re-frame.core :as rf]))
+  (:require [re-frame.core :as rf]
+            [cljsjs.showdown]))
 
-(defn- set-as-marked
+(defn- set-as-showdown
   "returns component as markdown"
   [field & [class]]
   [:div {:class class
          "dangerouslySetInnerHTML"
-                #js{:__html (js/marked (str field))}}])
+                #js{:__html (.makeHtml showdown (str field))}}])
 
 (defn activity-thumbnail [fields entry-id]
   (let [preview-image-url (get-in fields [:preview :sys :url])
         image (or preview-image-url "img/default-thumbnail.png")
-        {:keys [title summary unplugged techRequirements skills]} fields]
+        {:keys [title summary unplugged techRequirements skills]} fields
+        showdown (js/showdown.Converter.)]
     [:div.col-xs-12.col-md-6.col-lg-4
      [:div.activity-thumbnail-wrap.box-shadow
       [:a {:href     (str "#/activity/" entry-id)
@@ -22,7 +24,7 @@
        [:div.platform-wrap
         [:span "Platform: "]
         [:div.platform.btn
-         [set-as-marked techRequirements]]]
+          [set-as-showdown techRequirements]]]
        [:div.platform-wrap
         [:div.unplugged.btn
          "UNPLUGGED"]])
