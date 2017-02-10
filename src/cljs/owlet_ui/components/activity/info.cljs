@@ -1,17 +1,19 @@
 (ns owlet-ui.components.activity.info
   (:require [re-com.core :as re-com :refer-macros [handler-fn]]
             [re-com.popover]
-            [cljsjs.marked]
             [cljsjs.bootstrap]
             [cljsjs.jquery]
-            [reagent.core :as reagent]))
+            [reagent.core :as reagent]
+            [cljsjs.showdown]))
 
-(defn- set-as-marked
+(def showdown (js/showdown.Converter.))
+
+(defn- set-as-showdown
   "returns component as markdown"
   [title field & [class]]
   [:div {:class class
          "dangerouslySetInnerHTML"
-                #js{:__html (js/marked (str title field))}}])
+                #js{:__html (.makeHtml showdown (str title field))}}])
 
 (defn activity-info [unplugged techRequirements summary
                      why preRequisites materials]
@@ -32,11 +34,11 @@
                   :close-button? false
                   :title "What does this mean?"
                   :body "UNPLUGGED activities do not require a computer or device"]]
-       [set-as-marked "<b>Platform</b><br>" techRequirements])
-     [set-as-marked "<b>Summary</b><br>" summary]
+       [set-as-showdown "<b>Platform</b><br>" techRequirements])
+     [set-as-showdown "<b>Summary</b><br>" summary]
      (when why
-      [set-as-marked "<b>Why?</b><br>" why])
+      [set-as-showdown "<b>Why?</b><br>" why])
      (when preRequisites
-      [set-as-marked "<b>Pre-requisites</b><br>" preRequisites])
+      [set-as-showdown "<b>Pre-requisites</b><br>" preRequisites])
      (when materials
-      [set-as-marked "<b>Materials</b>" materials "list-title"])]))
+      [set-as-showdown "<b>Materials</b>" materials "list-title"])]))
