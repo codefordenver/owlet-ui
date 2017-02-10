@@ -6,17 +6,18 @@
             [reagent.core :as reagent]
             [cljsjs.showdown]))
 
-; (defn- set-as-showdown
-;   "returns component as markdown"
-;   [title field & [class]]
-;   [:div {:class class
-;          "dangerouslySetInnerHTML"
-;                 #js{:__html (.makeHtml showdown (str title field))}}])
+(def showdown (js/showdown.Converter.))
+
+(defn- set-as-showdown
+  "returns component as markdown"
+  [title field & [class]]
+  [:div {:class class
+         "dangerouslySetInnerHTML"
+                #js{:__html (.makeHtml showdown (str title field))}}])
 
 (defn activity-info [unplugged techRequirements summary
                      why preRequisites materials]
-  (let [showing? (reagent/atom false)
-        showdown (js/showdown.Converter.)]
+  (let [showing? (reagent/atom false)]
     [:div.activity-info-wrap.box-shadow
      (if unplugged
        [re-com/popover-anchor-wrapper
@@ -32,12 +33,12 @@
         :popover [re-com/popover-content-wrapper
                   :close-button? false
                   :title "What does this mean?"
-                  :body "UNPLUGGED activities do not require a computer or device"]])]))
-    ;    [set-as-showdown "<b>Platform</b><br>" techRequirements])
-    ;  [set-as-showdown "<b>Summary</b><br>" summary]
-    ;  (when why
-    ;   [set-as-showdown "<b>Why?</b><br>" why])
-    ;  (when preRequisites
-    ;   [set-as-showdown "<b>Pre-requisites</b><br>" preRequisites])
-    ;  (when materials
-    ;   [set-as-showdown "<b>Materials</b>" materials "list-title"])]))
+                  :body "UNPLUGGED activities do not require a computer or device"]]
+       [set-as-showdown "<b>Platform</b><br>" techRequirements])
+     [set-as-showdown "<b>Summary</b><br>" summary]
+     (when why
+      [set-as-showdown "<b>Why?</b><br>" why])
+     (when preRequisites
+      [set-as-showdown "<b>Pre-requisites</b><br>" preRequisites])
+     (when materials
+      [set-as-showdown "<b>Materials</b>" materials "list-title"])]))

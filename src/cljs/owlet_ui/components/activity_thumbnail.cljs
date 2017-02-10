@@ -2,6 +2,8 @@
   (:require [re-frame.core :as rf]
             [cljsjs.showdown]))
 
+(def showdown (js/showdown.Converter.))
+
 (defn- set-as-showdown
   "returns component as markdown"
   [field & [class]]
@@ -12,8 +14,7 @@
 (defn activity-thumbnail [fields entry-id]
   (let [preview-image-url (get-in fields [:preview :sys :url])
         image (or preview-image-url "img/default-thumbnail.png")
-        {:keys [title summary unplugged techRequirements skills]} fields
-        showdown (js/showdown.Converter.)]
+        {:keys [title summary unplugged techRequirements skills]} fields]
     [:div.col-xs-12.col-md-6.col-lg-4
      [:div.activity-thumbnail-wrap.box-shadow
       [:a {:href     (str "#/activity/" entry-id)

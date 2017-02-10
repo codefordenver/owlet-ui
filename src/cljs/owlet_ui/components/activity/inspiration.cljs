@@ -1,9 +1,10 @@
 (ns owlet-ui.components.activity.inspiration
   (:require [cljsjs.showdown]))
 
+(def showdown (js/showdown.Converter.))
+
 (defn activity-inspiration [inspiration]
- (let [showdown (js/showdown.Converter.)]
   [:div.activity-inspiration-wrap.box-shadow
    [:b "Inspiration"]
    [:div {"dangerouslySetInnerHTML"
-          #js{:__html (.makeHtml showdown inspiration)}}]]))
+          #js{:__html (.makeHtml showdown inspiration)}}]])
