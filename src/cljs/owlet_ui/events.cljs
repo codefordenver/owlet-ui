@@ -4,9 +4,10 @@
             [owlet-ui.db :as db]
             [owlet-ui.config :as config]
             [owlet-ui.firebase :as fb]
+            [owlet-ui.helpers :refer [keywordize-name remove-nil
+                                      parse-platform clean-search-term]]
             [day8.re-frame.http-fx]
-            [ajax.core :as ajax :refer [GET POST PUT]]
-            [camel-snake-kebab.core :refer [->kebab-case]]))
+            [ajax.core :as ajax :refer [GET POST PUT]]))
 
 
 (defonce library-content-url
@@ -26,6 +27,7 @@
   (fn [cofx val]
     (assoc-in cofx [:db :app :loading?] val)))
 
+
 (re/reg-cofx
   :close-sidebar!
   (fn [cofx]
@@ -33,6 +35,12 @@
       (when-not (= (db :active-view) :welcome-view)
         (js/closeSidebar))
       (assoc-in cofx [:db :app :open-sidebar] true))))
+
+
+(re/reg-cofx
+  :navigate-to-view!
+  (fn [cofx new-view]
+    (assoc-in cofx [:db :active-view] new-view)))
 
 
 (re/reg-event-db
@@ -45,7 +53,8 @@
                                               :activity-in-view
                                               :fields
                                               :title)
-                  :branch-activities-view (-> (:activities-by-branch-in-view db)
+                  :branch-activities-view (-> db
+                                              :activities-by-branch-in-view
                                               :display-name)}
           default-title (:welcome-view titles)
           document-title (or (titles active-view) (clj-str/capitalize (or val "")))
@@ -260,8 +269,17 @@
                                    image-gallery (get-in activity [:fields :imageGallery])
                                    image-gallery-ids (map #(-> % :sys :id) image-gallery)
                                    image-gallery-urls (map #(url-for-id %) image-gallery-ids)]]
-                         (update-in activity [:fields] #(assoc % :image-gallery-urls image-gallery-urls)))))]
-      _db_)))
+                         (update-in activity [:fields] #(assoc % :image-gallery-urls image-gallery-urls)))))
+
+          __db__ (update _db_
+                         :activities                        ; Return new db, adding :skills-set
+                         #(mapv (fn [activity]
+                                  (let [skills (remove-nil (-> activity :fields :skills))]
+                                    (if (seq skills)
+                                      (assoc activity :skill-set (set (map keywordize-name skills)))
+                                      activity))) %))]
+
+      __db__)))
 
 
 (re/reg-event-db
@@ -279,15 +297,17 @@
   [(re/inject-cofx :set-loading! false)]
   (fn [db [_ res]]
     (let [branches (:branches res)
-          ;; skills (:skills res) ;; TODO: FEAT-149
+          skills (:skills res)
           all-activities (:activities db)
-
+          platforms (remove-nil (map #(get-in % [:fields :techRequirements]) all-activities))
+          platforms-nomalized (->> platforms (map parse-platform))
+          activity-titles (remove-nil (map #(get-in % [:fields :title]) all-activities))
           branches-template (->> (mapv (fn [branch]
-                                         (hash-map (keyword (->kebab-case branch))
+                                         (hash-map (keywordize-name branch)
                                                    {:activities   []
                                                     :display-name branch
                                                     :count        0
-                                                    :preview-urls  []})) branches)
+                                                    :preview-urls []})) branches)
                                  (into {}))
 
           activities-by-branch (->> (mapv (fn [branch]
@@ -303,7 +323,7 @@
                                                             {:activities   matches
                                                              :display-name display-name
                                                              :count        (count matches)
-                                                             :preview-urls  preview-urls})
+                                                             :preview-urls preview-urls})
                                                   branch))))
                                           branches-template)
                                     (into {}))]
@@ -315,9 +335,15 @@
             (let [activities-by-branch-in-view ((keyword branch) activities-by-branch)]
               (re/dispatch [:set-activities-by-branch-in-view branch activities-by-branch-in-view])
               (assoc db :activity-branches branches
-                        :activities-by-branch activities-by-branch)))))
+                        :skills skills
+                        :activities-by-branch activities-by-branch
+                        :activity-titles activity-titles
+                        :activity-platforms platforms-nomalized)))))
       (assoc db :activity-branches branches
-                :activities-by-branch activities-by-branch))))
+                :skills skills
+                :activities-by-branch activities-by-branch
+                :activity-titles activity-titles
+                :activity-platforms platforms-nomalized))))
 
 
 (re/reg-event-db
@@ -332,3 +358,47 @@
   (fn [db [_ activity-id all-activities]]
     (assoc db :activity-in-view (some #(when (= (get-in % [:sys :id]) activity-id) %)
                                       (or (:activities db) all-activities)))))
+
+
+(re/reg-event-db
+  :filter-activities-by-search-term
+  [(re/inject-cofx :navigate-to-view! :branch-activities-view)]
+  (fn [db [_ term]]
+
+    ;; by branch
+    ;; ---------
+
+    (let [search-term (keywordize-name term)
+          activities (:activities db)]
+
+      (if-let [filtered-set (search-term (:activities-by-branch db))]
+        (assoc db :activities-by-branch-in-view filtered-set)
+
+        ;; by skill
+        ;; --------
+
+        (let [filtered-set (filterv #(when (contains? (:skill-set %) search-term) %) activities)]
+          (if (seq filtered-set)
+            (assoc db :activities-by-branch-in-view (hash-map :activities filtered-set
+                                                              :display-name term))
+
+            ;; by activity name (title)
+            ;; ------------------------
+
+            (let [filtered-set (filterv #(when (= (get-in % [:fields :title]) term) %) activities)]
+              (if (seq filtered-set)
+                (assoc db :activities-by-branch-in-view (hash-map :activities filtered-set
+                                                                  :display-name term))
+
+                ;; by platform
+                ;; -----------
+
+                (let [filtered-set (filterv #(let [platform (-> (get-in % [:fields :techRequirements])
+                                                                parse-platform)]
+                                               (when (= platform term) %)) activities)]
+                  (if (seq filtered-set)
+                    (assoc db :activities-by-branch-in-view (hash-map :activities filtered-set
+                                                                      :display-name term))
+                    db))))))))))
+
+

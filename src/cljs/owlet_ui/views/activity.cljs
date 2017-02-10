@@ -1,6 +1,5 @@
 (ns owlet-ui.views.activity
-  (:require [owlet-ui.components.activity.breadcrumb :refer [breadcrumb]]
-            [owlet-ui.components.activity.title :refer [activity-title]]
+  (:require [owlet-ui.components.activity.title :refer [activity-title]]
             [owlet-ui.components.activity.embed :refer [activity-embed]]
             [owlet-ui.components.activity.info :refer [activity-info]]
             [owlet-ui.components.activity.inspiration :refer [activity-inspiration]]
@@ -26,7 +25,6 @@
                   image-gallery-urls]} fields]
       (re/dispatch [:set-active-document-title! title])
       [:div.activity
-       [breadcrumb]
        [:div.activity-wrap
         [:div.activity-header.col-xs-12
          [activity-title title author]]
