@@ -25,4 +25,6 @@
    :active-branch-activities     nil
    :id                           nil
    :activity-in-view             nil
-   :activity-titles              nil})
+   :activity-titles              nil
+   :activity-platforms           nil})
+
