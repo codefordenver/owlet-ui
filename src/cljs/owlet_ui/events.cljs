@@ -5,7 +5,7 @@
             [owlet-ui.config :as config]
             [owlet-ui.firebase :as fb]
             [owlet-ui.helpers :refer [keywordize-name remove-nil
-                                      parse-tech-req clean-search-term]]
+                                      parse-platform clean-search-term]]
             [day8.re-frame.http-fx]
             [ajax.core :as ajax :refer [GET POST PUT]]))
 
@@ -299,8 +299,8 @@
     (let [branches (:branches res)
           skills (:skills res)
           all-activities (:activities db)
-          tech-requirements (remove-nil (map #(get-in % [:fields :techRequirements]) all-activities))
-          tech-requirements-nomalized (->> tech-requirements (map parse-tech-req))
+          platforms (remove-nil (map #(get-in % [:fields :techRequirements]) all-activities))
+          platforms-nomalized (->> platforms (map parse-platform))
           activity-titles (remove-nil (map #(get-in % [:fields :title]) all-activities))
           branches-template (->> (mapv (fn [branch]
                                          (hash-map (keywordize-name branch)
@@ -338,12 +338,12 @@
                         :skills skills
                         :activities-by-branch activities-by-branch
                         :activity-titles activity-titles
-                        :activity-platforms tech-requirements-nomalized)))))
+                        :activity-platforms platforms-nomalized)))))
       (assoc db :activity-branches branches
                 :skills skills
                 :activities-by-branch activities-by-branch
                 :activity-titles activity-titles
-                :activity-platforms tech-requirements-nomalized))))
+                :activity-platforms platforms-nomalized))))
 
 
 (re/reg-event-db
@@ -394,7 +394,7 @@
                 ;; -----------
 
                 (let [filtered-set (filterv #(let [platform (-> (get-in % [:fields :techRequirements])
-                                                                parse-tech-req)]
+                                                                parse-platform)]
                                                (when (= platform term) %)) activities)]
                   (if (seq filtered-set)
                     (assoc db :activities-by-branch-in-view (hash-map :activities filtered-set

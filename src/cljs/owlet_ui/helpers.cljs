@@ -7,7 +7,7 @@
 
 (def remove-nil (partial remove nil?))
 
-(defn parse-tech-req [term]
+(defn parse-platform [term]
   (if (not (nil? term))
     (let [name (re-find #"\[+(.*)(\]+)" term)]
       (if (seq name)
