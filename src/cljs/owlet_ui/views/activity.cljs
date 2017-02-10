@@ -5,6 +5,7 @@
             [owlet-ui.components.activity.inspiration :refer [activity-inspiration]]
             [owlet-ui.components.activity.challenge :refer [activity-challenge]]
             [owlet-ui.components.activity.image-gallery :refer [activity-image-gallery]]
+            [owlet-ui.components.activity.comments :refer [activity-comments]]
             [re-frame.core :as re]))
 
 (defn activity-view []
@@ -37,4 +38,5 @@
          (when challenge
           [activity-challenge challenge])
          (when inspiration
-          [activity-inspiration inspiration])]]])))
+          [activity-inspiration inspiration])]
+        [:div.activity-content.col-xs-12 [activity-comments]]]])))
