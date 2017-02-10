@@ -92,3 +92,5 @@
 (register-getter-sub :skills [:skills])
 
 (register-getter-sub :activity-titles [:activity-titles])
+
+(register-getter-sub :activity-platforms [:activity-platforms])

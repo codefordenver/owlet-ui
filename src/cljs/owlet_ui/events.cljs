@@ -4,7 +4,8 @@
             [owlet-ui.db :as db]
             [owlet-ui.config :as config]
             [owlet-ui.firebase :as fb]
-            [owlet-ui.helpers :refer [keywordize-name without-nils]]
+            [owlet-ui.helpers :refer [keywordize-name remove-nil
+                                      parse-tech-req clean-search-term]]
             [day8.re-frame.http-fx]
             [ajax.core :as ajax :refer [GET POST PUT]]))
 
@@ -273,7 +274,7 @@
           __db__ (update _db_
                          :activities                        ; Return new db, adding :skills-set
                          #(mapv (fn [activity]
-                                  (let [skills (without-nils (-> activity :fields :skills))]
+                                  (let [skills (remove-nil (-> activity :fields :skills))]
                                     (if (seq skills)
                                       (assoc activity :skill-set (set (map keywordize-name skills)))
                                       activity))) %))]
@@ -298,8 +299,9 @@
     (let [branches (:branches res)
           skills (:skills res)
           all-activities (:activities db)
-          activity-titles (without-nils
-                            (map #(get-in % [:fields :title]) all-activities))
+          tech-requirements (remove-nil (map #(get-in % [:fields :techRequirements]) all-activities))
+          tech-requirements-nomalized (->> tech-requirements (map parse-tech-req))
+          activity-titles (remove-nil (map #(get-in % [:fields :title]) all-activities))
           branches-template (->> (mapv (fn [branch]
                                          (hash-map (keywordize-name branch)
                                                    {:activities   []
@@ -335,11 +337,13 @@
               (assoc db :activity-branches branches
                         :skills skills
                         :activities-by-branch activities-by-branch
-                        :activity-titles activity-titles)))))
+                        :activity-titles activity-titles
+                        :activity-platforms tech-requirements-nomalized)))))
       (assoc db :activity-branches branches
                 :skills skills
                 :activities-by-branch activities-by-branch
-                :activity-titles activity-titles))))
+                :activity-titles activity-titles
+                :activity-platforms tech-requirements-nomalized))))
 
 
 (re/reg-event-db
@@ -364,14 +368,16 @@
     ;; by branch
     ;; ---------
 
-    (let [search-term (keywordize-name term)]
+    (let [search-term (keywordize-name term)
+          activities (:activities db)]
+
       (if-let [filtered-set (search-term (:activities-by-branch db))]
         (assoc db :activities-by-branch-in-view filtered-set)
 
         ;; by skill
         ;; --------
 
-        (let [filtered-set (filterv #(when (contains? (:skill-set %) search-term) %) (:activities db))]
+        (let [filtered-set (filterv #(when (contains? (:skill-set %) search-term) %) activities)]
           (if (seq filtered-set)
             (assoc db :activities-by-branch-in-view (hash-map :activities filtered-set
                                                               :display-name term))
@@ -379,10 +385,20 @@
             ;; by activity name (title)
             ;; ------------------------
 
-            (if-let [filtered-set (filterv #(when (= (get-in % [:fields :title]) term) %) (:activities db))]
-              (assoc db :activities-by-branch-in-view (hash-map :activities filtered-set
+            (let [filtered-set (filterv #(when (= (get-in % [:fields :title]) term) %) activities)]
+              (if (seq filtered-set)
+                (assoc db :activities-by-branch-in-view (hash-map :activities filtered-set
                                                                   :display-name term))
-              db)))))))
 
-              ;; by platform
-              ;; -----------
+                ;; by platform
+                ;; -----------
+
+                (let [filtered-set (filterv #(let [platform (-> (get-in % [:fields :techRequirements])
+                                                                parse-tech-req)]
+                                               (when (= platform term) %)) activities)]
+                  (if (seq filtered-set)
+                    (assoc db :activities-by-branch-in-view (hash-map :activities filtered-set
+                                                                      :display-name term))
+                    db))))))))))
+
+

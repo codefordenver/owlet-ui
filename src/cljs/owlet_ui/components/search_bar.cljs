@@ -1,5 +1,6 @@
 (ns owlet-ui.components.search-bar
-  (:require [re-com.core :refer [typeahead]]
+  (:require [owlet-ui.helpers :refer [clean-search-term]]
+            [re-com.core :refer [typeahead]]
             [re-frame.core :as rf]
             [reagent.core :as reagent]))
 
@@ -8,13 +9,13 @@
         branches (rf/subscribe [:activity-branches])
         skills (rf/subscribe [:skills])
         activity-titles (rf/subscribe [:activity-titles])
+        activity-platforms (rf/subscribe [:activity-platforms])
         result-formatter #(-> {:term %})
         suggestions-for-search
         (fn [s]
           (into []
                 (take 16
-                      ;; TODO: (david) concat platform
-                      (for [n (concat @skills @branches @activity-titles)
+                      (for [n (distinct (concat @skills @branches @activity-titles @activity-platforms))
                             :when (re-find (re-pattern (str "(?i)" s)) n)]
                         (result-formatter n)))))
         change-handler #(rf/dispatch [:filter-activities-by-search-term (:term %)])]
