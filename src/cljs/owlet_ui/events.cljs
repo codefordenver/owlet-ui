@@ -40,6 +40,7 @@
 (re/reg-cofx
   :navigate-to-view!
   (fn [cofx new-view]
+    (js/clearSearch)
     (assoc-in cofx [:db :active-view] new-view)))
 
 
@@ -400,5 +401,3 @@
                     (assoc db :activities-by-branch-in-view (hash-map :activities filtered-set
                                                                       :display-name term))
                     db))))))))))
-
-

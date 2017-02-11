@@ -59,9 +59,10 @@
     overlay.style.zIndex = "-1";
   }
   function clearSearch() {
-    var searchBar = document.getElementsByClassName("form-control");
-    if(searchBar[0] != null) {
-      searchBar[0].value = "";
+    var searchBar = document.getElementsByClassName("form-control")[0];
+    if(searchBar != null) {
+      searchBar.value = "";
+      searchBar.blur();
     }
   }
 </script>
