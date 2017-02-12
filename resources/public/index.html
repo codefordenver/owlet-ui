@@ -39,7 +39,7 @@
     open.style.left = "80px";
     open.style.zIndex = "0";
     close.style.left = "80px";
-    close.style.zIndex = "3";
+    close.style.zIndex = "2";
     overlay.style.backgroundColor = "rgba(0,0,0,0.5)";
     overlay.style.zIndex = "2";
   }
@@ -57,6 +57,13 @@
     close.style.zIndex = "0";
     overlay.style.backgroundColor = "rgba(0,0,0,0)";
     overlay.style.zIndex = "-1";
+  }
+  function clearSearch() {
+    var searchBar = document.getElementsByClassName("form-control")[0];
+    if(searchBar != null) {
+      searchBar.value = "";
+      searchBar.blur();
+    }
   }
 </script>
 </body>

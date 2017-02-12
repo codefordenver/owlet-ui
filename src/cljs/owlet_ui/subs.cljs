@@ -44,9 +44,6 @@
     (:active-view db)))
 
 
-(reg-getter :my-user-id [:my-user-id])
-
-
 (reg-getter :change-fb-users [:users])
 
 
@@ -91,3 +88,9 @@
     (get-in db [:app :loading?])))
 
 (reg-getter :app-title [:app :title])
+
+(reg-getter :skills [:skills])
+
+(reg-getter :activity-titles [:activity-titles])
+
+(reg-getter :activity-platforms [:activity-platforms])
