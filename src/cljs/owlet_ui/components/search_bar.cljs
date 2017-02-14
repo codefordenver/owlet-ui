@@ -22,7 +22,6 @@
     [:div.search-bar-wrap
      [typeahead
       :width "100%"
-      :class "form-control"
       :on-change change-handler
       :suggestion-to-string #(:term %)
       :debounce-delay 100
