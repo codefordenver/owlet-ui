@@ -40,8 +40,12 @@
 (re/reg-cofx
   :navigate-to-view!
   (fn [cofx new-view]
-    (js/clearSearch)
-    (assoc-in cofx [:db :active-view] new-view)))
+    (let [search (aget (js->clj (js/document.getElementsByClassName "form-control")) 0)]
+      (when-not (nil? search)
+        (do
+          (set! (.-value search) "")
+          (.blur search)))
+      (assoc-in cofx [:db :active-view] new-view))))
 
 
 (re/reg-event-db

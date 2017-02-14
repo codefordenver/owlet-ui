@@ -51,7 +51,7 @@
             (re/dispatch [:set-active-document-title! "Branches"]))
 
   (defroute "/search/:search" [search]
-            (re/dispatch [:filter-activities-by-search-term (:term search)]))
+            (prn search))
 
   (defroute "/:branch" {:as params}
             (re/dispatch [:get-library-content-from-contentful params])
