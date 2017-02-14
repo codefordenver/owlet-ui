@@ -333,7 +333,7 @@
                                           branches-template)
                                     (into {}))]
       (when-let [route-params (get-in db [:app :route-params])]
-        (let [{:keys [activity branch]} route-params]
+        (let [{:keys [activity branch search]} route-params]
           (when activity
             (re/dispatch [:set-activity-in-view activity all-activities]))
           (when branch
@@ -343,7 +343,9 @@
                         :skills skills
                         :activities-by-branch activities-by-branch
                         :activity-titles activity-titles
-                        :activity-platforms platforms-nomalized)))))
+                        :activity-platforms platforms-nomalized)))
+          (when search
+            (re/dispatch [:filter-activities-by-search-term search]))))
       (assoc db :activity-branches branches
                 :skills skills
                 :activities-by-branch activities-by-branch
