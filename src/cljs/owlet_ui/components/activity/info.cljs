@@ -4,20 +4,15 @@
             [cljsjs.bootstrap]
             [cljsjs.jquery]
             [reagent.core :as reagent]
-            [cljsjs.showdown]))
-
-(def showdown (js/showdown.Converter.))
-
-(defn- set-as-showdown
-  "returns component as markdown"
-  [title field & [class]]
-  [:div {:class class
-         "dangerouslySetInnerHTML"
-                #js{:__html (.makeHtml showdown (str title field))}}])
+            [owlet-ui.helpers :refer [showdown]]))
 
 (defn activity-info [unplugged techRequirements summary
                      why preRequisites materials]
-  (let [showing? (reagent/atom false)]
+  (let [showing? (reagent/atom false)
+        set-as-showdown (fn [title field & [class]]
+                          [:div {:class class
+                                 "dangerouslySetInnerHTML"
+                                        #js{:__html (.makeHtml showdown (str title field))}}])]
     [:div.activity-info-wrap.box-shadow
      (if unplugged
        [re-com/popover-anchor-wrapper

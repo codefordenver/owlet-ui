@@ -1,7 +1,5 @@
 (ns owlet-ui.components.activity.challenge
-  (:require [cljsjs.showdown]))
-
-(def showdown (js/showdown.Converter.))
+  (:require [owlet-ui.helpers :refer [showdown]]))
 
 (defn activity-challenge [challenge]
   [:div.activity-challenge-wrap.box-shadow

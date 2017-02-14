@@ -1,6 +1,7 @@
 (ns owlet-ui.helpers
   (:require [clojure.string :as clj->str]
-            [camel-snake-kebab.core :refer [->kebab-case]]))
+            [camel-snake-kebab.core :refer [->kebab-case]]
+            [cljsjs.showdown]))
 
 (defn keywordize-name [name]
   (-> name ->kebab-case keyword))
@@ -19,3 +20,6 @@
 (defn clean-search-term [term]
   (clj->str/trim
     (clj->str/replace term #"(\*)" "")))
+
+;; for parsing markdown with showdown
+(def showdown (js/showdown.Converter.))
