@@ -4,4 +4,4 @@
 (defn back []
   [:a {:href "/branches"
        :on-click #(rf/dispatch [:set-active-view :branches-view])}
-    [:img.back {:src "img/back-filled.png"}]])
+    [:img.back {:src "/img/back-filled.png"}]])
