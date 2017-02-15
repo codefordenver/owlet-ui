@@ -11,7 +11,6 @@
 (defn toggle-suggestions [state]
    (let [suggestions (aget (js->clj (js/document.getElementsByClassName "rc-typeahead-suggestions-container")) 0)]
      (when-not (nil? suggestions)
-      (prn state)
       (set! (.-hidden suggestions) state))))
 
 (defn search-bar []
