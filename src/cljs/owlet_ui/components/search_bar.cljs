@@ -8,15 +8,11 @@
 
 (defonce suggestion-count (reagent/atom 16))
 
-(defn hide-suggestions []
-  (let [suggestions (aget (js->clj (js/document.getElementsByClassName "rc-typeahead-suggestions-container")) 0)]
-    (when-not (nil? suggestions)
-      (set! (.-hidden suggestions) true))))
-
-(defn show-suggestions []
-  (let [suggestions (aget (js->clj (js/document.getElementsByClassName "rc-typeahead-suggestions-container")) 0)]
-    (when-not (nil? suggestions)
-      (set! (.-hidden suggestions) false))))
+(defn toggle-suggestions [state]
+   (let [suggestions (aget (js->clj (js/document.getElementsByClassName "rc-typeahead-suggestions-container")) 0)]
+     (when-not (nil? suggestions)
+      (prn state)
+      (set! (.-hidden suggestions) state))))
 
 (defn search-bar []
   (let [branches (rf/subscribe [:activity-branches])
@@ -27,9 +23,9 @@
         result-formatter #(-> {:term %})
         suggestions-for-search
         (fn [s]
-          (if (< 1 (count s))
-            (reset! suggestion-count 16)
-            (reset! suggestion-count 0))
+          ;;(if (< 1 (count s))
+            ;;(reset! suggestion-count 16)
+            ;;(reset! suggestion-count 0)
           (prn @suggestion-count)
           (into []
                 (take @suggestion-count
@@ -37,8 +33,8 @@
                             :when (re-find (re-pattern (str "(?i)" s)) n)]
                         (result-formatter n)))))
         change-handler #(rf/dispatch [:filter-activities-by-search-term (:term %)])]
-    [:div.search-bar-wrap {:on-blur hide-suggestions
-                           :on-focus show-suggestions}
+    [:div.search-bar-wrap {:on-blur (toggle-suggestions true)
+                           :on-focus (toggle-suggestions false)}
      [typeahead
       :width "100%"
       :on-change change-handler
