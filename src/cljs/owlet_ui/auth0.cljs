@@ -22,12 +22,6 @@
     (clj->js {:auth {:connectionScopes {:google-oauth2 ["openid" "profile"]}
                      :redirect         false}})))
 
-;           [token     (:idToken auth-result)
-;            social-id (-> auth-result :idTokenPayload :sub)]
-;        (rf-frame/dispatch [:user-has-logged-in-out! true])
-;        (rf-frame/dispatch [:update-sid-and-get-cms-entries-for social-id])
-;        (.setItem js/localStorage "userToken" token)
-
 
 (defn on-authenticated
   "Registers a re-frame event to be fired whenever the user signs in. The event

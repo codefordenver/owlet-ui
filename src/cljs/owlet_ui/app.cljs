@@ -37,7 +37,7 @@
                           config/auth0-del-opts-for-firebase
                           :auth0-authenticated
                           :auth0-error)
-  (fb/on-auth-change fb/firebase-auth-object :firebase-user)
+  (fb/on-auth-change fb/firebase-auth-object :firebase-auth-change)
 
   (let [users-db-path (fb/db-ref-for-path "users")]
     (fb/on-change users-db-path :firebase-users-change))
@@ -50,44 +50,40 @@
         is-user-logged-in? (rf/subscribe [:my-user-id])
         open-modal (fn [] (reset! show? true))
         close-modal (fn [] (reset! show? false))]
-    (reagent/create-class
-      {:component-will-mount
-       #(rf/dispatch [:get-auth0-profile])
-       :reagent-render
-       (fn []
-         (set! (-> js/document .-title) @(rf/subscribe [:app-title]))
-         (if (= @active-view :welcome-view)
-           [show-view @active-view]
-           [:div#main
-            [:div#lpsidebar-overlay.hidden-md-up {:on-click #(js/closeSidebar)}]
-            [:div#lpsidebar-wrap.hidden-md-up
-             [lpsidebar-component]]
-            [:img#lpsidebar-open.hidden-md-up {:src "img/owlet-tab-closed.png"
-                                               :on-click #(js/openSidebar)}]
-            [:img#lpsidebar-close.hidden-md-up {:src "img/owlet-tab-opened.png"
-                                                :on-click #(js/closeSidebar)
-                                                :style {:z-index "0"}}]
-            [:div#sidebar-wrap.hidden-sm-down
-             [sidebar-component]]
-            [:div.outer-height-wrap
-             [search-bar]
-             [:div.inner-height-wrap
-                [:div.content {:style {:background-image (str "url(" @src ")")
-                                       :background-size  "cover"}}
-                   [upload-image-component show? close-modal]
-                   [:button#change-header-btn
-                    {:type     "button"
-                     :class    "btn btn-secondary"
-                     :style    {:font-size "1em"
-                                :padding   "6px"
-                                :display   (if @is-user-logged-in?
-                                             "block"
-                                             "none")}
-                     :on-click open-modal}
-                    [:i.fa.fa-pencil-square-o]]
-                   (when @loading?
-                     [loading-component])
-                   [show-view @active-view]]]]]))})))
+    (fn []
+      (set! (-> js/document .-title) @(rf/subscribe [:app-title]))
+      (if (= @active-view :welcome-view)
+        [show-view @active-view]
+        [:div#main
+         [:div#lpsidebar-overlay.hidden-md-up {:on-click #(js/closeSidebar)}]
+         [:div#lpsidebar-wrap.hidden-md-up
+          [lpsidebar-component]]
+         [:img#lpsidebar-open.hidden-md-up {:src "img/owlet-tab-closed.png"
+                                            :on-click #(js/openSidebar)}]
+         [:img#lpsidebar-close.hidden-md-up {:src "img/owlet-tab-opened.png"
+                                             :on-click #(js/closeSidebar)
+                                             :style {:z-index "0"}}]
+         [:div#sidebar-wrap.hidden-sm-down
+          [sidebar-component]]
+         [:div.outer-height-wrap
+          [search-bar]
+          [:div.inner-height-wrap
+             [:div.content {:style {:background-image (str "url(" @src ")")
+                                    :background-size  "cover"}}
+                [upload-image-component show? close-modal]
+                [:button#change-header-btn
+                 {:type     "button"
+                  :class    "btn btn-secondary"
+                  :style    {:font-size "1em"
+                             :padding   "6px"
+                             :display   (if @is-user-logged-in?
+                                          "block"
+                                          "none")}
+                  :on-click open-modal}
+                 [:i.fa.fa-pencil-square-o]]
+                (when @loading?
+                  [loading-component])
+                [show-view @active-view]]]]]))))
 
 
 (rf/reg-fx

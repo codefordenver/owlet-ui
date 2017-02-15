@@ -4,9 +4,7 @@
 
 (def default-user-db
   "initial user state"
-  {:logged-in?                false
-   :social-id                 nil
-   :content-entries           []
+  {:content-entries           []
    :background-image          config/default-header-bg-image
    :background-image-entry-id nil})
 
@@ -23,7 +21,7 @@
    :activities-by-branch-in-view nil
    :activities-by-branch         {}
    :active-branch-activities     nil
-   :id                           nil
+   :my-user-id                   nil
    :activity-in-view             nil
    :activity-titles              nil
    :activity-platforms           nil})

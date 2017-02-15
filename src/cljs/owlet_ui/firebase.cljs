@@ -103,7 +103,16 @@
 
 (rf/reg-fx
   :firebase-sign-in
+  ; A list must be provided for this effect, which contains just the args. for
+  ; function sign-in, above.
   (partial apply sign-in))
+
+
+(rf/reg-fx
+  :firebase-sign-out
+  ; The desired firebase.auth.Auth instance must be provided for this effect,
+  ; such as firebase-auth-object, above.
+  (memfn signOut))
 
 
 (defn on-auth-change
@@ -206,18 +215,17 @@
                    (.toString %)))))
 
 
-(defn on-presence-change
-  "Exactly like on-change, this listens to the given Firebase database ref and
-  dispatches an event of the given id. In addition, a function is registered
-  to listen to any change in node /.info/connected, which tracks the client's
-  connection to Firebase. The function updates the given ref with a boolean at
-  key \"online\" and the number of milliseconds since the epoch at key
-  \"online-change-time\". Note that the contents of the ref are not replaced;
-  only values for these keys are updated.
+(defn note-presence-changes
+  "Tracks the client's connection to Firebase by registering a function to
+  listen for any change in node /.info/connected in the given database ref.
+  The function updates the given ref with a boolean at key \"online\" and the
+  number of milliseconds since the epoch at key \"online-change-time\". Note
+  that the contents of the ref are not replaced; values for only these keys
+  are written.
 
   Note also that, when disconnected, the \"online-change-time\" integer
-  recorded locally must be from the time known by the LOCAL system. The value
-  recorded on the Firebase server, however, will be from the SERVER'S time.
+  recorded locally must be the time known by the LOCAL system. The value
+  recorded on the Firebase server, however, will be the SERVER'S time.
   Once the connection is reestablished, however, the server's value will be
   recorded locally, and an event will be dispatched as usual.
 
@@ -226,8 +234,7 @@
   as in on-change. You can use these with the firebase.database.Reference
   method off(). See the on-change doc.
   "
-  [db-ref event-id & args]
-
+  [db-ref]
   (letfn [(update-presence-info [db-obj connected?]
             ; Note that db-obj may be just db-ref (a firebase.database.Reference
             ; object), OR its associated firebase.database.OnDisconnect object.
@@ -244,6 +251,7 @@
 
     [(.on (db-ref-for-path ".info/connected")
           "value"
+
           (fn [snapshot]
             ; Update db-ref with connection status, incl. time connected.
             (update-presence-info db-ref (.val snapshot))
@@ -251,15 +259,11 @@
               ; Tell db-ref to do update on the server only if connection is
               ; lost. This happens at most once.
               (update-presence-info (.onDisconnect db-ref) false)))
+
+          ; Log any error:
           #(.log js/console (str "owlet-ui.firebase/on-presence-change \n"
                                  "calling firebase.database.Reference's .on():\n"
-                                 (.toString %))))
-
-     ; When a connection or disconnection occurs, dispatch an event vector
-     ; with the new contents of db-ref,
-     ; map { ... :online true, :online-change-time <server-or-local-time> ...}
-     ; as its second element.
-     (apply on-change db-ref event-id args)]))
+                                 (.toString %))))]))
 
 
 (defn change-on

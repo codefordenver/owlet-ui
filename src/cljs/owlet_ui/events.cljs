@@ -112,18 +112,6 @@
 
 
 (re/reg-event-db
-  :user-has-logged-in-out!
-  (re/path [:user])
-  (fn [db [_ val]]
-    ;; reset user-bg-image on logout
-    (when (false? val)
-      (do
-        (re/dispatch [:reset-user-bg-image! config/default-header-bg-image])
-        (re/dispatch [:reset-user-db!])))
-    (assoc db :logged-in? val)))
-
-
-(re/reg-event-db
   :reset-user-db!
   (re/path [:user])
   (fn [_ [_ _]]
@@ -131,111 +119,9 @@
 
 
 (re/reg-event-db
-  :update-sid-and-get-cms-entries-for
-  (re/path [:user])
-  (fn [db [_ sid]]
-    (GET (str config/server-url "/api/content/entries?social-id=" sid)
-         {:response-format :json
-          :keywords?       true
-          :handler         #(re/dispatch [:process-fetch-entries-success! %1])})
-    (assoc db :social-id sid)))
-
-
-(re/reg-event-db
-  :process-fetch-entries-success!
-  (re/path [:user :content-entries])
-  (fn [db [_ entries]]
-    (re/dispatch [:set-user-background-image! entries])
-    (conj db entries)))
-
-
-(re/reg-event-db
-  :set-user-background-image!
-  (re/path [:user :background-image])
-  (fn [_ [_ coll]]
-    (let [filter-user-bg-image (fn [c]
-                                 (filterv #(= (get-in % [:sys :contentType :sys :id])
-                                              "userBgImage") c))
-          user-bg-image-entries (last (filter-user-bg-image coll))
-          entry-id (get-in user-bg-image-entries [:sys :id])]
-      ;; set :background-image-entry-id
-      (re/dispatch [:set-backround-image-entry-id! entry-id])
-      (get-in user-bg-image-entries [:fields :url :en-US]))))
-
-
-(re/reg-event-db
-  :set-backround-image-entry-id!
-  (re/path [:user :background-image-entry-id])
-  (fn [_ [_ id]]
-    id))
-
-
-(re/reg-event-db
   :update-user-background!
   (fn [db [_ url]]
-    ;; if we have a url and an entry-id, aka existing entry for *userBgImage*
-    ;; perform an update
-    (let [entry-id (get-in db [:user :background-image-entry-id])]
-      (if (and url entry-id)
-        (PUT
-          (str config/server-url "/api/content/entries")
-          {:response-format :json
-           :keywords?       true
-           :params          {:content-type "userBgImage"
-                             :fields       {:url      {"en-US" url}
-                                            :socialid {"en-US" (get-in db [:user :social-id])}}
-                             :entry-id     entry-id}
-           :handler         #(re/dispatch [:update-user-background-after-successful-post! %1])
-           :error-handler   #(prn %)})
-        (POST
-          (str config/server-url "/api/content/entries")
-          {:response-format :json
-           :keywords?       true
-           :params          {:content-type  "userBgImage"
-                             :fields        {:url      {"en-US" url}
-                                             :socialid {"en-US" (get-in db [:user :social-id])}}
-                             :auto-publish? true}
-           :handler         #(re/dispatch [:update-user-background-after-successful-post! %1])
-           :error-handler   #(prn %)})))
-    db))
 
-
-(re/reg-event-db
-  :update-user-background-after-successful-post!
-  (re/path [:user :background-image])
-  (fn [_ [_ res]]
-    (re/dispatch [:set-backround-image-entry-id! (get-in res [:sys :id])])
-    (get-in res [:fields :url :en-US])))
-
-
-(re/reg-event-db
-  :reset-user-bg-image!
-  (re/path [:user :background-image])
-  (fn [_ [_ url]]
-    url))
-
-
-(re/reg-event-db
-  :get-auth0-profile
-  (fn [db [_ _]]
-    (when-let [user-token (.getItem js/localStorage "owlet:user-token")]
-      (.getProfile
-        auth0/lock
-        user-token
-        (fn [err profile]
-          (if (some? err)
-            ;; delete expired token
-            (when user-token
-              (.removeItem js/localStorage "owlet:user-token"))
-            (let [user-id (.-user_id profile)]
-              (re/dispatch [:user-has-logged-in-out! true])
-              (re/dispatch [:update-sid-and-get-cms-entries-for user-id])
-              (fb/on-presence-change
-                (fb/db-ref-for-path (str "users/" user-id))
-                :user-presence-changed)
-              (reg-setter
-                :user-presence-changed
-                [:users (keyword user-id)]))))))
     db))
 
 
@@ -301,7 +187,7 @@
   [(re/inject-cofx :set-loading! false)]
   (fn [db [_ res]]
     (let [branches (:branches res)
-          ;; skills (:skills res) ;; TODO: FEAT-149
+          skills (:skills res)
           all-activities (:activities db)
           platforms (remove-nil (map #(get-in % [:fields :techRequirements]) all-activities))
           platforms-nomalized (->> platforms (map parse-platform))
@@ -430,9 +316,25 @@
     {}))
 
 
-(re/reg-event-db
-  :firebase-user
-  (fn [db [_ fb-user]]
-    (js/console.log "Firebase user: " fb-user)
-    db))
+(re/reg-event-fx
+  :firebase-auth-change
+  (fn [cofx [_ fb-user]]
+    ; If user is logged into firebase, fb-user is a JS object containing
+    ; a string in its uid property. Otherwise, fb-user is nil. Thus we will
+    ; know whether we're logged-in simply from (:my-user-id db).
+    (let [user-id (and fb-user (.-uid fb-user))]
+      {:db                (assoc (:db cofx) :my-user-id user-id)
+       :watch-my-presence user-id})))
 
+
+(re/reg-fx
+  :watch-my-presence
+  (fn [user-id]
+    (fb/note-presence-changes
+      (fb/db-ref-for-path (str "users/" user-id)))))
+
+
+(re/reg-event-fx
+  :log-out
+  (fn [_ _]
+    {:firebase-sign-out fb/firebase-auth-object}))

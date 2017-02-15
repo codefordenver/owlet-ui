@@ -16,8 +16,7 @@
   []
   [:button.btn.btn-logout.btn-sm
    {:type     "button"
-    :on-click #(do (.signOut fb/firebase-auth-object)
-                   (rf/dispatch [:user-has-logged-in-out! false]))}
+    :on-click #(rf/dispatch [:log-out])}
    "Log out"])
 
 

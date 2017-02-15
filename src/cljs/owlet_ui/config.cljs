@@ -61,27 +61,3 @@
 
 (def default-header-bg-image "img/default_background.png")
 
-
-(def default-user-db
-  "initial user state"
-  {:logged-in?                false
-   :social-id                 nil
-   :content-entries           []
-   :background-image          default-header-bg-image
-   :background-image-entry-id nil})
-(def default-db
-  "initial app state"
-  {:active-view                  nil
-   :user                         default-user-db
-   :app                          {:loading?     nil
-                                  :open-sidebar false
-                                  :route-params {}
-                                  :title        (str project-name " ^OvO^")}
-   :activities                   []
-   :activity-branches            nil
-   :activities-by-branch-in-view nil
-   :activities-by-branch         {}
-   :active-branch-activities     nil
-   :id                           nil
-   :activity-in-view             nil})
-

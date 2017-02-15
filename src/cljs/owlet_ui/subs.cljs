@@ -44,13 +44,11 @@
     (:active-view db)))
 
 
+(reg-getter :my-user-id [:my-user-id])
+
+
 (reg-getter :change-fb-users [:users])
 
-
-(rf/reg-sub
-  :social-id-subscription
-  (fn [db]
-    (get-in db [:user :social-id])))
 
 (rf/reg-sub
   :user-has-background-image?
