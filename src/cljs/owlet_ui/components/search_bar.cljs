@@ -23,9 +23,9 @@
         result-formatter #(-> {:term %})
         suggestions-for-search
         (fn [s]
-          ;;(if (< 1 (count s))
-            ;;(reset! suggestion-count 16)
-            ;;(reset! suggestion-count 0)
+          (if (< 1 (count s))
+            (reset! suggestion-count 16)
+            (reset! suggestion-count 0))
           (prn @suggestion-count)
           (into []
                 (take @suggestion-count
@@ -33,8 +33,8 @@
                             :when (re-find (re-pattern (str "(?i)" s)) n)]
                         (result-formatter n)))))
         change-handler #(rf/dispatch [:filter-activities-by-search-term (:term %)])]
-    [:div.search-bar-wrap {:on-blur (toggle-suggestions true)
-                           :on-focus (toggle-suggestions false)}
+    [:div.search-bar-wrap {:on-blur #(toggle-suggestions true)
+                           :on-focus #(toggle-suggestions false)}
      [typeahead
       :width "100%"
       :on-change change-handler
