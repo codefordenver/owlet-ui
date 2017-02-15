@@ -4,18 +4,26 @@
             [re-frame.core :as rf]
             [reagent.core :as reagent]))
 
+(defonce search-model (reagent/atom {}))
+
+(defonce suggestion-count (reagent/atom 16))
+
 (defn search-bar []
-  (let [search-model (reagent/atom {})
-        branches (rf/subscribe [:activity-branches])
+  (let [branches (rf/subscribe [:activity-branches])
         skills (rf/subscribe [:skills])
         activity-titles (rf/subscribe [:activity-titles])
         activity-platforms (rf/subscribe [:activity-platforms])
+        search-collections (concat @skills @branches @activity-titles @activity-platforms)
         result-formatter #(-> {:term %})
         suggestions-for-search
         (fn [s]
+          ;(if (< 1 (count s))
+          ;  (reset! suggestion-count 16)
+          ;  (reset! suggestion-count 0))
+          (prn @suggestion-count)
           (into []
-                (take 16
-                      (for [n (distinct (concat @skills @branches @activity-titles @activity-platforms))
+                (take @suggestion-count
+                      (for [n (distinct search-collections)
                             :when (re-find (re-pattern (str "(?i)" s)) n)]
                         (result-formatter n)))))
         change-handler #(rf/dispatch [:filter-activities-by-search-term (:term %)])]
