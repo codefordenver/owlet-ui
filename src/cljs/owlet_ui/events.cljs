@@ -369,7 +369,7 @@
 
 (re/reg-event-db
   :filter-activities-by-search-term
-  [(re/inject-cofx :navigate-to-view! :branch-activities-view)]
+  [(re/inject-cofx :navigate-to-view! :search-results-view)]
   (fn [db [_ term]]
     (set! (.-location js/window) (str "/#/search/" term))
     ;; by branch
