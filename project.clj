@@ -6,6 +6,7 @@
                  [binaryage/dirac "RELEASE"]
                  [re-frame "0.9.1"]
                  [secretary "1.2.3"]
+                 [venantius/accountant "0.1.7"]
                  [compojure "1.5.0"]
                  [yogthos/config "0.8"]
                  [ring "1.4.0"]
