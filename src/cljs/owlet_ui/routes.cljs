@@ -50,6 +50,11 @@
             (re/dispatch [:set-active-view :branches-view])
             (re/dispatch [:set-active-document-title! "Branches"]))
 
+  (defroute "/search/:search" {:as params}
+            (re/dispatch [:get-library-content-from-contentful params])
+            (re/dispatch [:filter-activities-by-search-term (:search params)])
+            (re/dispatch [:set-active-document-title! (:branch params)]))
+
   (defroute "/:branch" {:as params}
             (re/dispatch [:get-library-content-from-contentful params])
             (re/dispatch [:set-active-view :branch-activities-view])

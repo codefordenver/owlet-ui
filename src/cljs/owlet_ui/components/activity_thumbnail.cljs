@@ -1,20 +1,15 @@
 (ns owlet-ui.components.activity-thumbnail
   (:require [re-frame.core :as rf]
-            [cljsjs.showdown]))
-
-(def showdown (js/showdown.Converter.))
-
-(defn- set-as-showdown
-  "returns component as markdown"
-  [field & [class]]
-  [:div {:class class
-         "dangerouslySetInnerHTML"
-                #js{:__html (.makeHtml showdown (str field))}}])
+            [owlet-ui.helpers :refer [showdown]]))
 
 (defn activity-thumbnail [fields entry-id]
   (let [preview-image-url (get-in fields [:preview :sys :url])
         image (or preview-image-url "img/default-thumbnail.png")
-        {:keys [title summary unplugged techRequirements skills]} fields]
+        {:keys [title summary unplugged techRequirements skills]} fields
+        set-as-showdown (fn [field & [class]]
+                          [:div {:class class
+                                 "dangerouslySetInnerHTML"
+                                        #js{:__html (.makeHtml showdown (str field))}}])]
     [:div.col-xs-12.col-md-6.col-lg-4
      [:div.activity-thumbnail-wrap.box-shadow
       [:a {:href     (str "#/activity/" entry-id)

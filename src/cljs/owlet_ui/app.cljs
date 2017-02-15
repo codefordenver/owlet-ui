@@ -11,15 +11,17 @@
             [owlet-ui.views.activity :refer [activity-view]]
             [owlet-ui.views.branches :refer [branches-view]]
             [owlet-ui.views.settings :refer [settings-view]]
-            [owlet-ui.views.branch-activities :refer [branch-activities-view]]
             [owlet-ui.async :as async]
             [owlet-ui.auth0 :as auth0]
             [owlet-ui.config :as config]
-            [owlet-ui.firebase :as fb]))
+            [owlet-ui.firebase :as fb]
+            [owlet-ui.views.search-results :refer [search-results-view]]
+            [owlet-ui.views.branch-activities :refer [branch-activities-view]]))
 
 (defmulti views identity)
 (defmethod views :welcome-view [] [welcome-view])
 (defmethod views :not-found-view [] [not-found-view])
+(defmethod views :search-results-view [] [search-results-view])
 (defmethod views :activity-view [] [activity-view])
 (defmethod views :branches-view [] [branches-view])
 (defmethod views :branch-activities-view [] [branch-activities-view])
@@ -84,17 +86,4 @@
                 (when @loading?
                   [loading-component])
                 [show-view @active-view]]]]]))))
-
-
-(rf/reg-fx
-  :set-local-storage
-  (fn [clj-map]
-    (doseq [[k v] clj-map]
-      (.setItem js/localStorage (clj->js k) (clj->js v)))))
-
-
-(rf/reg-cofx
-  :get-local-storage
-  (fn [cofx k]
-    (.getItem js/localStorage (clj->js k))))
 

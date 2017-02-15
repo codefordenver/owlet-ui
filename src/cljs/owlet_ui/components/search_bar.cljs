@@ -4,25 +4,37 @@
             [re-frame.core :as rf]
             [reagent.core :as reagent]))
 
+(defonce search-model (reagent/atom {}))
+
+(defonce suggestion-count (reagent/atom 16))
+
+(defn toggle-suggestions [state]
+   (let [suggestions (aget (js->clj (js/document.getElementsByClassName "rc-typeahead-suggestions-container")) 0)]
+     (when-not (nil? suggestions)
+      (set! (.-hidden suggestions) state))))
+
 (defn search-bar []
-  (let [search-model (reagent/atom {})
-        branches (rf/subscribe [:activity-branches])
+  (let [branches (rf/subscribe [:activity-branches])
         skills (rf/subscribe [:skills])
         activity-titles (rf/subscribe [:activity-titles])
         activity-platforms (rf/subscribe [:activity-platforms])
+        search-collections (concat @skills @branches @activity-titles @activity-platforms)
         result-formatter #(-> {:term %})
         suggestions-for-search
         (fn [s]
+          (if (< 1 (count s))
+            (reset! suggestion-count 16)
+            (reset! suggestion-count 0))
           (into []
-                (take 16
-                      (for [n (distinct (concat @skills @branches @activity-titles @activity-platforms))
+                (take @suggestion-count
+                      (for [n (distinct search-collections)
                             :when (re-find (re-pattern (str "(?i)" s)) n)]
                         (result-formatter n)))))
         change-handler #(rf/dispatch [:filter-activities-by-search-term (:term %)])]
-    [:div.search-bar-wrap
+    [:div.search-bar-wrap {:on-blur #(toggle-suggestions true)
+                           :on-focus #(toggle-suggestions false)}
      [typeahead
       :width "100%"
-      :class "form-control"
       :on-change change-handler
       :suggestion-to-string #(:term %)
       :debounce-delay 100
