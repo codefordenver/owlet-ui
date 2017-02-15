@@ -26,7 +26,6 @@
           (if (< 1 (count s))
             (reset! suggestion-count 16)
             (reset! suggestion-count 0))
-          (prn @suggestion-count)
           (into []
                 (take @suggestion-count
                       (for [n (distinct search-collections)
