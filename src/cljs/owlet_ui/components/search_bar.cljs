@@ -8,10 +8,11 @@
 
 (defonce suggestion-count (reagent/atom 16))
 
-(defn toggle-suggestions [state]
-   (let [suggestions (aget (js->clj (js/document.getElementsByClassName "rc-typeahead-suggestions-container")) 0)]
+(defn toggle-suggestions []
+   (let [suggestions (aget (js->clj (js/document.getElementsByClassName "rc-typeahead-suggestions-container")) 0)
+         hidden (.-hidden suggestions)]
      (when-not (nil? suggestions)
-      (set! (.-hidden suggestions) state))))
+      (set! (.-hidden suggestions) (not hidden)))))
 
 (defn search-bar []
   (let [branches (rf/subscribe [:activity-branches])
@@ -31,8 +32,8 @@
                             :when (re-find (re-pattern (str "(?i)" s)) n)]
                         (result-formatter n)))))
         change-handler #(rf/dispatch [:filter-activities-by-search-term (:term %)])]
-    [:div.search-bar-wrap {:on-blur #(toggle-suggestions true)
-                           :on-focus #(toggle-suggestions false)}
+    [:div.search-bar-wrap {:on-blur #(toggle-suggestions)
+                           :on-focus #(toggle-suggestions)}
      [typeahead
       :width "100%"
       :on-change change-handler
