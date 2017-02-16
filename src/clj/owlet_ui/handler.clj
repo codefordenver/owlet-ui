@@ -6,6 +6,7 @@
 
 (defroutes routes
   (GET "/*" [] (resource-response "index.html" {:root "public"}))
+  (GET "/activity/*" [] (resource-response "index.html" {:root "public"}))
   (resources "/"))
 
 (def dev-handler (-> #'routes wrap-reload))
