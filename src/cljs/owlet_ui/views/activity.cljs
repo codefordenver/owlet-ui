@@ -5,6 +5,7 @@
             [owlet-ui.components.activity.inspiration :refer [activity-inspiration]]
             [owlet-ui.components.activity.challenge :refer [activity-challenge]]
             [owlet-ui.components.activity.image-gallery :refer [activity-image-gallery]]
+            [owlet-ui.components.back :refer [back]]
             [re-frame.core :as re]))
 
 (defn activity-view []
@@ -14,7 +15,7 @@
         [:h2 [:mark.white.box.box-shadow [:b "Loading..."]]]]
       (if (= activity "none")
         [:div.branch-activities-wrap
-          [:h2 [:mark.white.box.box-shadow [:b "This activity does not exist"]]]]
+          [:h2 [back] [:mark.white.box.box-shadow [:b "This activity does not exist"]]]]
         (let [{:keys [fields]} activity]
           (let [{:keys [why
                         title
