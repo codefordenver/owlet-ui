@@ -363,9 +363,10 @@
 (re/reg-event-db
   :set-activity-in-view
   (fn [db [_ activity-id all-activities]]
-    (assoc db :activity-in-view (some #(when (= (get-in % [:sys :id]) activity-id) %)
-                                      (or (:activities db) all-activities)))))
-
+    (if-let [activity-match (some #(when (= (get-in % [:sys :id]) activity-id) %)
+                                  (or (:activities db) all-activities))]
+      (assoc db :activity-in-view activity-match)
+      (assoc db :activity-in-view "none"))))
 
 (re/reg-event-db
   :filter-activities-by-search-term
