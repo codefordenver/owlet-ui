@@ -303,10 +303,7 @@
   (fn [_ [_ {:keys [auth0-token delegation-token]}]]
     {:firebase-sign-in  [fb/firebase-auth-object
                          delegation-token
-                         :firebase-sign-in-failed]
-
-     :set-local-storage {:auth0-token    auth0-token
-                         :firebase-token delegation-token}}))
+                         :firebase-sign-in-failed]}))
 
 
 (re/reg-event-fx
@@ -327,20 +324,52 @@
   (fn [cofx [_ fb-user]]
     ; If user is logged into firebase, fb-user is a JS object containing
     ; a string in its uid property. Otherwise, fb-user is nil. Thus we will
-    ; know whether we're logged-in simply from (:my-user-id db).
-    (let [user-id (and fb-user (.-uid fb-user))]
-      {:db                (assoc (:db cofx) :my-user-id user-id)
-       :watch-my-presence user-id})))
+    ; know whether we're logged-in simply from (:my-user-id db). Also, if
+    ; non-nil user-id changed (from nil), then turn on the presence watcher.
+    (let [new-id       (and fb-user (.-uid fb-user))
+          old-identity (-> cofx :db :my-identity)]
+      ; Compare user-id with FORMER value at :my-user-id in app-db.
+      (if (= new-id (:firebase-id old-identity))
+        {}
+        {:change-user [new-id old-identity]}))))
 
 
 (re/reg-fx
-  :watch-my-presence
-  (fn [user-id]
-    (fb/note-presence-changes
-      (fb/db-ref-for-path (str "users/" user-id)))))
+  :change-user
+  (fn [[new-id {:keys [firebase-db-ref presence-off-cb]}]]
+    (if new-id
+
+      ; User just logged in, so track presence and save the user's firebase id,
+      ; the location (ref) in the firebase database where his/her persisted
+      ; data is stored, and the callback we'll need to turn off presence when
+      ; logging out.
+      (let [new-ref (fb/path-str->db-ref (str "users/" new-id))]
+        (re/dispatch
+          [:my-identity {:firebase-id    new-id
+                         :firebase-db-ref new-ref
+                         :presence-off-cb (fb/note-presence-changes new-ref)}]))
+
+      ; Else just logged out. Turn off presence tracking and set :online false.
+      ; Also flag that we're logged out with nil for :my-user-id.
+      (do (.off firebase-db-ref "value" presence-off-cb)
+          ; TODO: Does .off really work? Try logging out, :online is false -- OK.
+          ;       Disconnect from network, then reconnect. :online becomes true. How?
+          ;       We're still logged out, so shouldn't know which user's :online to set.
+          (fb/reset-into-ref
+            firebase-db-ref
+            {:online             false
+             :online-change-time fb/timestamp-placeholder})
+          (re/dispatch [:my-identity nil])))))
+
+
+(reg-setter :my-identity [:my-identity])
 
 
 (re/reg-event-fx
   :log-out
   (fn [_ _]
-    {:firebase-sign-out fb/firebase-auth-object}))
+    {; Tell Firebase to sign me out.
+     :firebase-sign-out fb/firebase-auth-object
+
+     ; Optimistically tell GUI we're signed out, so we don't wait for Firebase.
+     :dispatch          [:my-identity nil]}))

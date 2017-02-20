@@ -21,7 +21,7 @@
    :activities-by-branch-in-view nil
    :activities-by-branch         {}
    :active-branch-activities     nil
-   :my-user-id                   nil
+   :my-identity                  nil
    :activity-in-view             nil
    :activity-titles              nil
    :activity-platforms           nil})

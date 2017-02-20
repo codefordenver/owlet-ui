@@ -22,7 +22,7 @@
 
 (defn login-component
   []
-  (if @(rf/subscribe [:my-user-id])
+  (if @(rf/subscribe [:my-identity])
     [logout-button]
     [login-button]))
 

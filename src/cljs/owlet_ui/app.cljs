@@ -41,7 +41,7 @@
                           :auth0-error)
   (fb/on-auth-change fb/firebase-auth-object :firebase-auth-change)
 
-  (let [users-db-path (fb/db-ref-for-path "users")]
+  (let [users-db-path (fb/path-str->db-ref "users")]
     (fb/on-change users-db-path :firebase-users-change))
     ;(fb/change-on users-db-path :change-fb-users))
   ;(async/repeatedly-run)    ; Needed to poll subscriptions to update Firebase DB.
@@ -49,7 +49,7 @@
   (let [active-view (rf/subscribe [:active-view])
         loading? (rf/subscribe [:set-loading-state?])
         src (rf/subscribe [:user-has-background-image?])
-        is-user-logged-in? (rf/subscribe [:my-user-id])
+        is-user-logged-in? (rf/subscribe [:my-identity])
         open-modal (fn [] (reset! show? true))
         close-modal (fn [] (reset! show? false))]
     (fn []

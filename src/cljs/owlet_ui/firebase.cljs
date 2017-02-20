@@ -52,12 +52,20 @@
   (-> firebase-app .database .ref))
 
 
-(defn db-ref-for-path
-  "Returns a Firebase ref for the node at the given path string relative to
-  firebase-db-ref.
+(defn vec->path-str
+  "Given a sequence of keywords, strings, or symbols (e.g. a path vector for
+  get-in), returns a string suitable for use as a Firebase path argument.
   "
-  [rel-path]
-  (.child firebase-db-ref rel-path))
+  [v]
+  (->> v (map name) (interleave (repeat "/")) rest (apply str)))
+
+
+(defn path-str->db-ref
+  "Returns a Firebase ref for the node at the given path string relative to
+  firebase-db-ref, or to the first argument if called with two args.
+  "
+  ([rel-path] (path-str->db-ref firebase-db-ref rel-path))
+  ([db-ref rel-path] (.child db-ref rel-path)))
 
 
 (def firebase-storage-ref
@@ -103,15 +111,17 @@
 
 (rf/reg-fx
   :firebase-sign-in
-  ; A list must be provided for this effect, which contains just the args. for
-  ; function sign-in, above.
+  ; A list must be provided to this effect function, as for function sign-in,
+  ; above. E.g., your reg-event-fx registred function could return
+  ; {:firebase-sign-in  [fb/firebase-auth-object a-token :some-event]}
   (partial apply sign-in))
 
 
 (rf/reg-fx
   :firebase-sign-out
-  ; The desired firebase.auth.Auth instance must be provided for this effect,
-  ; such as firebase-auth-object, above.
+  ; The desired firebase.auth.Auth instance must be provided for this effect.
+  ; E.g., your reg-event-fx registered function could return
+  ; {:firebase-sign-out fb/firebase-auth-object}.
   (memfn signOut))
 
 
@@ -125,9 +135,9 @@
   "
   [auth-obj event-id & args]
   (.onAuthStateChanged auth-obj
-                       (fn [fb-user]
+                       (fn [fb-user-obj]
                          (rf/dispatch
-                           (apply vector event-id (js->clj fb-user) args)))))
+                           (apply vector event-id fb-user-obj args)))))
 
 
 ;  ;  ;  ;  ;  ;  ;  ;  Communicating with Firebase DB  ;  ;  ;  ;  ;  ;  ;  ;
@@ -135,7 +145,7 @@
 
 (def legal-db-value?
   "Returns true iff the given Clojure value can be stored as a value in the
-  Firebase database, say using set-ref or change-on. Most Clojure values could
+  Firebase database, say using reset-ref or change-on. Most Clojure values could
   be \"converted\" to JSON just using clj->js, but important meaning could be
   lost. So, to enforce explicitness, we require that only \"stringish\" values
   (strings, symbols, or keywords) be used as keys in the case of a map
@@ -144,9 +154,10 @@
   values as defined here.
   "
   (let [stringish? (some-fn string? symbol? keyword?)]
-    (comp boolean (some-fn number?
+    (comp boolean (some-fn nil?
+                           boolean?
+                           number?
                            stringish?
-                           nil?
                            (partial = timestamp-placeholder)
                            (every-pred
                              (some-fn sequential? set?)
@@ -159,28 +170,70 @@
                              #(every? legal-db-value? (vals %)))))))
 
 
-(defn set-ref
-  "Asynchronously assigns the given clojure value v at Firebase reference
-  a-ref. If a no-arg callback function is given as third argument, it is
-  called upon completion.
+(defn- apply-setter-to-ref
 
-  Note that v must pass precondition legal-db-value?, and if v is nil, the
-  location corresponding to a-ref will be deleted. The same applies to empty
-  collections as values, like [], {}, or #{}. (The Firebase databse does not
-  store null values or empty collections.)
+  ([setter db-ref v]
+   (apply-setter-to-ref setter db-ref v :callback-fn #(do)))
 
-  Returns a js/Promise, which will perform (or has performed) the .set method
-  call.
-  "
-  ([a-ref v]
-   (set-ref a-ref v #(do)))
+  ([setter db-ref v event]
+   {:pre [(or (and (vector? event) (seq event))
+              (.log js/console (str "Illegal re-frame event:" (pr-str event))))]}
 
-  ([a-ref v callback]
+   (apply-setter-to-ref setter db-ref v :callback-fn #(rf/dispatch event)))
+
+  ([setter db-ref v _ callback]
    {:pre [(or (legal-db-value? v)
-              (.log js/console (str "Illegal Firebase value:" (pr-str v))))
-          (fn? callback)]}
-   (let [value (clj->js v)]
-     (.set a-ref value callback))))
+              (.log js/console (str "Illegal Firebase value: " (pr-str v))))]}
+
+   (setter db-ref (clj->js v) callback)))
+
+
+(def reset-ref
+  (partial apply-setter-to-ref (memfn set v callback)))
+
+
+(rf/reg-fx
+  :firebase-reset-ref
+
+  ; ([db-ref v] [db-ref v event])
+  ;
+  ; Asynchronously assigns the given clojure value at the given Firebase
+  ; database reference. If an event vector is given as the third argument,
+  ; it will be dispatched upon completion.
+  ;
+  ; Note that the Clojure value v must pass precondition legal-db-value?. If it is nil, the
+  ; location corresponding to the ref will be deleted. The same applies to empty
+  ; collections as values, like [], {}, or #{}. (The Firebase databse does not)
+  ; store null values or empty collections.
+  ;
+  ; Returns a js/Promise, which will perform (or has performed) the db-ref.set
+  ; method call.
+
+  (partial apply reset-ref))
+
+
+(def reset-into-ref
+  (partial apply-setter-to-ref (memfn update v callback)))
+
+(rf/reg-fx
+  :firebase-reset-into-ref
+
+  ; ([db-ref v] [db-ref v event])
+  ;
+  ; Asynchronously merges the key/values of the given associative Clojure value v
+  ; (say a map or vector) into the given Firebase database reference. Any values
+  ; at keys not present in the Clojure value will not be changed. If an event
+  ; vector is given as the third argument, it will be dispatched upon completion.
+  ;
+  ; Note that the Clojure value v must pass precondition legal-db-value?. If it is nil, the
+  ; location corresponding to the ref will be deleted. The same applies to empty
+  ; collections as values, like [], {}, or #{}. (The Firebase databse does not)
+  ; store null values or empty collections.
+  ;
+  ; Returns a js/Promise, which will perform (or has performed) the db-ref.update
+  ; method call.)
+
+  (partial apply reset-into-ref))
 
 
 (defn on-change
@@ -218,52 +271,69 @@
 (defn note-presence-changes
   "Tracks the client's connection to Firebase by registering a function to
   listen for any change in node /.info/connected in the given database ref.
-  The function updates the given ref with a boolean at key \"online\" and the
-  number of milliseconds since the epoch at key \"online-change-time\". Note
-  that the contents of the ref are not replaced; values for only these keys
-  are written.
+  If called with just one argument, this function updates the given ref with a
+  boolean at key \"online\" and the number of milliseconds since the epoch at
+  key \"online-change-time\". If called with three arguments, the second arg.
+  must be a map whose keys and values will be used to update the given db-ref
+  when a connection is established. The update will use the data in the third
+  argument will when the connection is lost.
+
+  Note that not all the contents of the ref are replaced; values for only the
+  keys \"online\" and \"online-change-time\" are written. Similarly, if called
+  with three arguments, only the values for keys in the given maps are written.
 
   Note also that, when disconnected, the \"online-change-time\" integer
   recorded locally must be the time known by the LOCAL system. The value
   recorded on the Firebase server, however, will be the SERVER'S time.
   Once the connection is reestablished, however, the server's value will be
-  recorded locally, and an event will be dispatched as usual.
+  recorded locally.
 
-  Returns a vector containing two functions. The first is the function
-  listening to node /.info/connected, and the second is listening to db-ref,
-  as in on-change. You can use these with the firebase.database.Reference
-  method off(). See the on-change doc.
+  Returns a function listening to node \".info/connected\". You can use it with
+  the firebase.database.Reference method off() to tell the server to stop
+  listening for presence changes.
   "
-  [db-ref]
-  (letfn [(update-presence-info [db-obj connected?]
-            ; Note that db-obj may be just db-ref (a firebase.database.Reference
-            ; object), OR its associated firebase.database.OnDisconnect object.
-            ; Notice that timestamp-placeholder works locally too!
-            (.update db-obj
-                     (clj->js {:online             connected?
-                               :online-change-time timestamp-placeholder})
-                     #(when %
-                        (.log js/console
-                              (str "owlet-ui.firebase/on-presence-change \n"
-                                   "calling firebase.database.OnDisconnect's"
-                                   ".uppdate():\n"
-                                   (.toString %))))))]
+  ([db-ref]
+   (note-presence-changes
+     db-ref
+     {:online true,  :online-change-time timestamp-placeholder}
+     {:online false, :online-change-time timestamp-placeholder}))
 
-    [(.on (db-ref-for-path ".info/connected")
+  ([db-ref online-vals offline-vals]
+   (letfn [(update-presence-info [target-ref vals]
+             ; Note that target-ref may be just db-ref (a
+             ; firebase.database.Reference object), OR its associated
+             ; OnDisconnect object. Notice that timestamp-placeholder works
+             ; locally too!
+             (.update target-ref
+                      (clj->js vals)
+                      #(when %
+                         (.log js/console
+                               (str "owlet-ui.firebase/note-presence-changes \n"
+                                    "calling firebase.database.OnDisconnect's"
+                                    ".update():\n"
+                                    (.toString %))))))]
+
+     (.on (-> db-ref .-root (.child ".info/connected"))
           "value"
 
           (fn [snapshot]
-            ; Update db-ref with connection status, incl. time connected.
-            (update-presence-info db-ref (.val snapshot))
-            (when (.val snapshot)
-              ; Tell db-ref to do update on the server only if connection is
-              ; lost. This happens at most once.
-              (update-presence-info (.onDisconnect db-ref) false)))
+            (if (.val snapshot)
+              (do
+                ; We're now online. Set the current state AND prepare the future
+                ; setting, for when the server detects the next disconnection.
+                (update-presence-info db-ref online-vals)
+                (update-presence-info (.onDisconnect db-ref) offline-vals))
+                ; This new firebase.database.OnDisconnect object will be used
+                ; at most once.
+
+              ; Otherwise, we're currently offline, so just record the state
+              ; locally.
+              (update-presence-info db-ref offline-vals)))
 
           ; Log any error:
-          #(.log js/console (str "owlet-ui.firebase/on-presence-change \n"
-                                 "calling firebase.database.Reference's .on():\n"
-                                 (.toString %))))]))
+          #(js/console.log (str "owlet-ui.firebase/on-presence-change \n"
+                                "calling firebase.database.Reference's .on():\n"
+                                (.toString %)))))))
 
 
 (defn change-on
@@ -295,7 +365,7 @@
   "
   [db-ref & subscription-args]
   (let [sub-reaction     (rf/subscribe (vec subscription-args))
-        sending-reaction (reaction (set-ref db-ref @sub-reaction))
+        sending-reaction (reaction (reset-ref db-ref @sub-reaction))
         repeated-fn      (fn [] @sending-reaction)]
     (swap! repeatedly-running conj repeated-fn)
     repeated-fn))
@@ -308,7 +378,7 @@
   This is handy for ad-hoc queries at the REPL.
   "
   [rel-path callback]
-  (.once (db-ref-for-path rel-path)
+  (.once (path-str->db-ref rel-path)
          "value"
          #(-> % .val js->clj callback)
          #(.log js/console

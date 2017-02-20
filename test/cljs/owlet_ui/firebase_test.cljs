@@ -47,15 +47,15 @@
 
   {:before
    #(async done
-     ; Push test data onto Firebase, so it exists prior to connecting to it
-     ; with on-change.
-     (let [tests-ref   (fb/db-ref-for-path "tests")
-           on-complete (fn [err]
-                         (if err
-                           (do (prn err) (flush))
-                           (done)))]
-       (reset! test-ref
-               (.push tests-ref init-data on-complete))))
+      ; Push test data onto Firebase, so it exists prior to connecting to it
+      ; with on-change.
+      (let [tests-ref   (fb/path-str->db-ref "tests")
+            on-complete (fn [err]
+                          (if err
+                            (do (prn err) (flush))
+                            (done)))]
+        (reset! test-ref
+                (.push tests-ref init-data on-complete))))
 
    :after
    #(print "Done with Firebase.")}
@@ -136,9 +136,9 @@
 
         ; Next, let's try directly modifying the data on Firebase to see if
         ; our handler fires and the GUI is updated.
-        (fb/set-ref (.child @test-ref "notification")
-                    "modified"
-                    #(as/continue-chan! ch))
+        (.set (.child @test-ref "notification")
+              "modified"
+              #(as/continue-chan! ch))
         (<! ch)              ; Wait for Firebase to finish.
         (<! ch)              ; Wait for :test-notify handler.
 

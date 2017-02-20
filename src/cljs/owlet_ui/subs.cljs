@@ -44,7 +44,7 @@
     (:active-view db)))
 
 
-(reg-getter :my-user-id [:my-user-id])
+(reg-getter :my-identity [:my-identity])
 
 
 (reg-getter :change-fb-users [:users])
