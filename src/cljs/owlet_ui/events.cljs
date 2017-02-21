@@ -33,7 +33,7 @@
   (fn [cofx]
     (let [db (:db cofx)]
       (when-not (= (db :active-view) :welcome-view)
-        (js/closeSidebar))
+        (js/toggle-sidebar false))
       (assoc-in cofx [:db :app :open-sidebar] true))))
 
 
