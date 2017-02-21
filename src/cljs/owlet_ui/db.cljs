@@ -2,16 +2,10 @@
   (:require [owlet-ui.config :as config]
             [owlet-ui.routes :refer [library-url]]))
 
-(def default-user-db
-  "initial user state"
-  {:content-entries           []
-   :background-image          config/default-header-bg-image
-   :background-image-entry-id nil})
 
 (def default-db
   "initial app state"
   {:active-view                  nil
-   :user                         default-user-db
    :app                          {:loading?     nil
                                   :open-sidebar false
                                   :route-params {}

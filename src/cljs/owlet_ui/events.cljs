@@ -122,11 +122,10 @@
     db/default-user-db))
 
 
-(re/reg-event-db
+(re/reg-event-fx
   :update-user-background!
-  (fn [db [_ url]]
-
-    db))
+  (fn [{{{my-db-ref :firebase-db-ref} :my-identity} :db} [_ url]]
+    {:firebase-reset-into-ref [my-db-ref {:background-image-url url}]}))
 
 
 (re/reg-event-fx
@@ -326,26 +325,26 @@
     ; a string in its uid property. Otherwise, fb-user is nil. Thus we will
     ; know whether we're logged-in simply from (:my-user-id db). Also, if
     ; non-nil user-id changed (from nil), then turn on the presence watcher.
-    (let [new-id       (and fb-user (.-uid fb-user))
+    (let [new-id-kw    (some-> fb-user .-uid keyword)
           old-identity (-> cofx :db :my-identity)]
       ; Compare user-id with FORMER value at :my-user-id in app-db.
-      (if (= new-id (:firebase-id old-identity))
+      (if (= new-id-kw (:firebase-id old-identity))
         {}
-        {:change-user [new-id old-identity]}))))
+        {:change-user [new-id-kw old-identity]}))))
 
 
 (re/reg-fx
   :change-user
-  (fn [[new-id {:keys [firebase-db-ref presence-off-cb]}]]
-    (if new-id
+  (fn [[new-id-kw {:keys [firebase-db-ref presence-off-cb]}]]
+    (if new-id-kw
 
       ; User just logged in, so track presence and save the user's firebase id,
       ; the location (ref) in the firebase database where his/her persisted
       ; data is stored, and the callback we'll need to turn off presence when
       ; logging out.
-      (let [new-ref (fb/path-str->db-ref (str "users/" new-id))]
+      (let [new-ref (fb/path-str->db-ref (str "users/" (name new-id-kw)))]
         (re/dispatch
-          [:my-identity {:firebase-id    new-id
+          [:my-identity {:firebase-id     new-id-kw
                          :firebase-db-ref new-ref
                          :presence-off-cb (fb/note-presence-changes new-ref)}]))
 
@@ -362,9 +361,6 @@
           (re/dispatch [:my-identity nil])))))
 
 
-(reg-setter :my-identity [:my-identity])
-
-
 (re/reg-event-fx
   :log-out
   (fn [_ _]
@@ -373,3 +369,9 @@
 
      ; Optimistically tell GUI we're signed out, so we don't wait for Firebase.
      :dispatch          [:my-identity nil]}))
+
+
+(reg-setter :my-identity [:my-identity])
+
+
+(reg-setter :firebase-users-change [:users])

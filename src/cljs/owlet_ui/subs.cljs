@@ -1,5 +1,6 @@
 (ns owlet-ui.subs
-  (:require [re-frame.core :as rf]))
+  (:require [re-frame.core :as rf]
+            [owlet-ui.config :as config]))
 
 
 (defn reg-getter
@@ -47,13 +48,13 @@
 (reg-getter :my-identity [:my-identity])
 
 
-(reg-getter :change-fb-users [:users])
-
-
 (rf/reg-sub
-  :user-has-background-image?
+  :my-background-image-url
   (fn [db]
-    (get-in db [:user :background-image])))
+    (let [me (rf/subscribe [:my-identity])]
+      (or
+        (get-in db [:users (:firebase-id @me) :background-image-url])
+        config/default-header-bg-image))))
 
 (rf/reg-sub
   :library-activities

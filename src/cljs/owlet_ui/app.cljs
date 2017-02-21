@@ -43,12 +43,10 @@
 
   (let [users-db-path (fb/path-str->db-ref "users")]
     (fb/on-change users-db-path :firebase-users-change))
-    ;(fb/change-on users-db-path :change-fb-users))
-  ;(async/repeatedly-run)    ; Needed to poll subscriptions to update Firebase DB.
 
   (let [active-view (rf/subscribe [:active-view])
         loading? (rf/subscribe [:set-loading-state?])
-        src (rf/subscribe [:user-has-background-image?])
+        src (rf/subscribe [:my-background-image-url])
         is-user-logged-in? (rf/subscribe [:my-identity])
         open-modal (fn [] (reset! show? true))
         close-modal (fn [] (reset! show? false))]
