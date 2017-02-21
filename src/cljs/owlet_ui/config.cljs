@@ -3,9 +3,7 @@
 
 (def debug?
   ^boolean js/goog.DEBUG)
-
-(when debug?
-  (enable-console-print!))
+(when debug? (enable-console-print!))
 
 
 (def project-name "OWLET")
@@ -25,9 +23,7 @@
 (def auth0-init
   "Credentials for instantiating Auth0 and Auth0Lock objects.
   "
-  ;{:clientID aCHybcxZ3qE6nWta60psS0An1jHUlgMm
-  ; :domain   "codefordenver.auth0.com"}
-  {:clientID "W1JzCkUXk2F2cey55eziGm3k99232tmU"
+  {:clientID "aCHybcxZ3qE6nWta60psS0An1jHUlgMm"
    :domain   "codefordenver.auth0.com"})
 
 
@@ -45,14 +41,10 @@
   ; Used only by owlet-ui.firebase/firebase-app, which may not be redefined
   ; while the app is running. So for clarity, we make this var defonce as well.
   ;
-  ;{:apiKey        "AIzaSyAbs6wXxPGX-8XEWR6nyj7iCETOL6dZjzY"
-  ; :authDomain    "owlet-users.firebaseapp.com"
-  ; :databaseURL   "https://owlet-users.firebaseio.com"
-  ; :storageBucket "owlet-users.appspot.com"}
-  {:apiKey        "AIzaSyCsyfVjnbyiizTgVNyoKW1LuwULj252W0o"
-   :authDomain    "owlet-ui-dev.firebaseapp.com"
-   :databaseURL   "https://owlet-ui-dev.firebaseio.com"
-   :storageBucket "owlet-ui-dev.appspot.com"})
+  {:apiKey        "AIzaSyAbs6wXxPGX-8XEWR6nyj7iCETOL6dZjzY"
+   :authDomain    "owlet-users.firebaseapp.com"
+   :databaseURL   "https://owlet-users.firebaseio.com"
+   :storageBucket "owlet-users.appspot.com"})
 
 
 (def library-space-id "c7i369745nqp")
