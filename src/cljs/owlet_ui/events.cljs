@@ -9,7 +9,8 @@
             [owlet-ui.auth0 :as auth0]
             [owlet-ui.helpers
              :refer
-             [keywordize-name remove-nil parse-platform clean-search-term]]))
+             [keywordize-name remove-nil parse-platform clean-search-term]]
+            [owlet-ui.app :refer [toggle-sidebar]]))
 
 
 (defonce library-content-url
@@ -35,7 +36,7 @@
   (fn [cofx]
     (let [db (:db cofx)]
       (when-not (= (db :active-view) :welcome-view)
-        (js/closeSidebar))
+        (toggle-sidebar false))
       (assoc-in cofx [:db :app :open-sidebar] true))))
 
 

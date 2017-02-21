@@ -31,6 +31,32 @@
 (defn show-view [view-name]
   [views view-name])
 
+(defn toggle-sidebar [closed]
+  (let [sidebar-wrap (js->clj (js/document.getElementById "lpsidebar-wrap"))
+        sidebar (js->clj (js/document.getElementById "lpsidebar"))
+        open (js->clj (js/document.getElementById "lpsidebar-open"))
+        close (js->clj (js/document.getElementById "lpsidebar-close"))
+        overlay (js->clj (js/document.getElementById "lpsidebar-overlay"))]
+    (if (= true closed)
+      (fn []
+        (set! (-> sidebar-wrap .-style .-width) "80px")
+        (set! (-> sidebar .-style .-width) "80px")
+        (set! (-> open .-style .-left) "80px")
+        (set! (-> open .-style .-zIndex) "0")
+        (set! (-> close .-style .-left) "80px")
+        (set! (-> close .-style .-zIndex) "2")
+        (set! (-> overlay .-style .-backgroundColor) "rgba(0,0,0,0.5)")
+        (set! (-> overlay .-style .-zIndex) "2"))
+      (fn []
+        (set! (-> sidebar-wrap .-style .-width) "0px")
+        (set! (-> sidebar .-style .-width) "0px")
+        (set! (-> open .-style .-left) "0px")
+        (set! (-> open .-style .-zIndex) "3")
+        (set! (-> close .-style .-left) "0px")
+        (set! (-> close .-style .-zIndex) "0")
+        (set! (-> overlay .-style .-backgroundColor) "rgba(0,0,0,0)")
+        (set! (-> overlay .-style .-zIndex) "-1")))))
+
 (def show? (reagent/atom false))
 
 (defn main-view []
