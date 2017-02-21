@@ -7,7 +7,8 @@
             [owlet-ui.helpers :refer [keywordize-name remove-nil
                                       parse-platform clean-search-term]]
             [day8.re-frame.http-fx]
-            [ajax.core :as ajax :refer [GET POST PUT]]))
+            [ajax.core :as ajax :refer [GET POST PUT]]
+            [owlet-ui.app :refer [toggle-sidebar]]))
 
 
 (defonce library-content-url
@@ -33,7 +34,7 @@
   (fn [cofx]
     (let [db (:db cofx)]
       (when-not (= (db :active-view) :welcome-view)
-        (js/toggle-sidebar false))
+        (toggle-sidebar false))
       (assoc-in cofx [:db :app :open-sidebar] true))))
 
 

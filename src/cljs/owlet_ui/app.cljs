@@ -52,9 +52,7 @@
         (set! (-> close .-style .-zIndex) "0")
         (set! (-> overlay .-style .-backgroundColor) "rgba(0,0,0,0)")
         (set! (-> overlay .-style .-zIndex) "-1")))))
-
-(set! js/toggle-sidebar toggle-sidebar)
-
+        
 (def show? (reagent/atom false))
 
 (defn main-view []
@@ -73,13 +71,13 @@
          (if (= @active-view :welcome-view)
            [show-view @active-view]
            [:div#main
-            [:div#lpsidebar-overlay.hidden-md-up {:on-click (js/toggle-sidebar false)}]
+            [:div#lpsidebar-overlay.hidden-md-up {:on-click (toggle-sidebar false)}]
             [:div#lpsidebar-wrap.hidden-md-up
              [lpsidebar-component]]
             [:img#lpsidebar-open.hidden-md-up {:src "img/owlet-tab-closed.png"
-                                               :on-click (js/toggle-sidebar true)}]
+                                               :on-click (toggle-sidebar true)}]
             [:img#lpsidebar-close.hidden-md-up {:src "img/owlet-tab-opened.png"
-                                                :on-click (js/toggle-sidebar false)
+                                                :on-click (toggle-sidebar false)
                                                 :style {:z-index "0"}}]
             [:div#sidebar-wrap.hidden-sm-down
              [sidebar-component]]
