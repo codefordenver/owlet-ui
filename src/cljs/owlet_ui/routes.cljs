@@ -1,6 +1,5 @@
 (ns owlet-ui.routes
-  (:require-macros [secretary.core :refer [defroute]])
-  (:require [secretary.core :as secretary]
+  (:require [secretary.core :as secretary :refer-macros [defroute]]
             [goog.events :as events]
             [goog.history.EventType :as EventType]
             [re-frame.core :as re]
@@ -87,6 +86,10 @@
   (defroute "/activity/:activity" {:as params}
             (re/dispatch [:get-library-content-from-contentful params])
             (re/dispatch [:set-active-view :activity-view]))
+
+  (defroute #"/activity/(\d+)" [activity {:keys [query-params]}]
+            (js/console.log activity)
+            (js/console.log (pr-str query-params)))
 
   (defroute "*" []
             (set! (.-location js/window) "/404"))

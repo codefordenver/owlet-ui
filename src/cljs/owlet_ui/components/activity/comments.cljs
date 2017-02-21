@@ -11,5 +11,6 @@
 (defn activity-comments []
   (let [activity @(re/subscribe [:activity-in-view])]
     (reagent/create-class
-       {:component-did-mount #(load-comments activity)
-        :reagent-render ( fn [] [:div.activity-comments-wrap [:div#disqus_thread]] )})))
+       {
+        ;:component-did-mount #(load-comments activity)
+        :reagent-render ( fn [] [:div.activity-comments-wrap [:div#disqus_thread]])})))
