@@ -103,6 +103,15 @@
        (assoc-in db db-path (apply f new-data args))))))
 
 
+(defn- note-pending
+  "Records a \"pending\" message (e.g. a keyword) in the :my-identity map,
+  indicating to the GUI that the indicated process has started but not yet
+  completed.
+  "
+  [cofx msg]
+  (assoc-in (:db cofx) [:my-identity :pending] msg))
+
+
 (re/reg-event-db
   :initialize-db
   (fn [_ _]
@@ -114,13 +123,6 @@
   [(re/inject-cofx :close-sidebar!)]
   (fn [db [_ active-view]]
     (assoc db :active-view active-view)))
-
-
-(re/reg-event-db
-  :reset-user-db!
-  (re/path [:user])
-  (fn [_ [_ _]]
-    db/default-user-db))
 
 
 (re/reg-event-fx
@@ -300,10 +302,11 @@
 
 (re/reg-event-fx
   :auth0-authenticated
-  (fn [_ [_ {:keys [auth0-token delegation-token]}]]
+  (fn [cofx [_ {:keys [auth0-token delegation-token]}]]
     {:firebase-sign-in  [fb/firebase-auth-object
                          delegation-token
-                         :firebase-sign-in-failed]}))
+                         :firebase-sign-in-failed]
+     :db                (note-pending cofx :log-in)}))
 
 
 (re/reg-event-fx
@@ -364,12 +367,9 @@
 
 (re/reg-event-fx
   :log-out
-  (fn [_ _]
-    {; Tell Firebase to sign me out.
-     :firebase-sign-out fb/firebase-auth-object
-
-     ; Optimistically tell GUI we're signed out, so we don't wait for Firebase.
-     :dispatch          [:my-identity nil]}))
+  (fn [cofx _]
+    {:db                (note-pending cofx :log-out)
+     :firebase-sign-out fb/firebase-auth-object}))
 
 
 (reg-setter :my-identity [:my-identity])
