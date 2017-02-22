@@ -45,6 +45,11 @@
   (defroute "/settings" []
             (re/dispatch [:set-active-view :settings-view]))
 
+  (defroute "/search/:search" {:as params}
+            (re/dispatch [:get-library-content-from-contentful params])
+            (re/dispatch [:filter-activities-by-search-term (:search params)])
+            (re/dispatch [:set-active-document-title! (:branch params)]))
+
   (defroute "/branches" []
             (re/dispatch [:get-library-content-from-contentful])
             (re/dispatch [:set-active-view :branches-view])
