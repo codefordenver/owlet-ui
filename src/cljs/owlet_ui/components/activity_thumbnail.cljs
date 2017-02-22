@@ -12,7 +12,7 @@
                                         #js{:__html (.makeHtml showdown (str field))}}])]
     [:div.col-xs-12.col-md-6.col-lg-4
      [:div.activity-thumbnail-wrap.box-shadow
-      [:a {:href     (str "/activity/" entry-id)
+      [:a {:href     (str "#/activity/#!" entry-id)
            :on-click #(rf/dispatch [:set-activity-in-view entry-id])}
        [:div.activity-thumbnail {:style {:background-image (str "url('" image "')")}}
         [:mark.title title]]]

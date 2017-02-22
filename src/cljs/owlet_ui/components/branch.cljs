@@ -43,7 +43,7 @@
            [:a.branch {:on-click #(re/dispatch-sync
                                    [:set-activities-by-branch-in-view
                                     (->kebab-case branch-name)])
-                       :href     (str "/" (->kebab-case branch-name))}
+                       :href     (str "#/" (->kebab-case branch-name))}
             [:h2 [:mark name-line1]
              (when (<= 1 (count name-line2))
                [:span

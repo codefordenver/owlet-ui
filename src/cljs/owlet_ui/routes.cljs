@@ -1,36 +1,12 @@
 (ns owlet-ui.routes
-  (:require [secretary.core :as secretary :refer-macros [defroute]]
+  (:require-macros [secretary.core :refer [defroute]])
+  (:import goog.History)
+  (:require [secretary.core :as secretary]
             [goog.events :as events]
             [goog.history.EventType :as EventType]
             [re-frame.core :as re]
-            [accountant.core :as accountant]
             [ajax.core :refer [GET]]
-            [owlet-ui.config :as config])
-  (:import goog.history.Html5History
-           goog.Uri))
-
-
-(accountant/configure-navigation!
- {:nav-handler  (fn [path]
-                  (secretary/dispatch! path))
-  :path-exists? (fn [path]
-                  (secretary/locate-route path))})
-
-(defn hook-browser-navigation! []
- (let [history (doto (Html5History.)
-                 (events/listen
-                   EventType/NAVIGATE
-                   (fn [event]
-                     (secretary/dispatch! (.-token event))))
-                 (.setUseFragment false)
-                 (.setPathPrefix "")
-                 (.setEnabled true))]
-   (events/listen js/document "click"
-                  (fn [e]
-                    (let [path (.getPath (.parse Uri (.-href (.-target e))))
-                          title (.-title (.-target e))]
-                      (when (secretary/locate-route path)
-                        (. history (setToken path title))))))))
+            [owlet-ui.config :as config]))
 
 
 (def library-url
@@ -54,6 +30,7 @@
 
 
 (defn app-routes []
+  (secretary/set-config! :prefix "#")
   ;; --------------------
   ;; define routes here
   (defroute "/" []
@@ -73,27 +50,22 @@
             (re/dispatch [:set-active-view :branches-view])
             (re/dispatch [:set-active-document-title! "Branches"]))
 
-  (defroute "/search/:search" {:as params}
-            (re/dispatch [:get-library-content-from-contentful params])
-            (re/dispatch [:filter-activities-by-search-term (:search params)])
-            (re/dispatch [:set-active-document-title! (:branch params)]))
-
   (defroute "/:branch" {:as params}
             (re/dispatch [:get-library-content-from-contentful params])
             (re/dispatch [:set-active-view :branch-activities-view])
             (re/dispatch [:set-active-document-title! (:branch params)]))
 
-  (defroute "/activity/:activity" {:as params}
+  (defroute "/activity/#!:activity" {:as params}
             (re/dispatch [:get-library-content-from-contentful params])
             (re/dispatch [:set-active-view :activity-view]))
 
-  (defroute #"/activity/(\d+)" [activity {:keys [query-params]}]
-            (js/console.log activity)
-            (js/console.log (pr-str query-params)))
-
   (defroute "*" []
-            (set! (.-location js/window) "/404"))
+            (set! (.-location js/window) "/#/404"))
 
-
-  ;; --------------------
-  (hook-browser-navigation!))
+  ; Ensure browser history uses Secretary to dispatch.
+  (doto (History.)
+    (events/listen
+      EventType/NAVIGATE
+      (fn [event]
+        (secretary/dispatch! (.-token event))))
+    (.setEnabled true)))
