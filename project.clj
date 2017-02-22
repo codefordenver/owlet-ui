@@ -96,6 +96,16 @@
   :cljsbuild
   {:builds
    [{:id           "dev"
+     :notify-command ["terminal-notifier"
+                                      "-title"
+                                      "OWLET ^OvO^ UI"
+                                      "-subtitle"
+                                      "cljsbuild dev"
+                                      "-group"
+                                      "some-group"
+                                      "-activate"
+                                      "com.googlecode.iTerm2"
+                                      "-message"]
      :source-paths ["src/cljs" "test/cljs"]
      :figwheel     {:on-jsload "owlet-ui.core/mount-root"}
      :compiler     {:main                 owlet-ui.core
