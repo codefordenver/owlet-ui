@@ -1,5 +1,5 @@
 (ns owlet-ui.app
-  (:require [re-frame.core :as re]
+  (:require [re-frame.core :as rf]
             [reagent.core :as reagent]
             [owlet-ui.components.upload-image-modal :refer [upload-image-component]]
             [owlet-ui.components.sidebar :refer [sidebar-component]]
@@ -11,6 +11,10 @@
             [owlet-ui.views.activity :refer [activity-view]]
             [owlet-ui.views.branches :refer [branches-view]]
             [owlet-ui.views.settings :refer [settings-view]]
+            [owlet-ui.async :as async]
+            [owlet-ui.auth0 :as auth0]
+            [owlet-ui.config :as config]
+            [owlet-ui.firebase :as fb]
             [owlet-ui.views.search-results :refer [search-results-view]]
             [owlet-ui.views.branch-activities :refer [branch-activities-view]]))
 
@@ -52,51 +56,58 @@
         (set! (-> close .-style .-zIndex) "0")
         (set! (-> overlay .-style .-backgroundColor) "rgba(0,0,0,0)")
         (set! (-> overlay .-style .-zIndex) "-1")))))
-        
+
 (def show? (reagent/atom false))
 
 (defn main-view []
-  (let [active-view (re/subscribe [:active-view])
-        loading? (re/subscribe [:set-loading-state?])
-        src (re/subscribe [:user-has-background-image?])
-        is-user-logged-in? (re/subscribe [:is-user-logged-in?])
+
+  (auth0/on-authenticated auth0/lock
+                          config/auth0-del-opts-for-firebase
+                          :auth0-authenticated
+                          :auth0-error)
+  (fb/on-auth-change fb/firebase-auth-object :firebase-auth-change)
+
+  (let [users-db-path (fb/path-str->db-ref "users")]
+    (fb/on-change users-db-path :firebase-users-change))
+
+  (let [active-view (rf/subscribe [:active-view])
+        loading? (rf/subscribe [:set-loading-state?])
+        src (rf/subscribe [:my-background-image-url])
+        is-user-logged-in? (rf/subscribe [:my-identity])
         open-modal (fn [] (reset! show? true))
         close-modal (fn [] (reset! show? false))]
-    (reagent/create-class
-      {:component-will-mount
-       #(re/dispatch [:get-auth0-profile])
-       :reagent-render
-       (fn []
-         (set! (-> js/document .-title) @(re/subscribe [:app-title]))
-         (if (= @active-view :welcome-view)
-           [show-view @active-view]
-           [:div#main
-            [:div#lpsidebar-overlay.hidden-md-up {:on-click (toggle-sidebar false)}]
-            [:div#lpsidebar-wrap.hidden-md-up
-             [lpsidebar-component]]
-            [:img#lpsidebar-open.hidden-md-up {:src "img/owlet-tab-closed.png"
-                                               :on-click (toggle-sidebar true)}]
-            [:img#lpsidebar-close.hidden-md-up {:src "img/owlet-tab-opened.png"
-                                                :on-click (toggle-sidebar false)
-                                                :style {:z-index "0"}}]
-            [:div#sidebar-wrap.hidden-sm-down
-             [sidebar-component]]
-            [:div.outer-height-wrap
-             [search-bar]
-             [:div.inner-height-wrap
-                [:div.content {:style {:background-image (str "url(" @src ")")
-                                       :background-size  "cover"}}
-                   [upload-image-component show? close-modal]
-                   [:button#change-header-btn
-                    {:type     "button"
-                     :class    "btn btn-secondary"
-                     :style    {:font-size "1em"
-                                :padding   "6px"
-                                :display   (if @is-user-logged-in?
-                                             "block"
-                                             "none")}
-                     :on-click open-modal}
-                    [:i.fa.fa-pencil-square-o]]
-                   (when @loading?
-                     [loading-component])
-                   [show-view @active-view]]]]]))})))
+    (fn []
+      (set! (-> js/document .-title) @(rf/subscribe [:app-title]))
+      (if (= @active-view :welcome-view)
+        [show-view @active-view]
+        [:div#main
+         [:div#lpsidebar-overlay.hidden-md-up {:on-click #(js/closeSidebar)}]
+         [:div#lpsidebar-wrap.hidden-md-up
+          [lpsidebar-component]]
+         [:img#lpsidebar-open.hidden-md-up {:src "img/owlet-tab-closed.png"
+                                            :on-click #(js/openSidebar)}]
+         [:img#lpsidebar-close.hidden-md-up {:src "img/owlet-tab-opened.png"
+                                             :on-click #(js/closeSidebar)
+                                             :style {:z-index "0"}}]
+         [:div#sidebar-wrap.hidden-sm-down
+          [sidebar-component]]
+         [:div.outer-height-wrap
+          [search-bar]
+          [:div.inner-height-wrap
+             [:div.content {:style {:background-image (str "url(" @src ")")
+                                    :background-size  "cover"}}
+                [upload-image-component show? close-modal]
+                [:button#change-header-btn
+                 {:type     "button"
+                  :class    "btn btn-secondary"
+                  :style    {:font-size "1em"
+                             :padding   "6px"
+                             :display   (if @is-user-logged-in?
+                                          "block"
+                                          "none")}
+                  :on-click open-modal}
+                 [:i.fa.fa-pencil-square-o]]
+                (when @loading?
+                  [loading-component])
+                [show-view @active-view]]]]]))))
+

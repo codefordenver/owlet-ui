@@ -1,13 +1,15 @@
 (ns owlet-ui.events
   (:require [clojure.string :as clj-str]
             [re-frame.core :as re]
+            [day8.re-frame.http-fx]
+            [ajax.core :as ajax :refer [GET POST PUT]]
             [owlet-ui.db :as db]
             [owlet-ui.config :as config]
             [owlet-ui.firebase :as fb]
-            [owlet-ui.helpers :refer [keywordize-name remove-nil
-                                      parse-platform clean-search-term]]
-            [day8.re-frame.http-fx]
-            [ajax.core :as ajax :refer [GET POST PUT]]
+            [owlet-ui.auth0 :as auth0]
+            [owlet-ui.helpers
+             :refer
+             [keywordize-name remove-nil parse-platform clean-search-term]]
             [owlet-ui.app :refer [toggle-sidebar]]))
 
 
@@ -68,7 +70,8 @@
           title (or title-template default-title)]
       (assoc-in db [:app :title] title))))
 
-(defn register-setter-handler
+
+(defn reg-setter
   "Provides an easy way to register a new handler returning a map that differs
   from the given one only at the location at the given path vector. Simply
   provide the event-key keyword and the db-path vector. Optionally, the new
@@ -91,13 +94,22 @@
   "
 
   ([event-key db-path]
-   (register-setter-handler event-key db-path identity))
+   (reg-setter event-key db-path identity))
 
   ([event-key db-path f]
    (re/reg-event-db
      event-key
      (fn [db [_ new-data & args]]
        (assoc-in db db-path (apply f new-data args))))))
+
+
+(defn- note-pending
+  "Records a \"pending\" message (e.g. a keyword) in the :my-identity map,
+  indicating to the GUI that the indicated process has started but not yet
+  completed.
+  "
+  [cofx msg]
+  (assoc-in (:db cofx) [:my-identity :pending] msg))
 
 
 (re/reg-event-db
@@ -113,132 +125,10 @@
     (assoc db :active-view active-view)))
 
 
-(re/reg-event-db
-  :user-has-logged-in-out!
-  (re/path [:user])
-  (fn [db [_ val]]
-    ;; reset user-bg-image on logout
-    (when (false? val)
-      (do
-        (re/dispatch [:reset-user-bg-image! config/default-header-bg-image])
-        (re/dispatch [:reset-user-db!])))
-    (assoc db :logged-in? val)))
-
-
-(re/reg-event-db
-  :reset-user-db!
-  (re/path [:user])
-  (fn [_ [_ _]]
-    db/default-user-db))
-
-
-(re/reg-event-db
-  :update-sid-and-get-cms-entries-for
-  (re/path [:user])
-  (fn [db [_ sid]]
-    (GET (str config/server-url "/api/content/entries?social-id=" sid)
-         {:response-format :json
-          :keywords?       true
-          :handler         #(re/dispatch [:process-fetch-entries-success! %1])})
-    (assoc db :social-id sid)))
-
-
-(re/reg-event-db
-  :process-fetch-entries-success!
-  (re/path [:user :content-entries])
-  (fn [db [_ entries]]
-    (re/dispatch [:set-user-background-image! entries])
-    (conj db entries)))
-
-
-(re/reg-event-db
-  :set-user-background-image!
-  (re/path [:user :background-image])
-  (fn [_ [_ coll]]
-    (let [filter-user-bg-image (fn [c]
-                                 (filterv #(= (get-in % [:sys :contentType :sys :id])
-                                              "userBgImage") c))
-          user-bg-image-entries (last (filter-user-bg-image coll))
-          entry-id (get-in user-bg-image-entries [:sys :id])]
-      ;; set :background-image-entry-id
-      (re/dispatch [:set-backround-image-entry-id! entry-id])
-      (get-in user-bg-image-entries [:fields :url :en-US]))))
-
-
-(re/reg-event-db
-  :set-backround-image-entry-id!
-  (re/path [:user :background-image-entry-id])
-  (fn [_ [_ id]]
-    id))
-
-
-(re/reg-event-db
+(re/reg-event-fx
   :update-user-background!
-  (fn [db [_ url]]
-    ;; if we have a url and an entry-id, aka existing entry for *userBgImage*
-    ;; perform an update
-    (let [entry-id (get-in db [:user :background-image-entry-id])]
-      (if (and url entry-id)
-        (PUT
-          (str config/server-url "/api/content/entries")
-          {:response-format :json
-           :keywords?       true
-           :params          {:content-type "userBgImage"
-                             :fields       {:url      {"en-US" url}
-                                            :socialid {"en-US" (get-in db [:user :social-id])}}
-                             :entry-id     entry-id}
-           :handler         #(re/dispatch [:update-user-background-after-successful-post! %1])
-           :error-handler   #(prn %)})
-        (POST
-          (str config/server-url "/api/content/entries")
-          {:response-format :json
-           :keywords?       true
-           :params          {:content-type  "userBgImage"
-                             :fields        {:url      {"en-US" url}
-                                             :socialid {"en-US" (get-in db [:user :social-id])}}
-                             :auto-publish? true}
-           :handler         #(re/dispatch [:update-user-background-after-successful-post! %1])
-           :error-handler   #(prn %)})))
-    db))
-
-
-(re/reg-event-db
-  :update-user-background-after-successful-post!
-  (re/path [:user :background-image])
-  (fn [_ [_ res]]
-    (re/dispatch [:set-backround-image-entry-id! (get-in res [:sys :id])])
-    (get-in res [:fields :url :en-US])))
-
-
-(re/reg-event-db
-  :reset-user-bg-image!
-  (re/path [:user :background-image])
-  (fn [_ [_ url]]
-    url))
-
-
-(re/reg-event-db
-  :get-auth0-profile
-  (fn [db [_ _]]
-    (when-let [user-token (.getItem js/localStorage "owlet:user-token")]
-      (.getProfile
-        config/lock
-        user-token
-        (fn [err profile]
-          (if (some? err)
-            ;; delete expired token
-            (when user-token
-              (.removeItem js/localStorage "owlet:user-token"))
-            (let [user-id (.-user_id profile)]
-              (re/dispatch [:user-has-logged-in-out! true])
-              (re/dispatch [:update-sid-and-get-cms-entries-for user-id])
-              (fb/on-presence-change
-                (fb/db-ref-for-path (str "users/" user-id))
-                :user-presence-changed)
-              (register-setter-handler
-                :user-presence-changed
-                [:users (keyword user-id)]))))))
-    db))
+  (fn [{{{my-db-ref :firebase-db-ref} :my-identity} :db} [_ url]]
+    {:firebase-reset-into-ref [my-db-ref {:background-image-url url}]}))
 
 
 (re/reg-event-fx
@@ -408,3 +298,81 @@
                     (assoc db :activities-by-branch-in-view (hash-map :activities filtered-set
                                                                       :display-name term))
                     db))))))))))
+
+
+(re/reg-event-fx
+  :auth0-authenticated
+  (fn [cofx [_ {:keys [auth0-token delegation-token]}]]
+    {:firebase-sign-in  [fb/firebase-auth-object
+                         delegation-token
+                         :firebase-sign-in-failed]
+     :db                (note-pending cofx :log-in)}))
+
+
+(re/reg-event-fx
+  :auth0-error
+  (fn [_ [_ error]]
+    (js/console.log "*** Error from Auth0: " error)))
+
+
+(re/reg-event-fx
+  :firebase-sign-in-failed
+  (fn [_ [_ fb-error]]
+    (js/console.log "*** Error signing into Firebase: ", fb-error)
+    {}))
+
+
+(re/reg-event-fx
+  :firebase-auth-change
+  (fn [cofx [_ fb-user]]
+    ; If user is logged into firebase, fb-user is a JS object containing
+    ; a string in its uid property. Otherwise, fb-user is nil. Thus we will
+    ; know whether we're logged-in simply from (:my-user-id db). Also, if
+    ; non-nil user-id changed (from nil), then turn on the presence watcher.
+    (let [new-id-kw    (some-> fb-user .-uid keyword)
+          old-identity (-> cofx :db :my-identity)]
+      ; Compare user-id with FORMER value at :my-user-id in app-db.
+      (if (= new-id-kw (:firebase-id old-identity))
+        {}
+        {:change-user [new-id-kw old-identity]}))))
+
+
+(re/reg-fx
+  :change-user
+  (fn [[new-id-kw {:keys [firebase-db-ref presence-off-cb]}]]
+    (if new-id-kw
+
+      ; User just logged in, so track presence and save the user's firebase id,
+      ; the location (ref) in the firebase database where his/her persisted
+      ; data is stored, and the callback we'll need to turn off presence when
+      ; logging out.
+      (let [new-ref (fb/path-str->db-ref (str "users/" (name new-id-kw)))]
+        (re/dispatch
+          [:my-identity {:firebase-id     new-id-kw
+                         :firebase-db-ref new-ref
+                         :presence-off-cb (fb/note-presence-changes new-ref)}]))
+
+      ; Else just logged out. Turn off presence tracking and set :online false.
+      ; Also flag that we're logged out with nil for :my-user-id.
+      (do (.off firebase-db-ref "value" presence-off-cb)
+          ; TODO: Does .off really work? Try logging out, :online is false -- OK.
+          ;       Disconnect from network, then reconnect. :online becomes true. How?
+          ;       We're still logged out, so shouldn't know which user's :online to set.
+          (fb/reset-into-ref
+            firebase-db-ref
+            {:online             false
+             :online-change-time fb/timestamp-placeholder})
+          (re/dispatch [:my-identity nil])))))
+
+
+(re/reg-event-fx
+  :log-out
+  (fn [cofx _]
+    {:db                (note-pending cofx :log-out)
+     :firebase-sign-out fb/firebase-auth-object}))
+
+
+(reg-setter :my-identity [:my-identity])
+
+
+(reg-setter :firebase-users-change [:users])
