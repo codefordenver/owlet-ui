@@ -95,28 +95,19 @@
 
   :cljsbuild
   {:builds
-   [{:id           "dev"
-     :notify-command ["terminal-notifier"
-                                      "-title"
-                                      "OWLET ^OvO^ UI"
-                                      "-subtitle"
-                                      "cljsbuild dev"
-                                      "-group"
-                                      "some-group"
-                                      "-activate"
-                                      "com.googlecode.iTerm2"
-                                      "-message"]
-     :source-paths ["src/cljs" "test/cljs"]
-     :figwheel     {:on-jsload "owlet-ui.core/mount-root"}
-     :compiler     {:main                 owlet-ui.core
-                    :output-to            "resources/public/js/compiled/app.js"
-                    :output-dir           "resources/public/js/compiled/out"
-                    :asset-path           "js/compiled/out"
-                    :source-map-timestamp true}}
+   [{:id             "dev"
+     :notify-command ["script/notify_command.cljs"]
+     :source-paths   ["src/cljs" "test/cljs"]
+     :figwheel       {:on-jsload "owlet-ui.core/mount-root"}
+     :compiler       {:main                 owlet-ui.core
+                      :output-to            "resources/public/js/compiled/app.js"
+                      :output-dir           "resources/public/js/compiled/out"
+                      :asset-path           "js/compiled/out"
+                      :source-map-timestamp true}}
 
     {:id           "min"
      :source-paths ["src/cljs"]
-     :jar true
+     :jar          true
      :compiler     {:main            owlet-ui.core
                     :output-to       "resources/public/js/compiled/app.js"
                     :optimizations   :advanced
