@@ -28,4 +28,5 @@
       (when skills
         (for [c skills]
           ^{:key (gensym "skill-")}
-          [:span.tag c]))]]))
+          [:div {:on-click #(set! (.-location js/window) (str "/#/search/" c))}
+            [:span.tag c]]))]]))
