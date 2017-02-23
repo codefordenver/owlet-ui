@@ -110,4 +110,3 @@
                 (when @loading?
                   [loading-component])
                 [show-view @active-view]]]]]))))
-
