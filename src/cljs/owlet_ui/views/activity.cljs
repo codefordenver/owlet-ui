@@ -13,7 +13,7 @@
     (if-not activity
       [:div.branch-activities-wrap
         [:h2 [:mark.white.box.box-shadow [:b "Loading..."]]]]
-      (if (= activity "none")
+      (if (= activity "error")
         [:div.branch-activities-wrap
           [:h2 [back] [:mark.white.box.box-shadow [:b "This activity does not exist"]]]]
         (let [{:keys [fields]} activity]

@@ -4,6 +4,7 @@
             [owlet-ui.db :as db]
             [owlet-ui.config :as config]
             [owlet-ui.firebase :as fb]
+            [camel-snake-kebab.core :refer [->kebab-case]]
             [owlet-ui.helpers :refer [keywordize-name remove-nil
                                       parse-platform clean-search-term]]
             [day8.re-frame.http-fx]
@@ -356,9 +357,9 @@
 (re/reg-event-db
   :set-activities-by-branch-in-view
   (fn [db [_ branch-name activities-by-branch]]
-    (let [activities-by-branch ((keyword branch-name) (or (:activities-by-branch db) activities-by-branch))]
-      (assoc db :activities-by-branch-in-view activities-by-branch))))
-
+    (if-let [activities-by-branch ((keyword branch-name) (or (:activities-by-branch db) activities-by-branch))]
+      (assoc db :activities-by-branch-in-view activities-by-branch)
+      (assoc db :activities-by-branch-in-view "error"))))
 
 (re/reg-event-db
   :set-activity-in-view
@@ -366,17 +367,17 @@
     (if-let [activity-match (some #(when (= (get-in % [:sys :id]) activity-id) %)
                                   (or (:activities db) all-activities))]
       (assoc db :activity-in-view activity-match)
-      (assoc db :activity-in-view "none"))))
+      (assoc db :activity-in-view "error"))))
 
 (re/reg-event-db
   :filter-activities-by-search-term
   [(re/inject-cofx :navigate-to-view! :search-results-view)]
   (fn [db [_ term]]
-    (set! (.-location js/window) (str "/#/search/" term))
+    (set! (.-location js/window) (str "/#/search/" (->kebab-case term)))
     ;; by branch
     ;; ---------
 
-    (let [search-term (keywordize-name term)
+    (let [search-term (keyword term)
           activities (:activities db)]
 
       (if-let [filtered-set (search-term (:activities-by-branch db))]
