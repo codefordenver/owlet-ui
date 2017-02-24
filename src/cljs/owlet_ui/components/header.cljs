@@ -6,8 +6,8 @@
 (defonce show? (reagent/atom false))
 
 (defn header-component []
-  (let [src (re-frame/subscribe [:user-has-background-image?])
-        is-user-logged-in? (re-frame/subscribe [:is-user-logged-in?])
+  (let [src (re-frame/subscribe [:my-background-image-url])
+        is-user-logged-in? (re-frame/subscribe [:my-identity])
         open-modal (fn [_] (reset! show? true))
         close-modal (fn [_] (reset! show? false))]
     (fn []

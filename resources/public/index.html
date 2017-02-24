@@ -26,38 +26,5 @@
 <script src="js/compiled/app.js"></script>
 <script>owlet_ui.core.init();</script>
 <script src="js/vendor/initPhotoSwipeFromDOM.js"></script>
-<script async defer>
-  function openSidebar() {
-    var content = document.getElementsByClassName("content");
-    var sidebarWrap = document.getElementById("lpsidebar-wrap");
-    var sidebar = document.getElementById("lpsidebar");
-    var open = document.getElementById("lpsidebar-open");
-    var close = document.getElementById("lpsidebar-close");
-    var overlay = document.getElementById("lpsidebar-overlay");
-    sidebarWrap.style.width = "80px";
-    sidebar.style.width = "80px";
-    open.style.left = "80px";
-    open.style.zIndex = "0";
-    close.style.left = "80px";
-    close.style.zIndex = "2";
-    overlay.style.backgroundColor = "rgba(0,0,0,0.5)";
-    overlay.style.zIndex = "2";
-  }
-  function closeSidebar() {
-    var sidebarWrap = document.getElementById("lpsidebar-wrap");
-    var sidebar = document.getElementById("lpsidebar");
-    var open = document.getElementById("lpsidebar-open");
-    var close = document.getElementById("lpsidebar-close");
-    var overlay = document.getElementById("lpsidebar-overlay");
-    sidebarWrap.style.width = "0px";
-    sidebar.style.width = "0px";
-    open.style.left = "0px";
-    open.style.zIndex = "3";
-    close.style.left = "0px";
-    close.style.zIndex = "0";
-    overlay.style.backgroundColor = "rgba(0,0,0,0)";
-    overlay.style.zIndex = "-1";
-  }
-</script>
 </body>
 </html>
