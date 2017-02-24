@@ -34,10 +34,11 @@
 (re/reg-cofx
   :close-sidebar!
   (fn [cofx]
-    (let [db (:db cofx)]
+    (let [db (:db cofx)
+          opened? (get-in db [:app :open-sidebar])]
       (when-not (= (db :active-view) :welcome-view)
-        (toggle-sidebar false))
-      (assoc-in cofx [:db :app :open-sidebar] true))))
+        ;(toggle-sidebar false))
+        (assoc-in cofx [:db :app :open-sidebar] (not opened?))))))
 
 
 (re/reg-cofx
