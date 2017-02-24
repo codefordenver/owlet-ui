@@ -61,7 +61,10 @@
                                               :title)
                   :branch-activities-view (-> db
                                               :activities-by-branch-in-view
-                                              :display-name)}
+                                              :display-name)
+                  :search-results-view (-> db
+                                           :activities-by-branch-in-view
+                                           :display-name)}
           default-title (:welcome-view titles)
           document-title (or (titles active-view) (clj-str/capitalize (or val "")))
           title-template (str document-title " | " config/project-name)
@@ -408,4 +411,4 @@
                   (if (seq filtered-set)
                     (assoc db :activities-by-branch-in-view (hash-map :activities filtered-set
                                                                       :display-name term))
-                    db))))))))))
+                    (assoc db :activities-by-branch-in-view "none")))))))))))
