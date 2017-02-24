@@ -52,7 +52,6 @@
 
   (defroute "/search/:search" {:as params}
             (re/dispatch [:get-library-content-from-contentful params])
-            (re/dispatch [:filter-activities-by-search-term (:search params)])
             (re/dispatch [:set-active-document-title! (:branch params)]))
 
   (defroute "/:branch" {:as params}

@@ -9,10 +9,10 @@
 (defonce suggestion-count (reagent/atom 16))
 
 (defn toggle-suggestions []
-   (let [suggestions (aget (js->clj (js/document.getElementsByClassName "rc-typeahead-suggestions-container")) 0)
-         hidden (.-hidden suggestions)]
-     (when-not (nil? suggestions)
-      (set! (.-hidden suggestions) (not hidden)))))
+  (if-let [suggestions (aget (js->clj (js/document.getElementsByClassName "rc-typeahead-suggestions-container")) 0)]
+    (let [hidden (.-hidden suggestions)]
+      (when-not (nil? suggestions)
+        (set! (.-hidden suggestions) (not hidden))))))
 
 (defn search-bar []
   (let [branches (rf/subscribe [:activity-branches])

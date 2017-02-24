@@ -376,11 +376,13 @@
   :filter-activities-by-search-term
   [(re/inject-cofx :navigate-to-view! :search-results-view)]
   (fn [db [_ term]]
+
     (set! (.-location js/window) (str "/#/search/" (->kebab-case term)))
+    
     ;; by branch
     ;; ---------
 
-    (let [search-term (keyword term)
+    (let [search-term (keywordize-name term)
           activities (:activities db)]
 
       (if-let [filtered-set (search-term (:activities-by-branch db))]
