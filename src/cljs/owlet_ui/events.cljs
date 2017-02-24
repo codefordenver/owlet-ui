@@ -268,6 +268,7 @@
   (fn [db [_ term]]
 
     (set! (.-location js/window) (str "/#/search/" (->kebab-case term)))
+    (re/dispatch [:set-active-document-title! term])
     
     ;; by branch
     ;; ---------
