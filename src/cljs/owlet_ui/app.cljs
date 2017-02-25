@@ -32,31 +32,12 @@
   [views view-name])
 
 (defn toggle-sidebar [closed]
-  (let [sidebar-wrap (js/document.getElementById "lpsidebar-wrap")
-        sidebar (js/document.getElementById "lpsidebar")
-        open (js/document.getElementById "lpsidebar-open")
-        close (js/document.getElementById "lpsidebar-close")
-        overlay (js/document.getElementById "lpsidebar-overlay")]
-    ; maybe use class toggleing here...
+  (let [overlay (js->clj (js/document.getElementById "lpsidebar-overlay"))]
     (if (= true closed)
-      (do
-        (set! (-> sidebar-wrap .-style .-width) "80px")
-        (set! (-> sidebar .-style .-width) "80px")
-        (set! (-> open .-style .-left) "80px")
-        (set! (-> open .-style .-zIndex) "0")
-        (set! (-> close .-style .-left) "80px")
-        (set! (-> close .-style .-zIndex) "2")
-        (set! (-> overlay .-style .-backgroundColor) "rgba(0,0,0,0.5)")
-        (set! (-> overlay .-style .-zIndex) "2"))
-      (do
-        (set! (-> sidebar-wrap .-style .-width) "0px")
-        (set! (-> sidebar .-style .-width) "0px")
-        (set! (-> open .-style .-left) "0px")
-        (set! (-> open .-style .-zIndex) "3")
-        (set! (-> close .-style .-left) "0px")
-        (set! (-> close .-style .-zIndex) "0")
-        (set! (-> overlay .-style .-backgroundColor) "rgba(0,0,0,0)")
-        (set! (-> overlay .-style .-zIndex) "-1")))))
+      (fn []
+        (set! (-> overlay .-id) "opened-sidebar"))
+      (fn []
+        (set! (-> overlay .-id) "closed-sidebar")))))
 
 (def show? (reagent/atom false))
 
@@ -88,8 +69,7 @@
          [:img#lpsidebar-open.hidden-md-up {:src "img/owlet-tab-closed.png"
                                             :on-click (toggle-sidebar true)}]
          [:img#lpsidebar-close.hidden-md-up {:src "img/owlet-tab-opened.png"
-                                             :on-click (toggle-sidebar false)
-                                             :style {:z-index "0"}}]
+                                             :on-click (toggle-sidebar false)}]
          [:div#sidebar-wrap.hidden-sm-down
           [sidebar-component]]
          [:div.outer-height-wrap
