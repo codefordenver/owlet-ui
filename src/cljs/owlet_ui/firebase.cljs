@@ -406,36 +406,43 @@
   "
   [js-file & {:keys [into-dir error complete-with-snapshot] :as options}]
 
-  (let [dir           (or into-dir "")
-        path          (str dir "/" (.-name js-file))
-        ref           (.child firebase-storage-ref path)
-        task          (.put ref js-file)
-        default-error ; Key-value pair for default "error" function.
-                      [:error
-                       (fn [js-error]
-                         (.log js/console
-                               "upload-file:"
-                               (str "Could not upload file '"
-                                    (.-name js-file)
-                                    "'.")
-                               js-error))]
-        snap-complete ; Key-value pair for the "complete" function expected by
-                      ; firebase.storage.UploadTask's .on method, which is a
-                      ; 0-arg function. So we wrap the given
-                      ; :complete-with-snapshot 1-arg function, passing it the
-                      ; new file URL.
-                      [:complete
-                       #(complete-with-snapshot (.-snapshot task))]]
+  (if js-file
+    (let [dir           (or into-dir "")
+          path          (str dir "/" (.-name js-file))
+          ref           (.child firebase-storage-ref path)
+          task          (.put ref js-file)
+          default-error ; Key-value pair for default "error" function.
+                        [:error
+                         (fn [js-error]
+                           (.log js/console
+                                 "upload-file:"
+                                 (str "Could not upload file '"
+                                      (.-name js-file)
+                                      "'.")
+                                 js-error))]
+          snap-complete ; Key-value pair for the "complete" function expected by
+                        ; firebase.storage.UploadTask's .on method, which is a
+                        ; 0-arg function. So we wrap the given
+                        ; :complete-with-snapshot 1-arg function, passing it the
+                        ; new file URL.
+                        [:complete
+                         #(complete-with-snapshot (.-snapshot task))]]
 
-    ; Execute the file-upload task, substituting :error or :complete functions,
-    ; if necessary.
-    (.on task
-         js/firebase.storage.TaskEvent.STATE_CHANGED
-         (-> options
-             (dissoc :into-dir :complete-with-snapshot)   ; Keys not expected by .on.
-             (conj (when (not error) default-error))
-             (conj (when complete-with-snapshot snap-complete))
-             clj->js))))
+      ; Execute the file-upload task, substituting :error or :complete functions,
+      ; if necessary.
+      (.on task
+           js/firebase.storage.TaskEvent.STATE_CHANGED
+           (-> options
+               (dissoc :into-dir :complete-with-snapshot)   ; Keys not expected by .on.
+               (conj (when-not error default-error))
+               (conj (when complete-with-snapshot snap-complete))
+               clj->js)))
+
+    (let [err-msg "Please select a file to be uploaded."]
+      (if error
+        (error (js/Error. err-msg))
+        (js/console.log "upload-file:" err-msg)))))
+
 
 
 (defn delete-file-at-url
