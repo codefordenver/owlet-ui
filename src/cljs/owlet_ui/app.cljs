@@ -81,13 +81,13 @@
       (if (= @active-view :welcome-view)
         [show-view @active-view]
         [:div#main
-         [:div#lpsidebar-overlay.hidden-md-up {:on-click #(js/closeSidebar)}]
+         [:div#lpsidebar-overlay.hidden-md-up {:on-click (toggle-sidebar true)}]
          [:div#lpsidebar-wrap.hidden-md-up
           [lpsidebar-component]]
          [:img#lpsidebar-open.hidden-md-up {:src "img/owlet-tab-closed.png"
-                                            :on-click #(js/openSidebar)}]
+                                            :on-click (toggle-sidebar true)}]
          [:img#lpsidebar-close.hidden-md-up {:src "img/owlet-tab-opened.png"
-                                             :on-click #(js/closeSidebar)
+                                             :on-click (toggle-sidebar false)
                                              :style {:z-index "0"}}]
          [:div#sidebar-wrap.hidden-sm-down
           [sidebar-component]]

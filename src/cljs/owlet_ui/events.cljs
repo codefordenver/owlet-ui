@@ -6,10 +6,10 @@
             [owlet-ui.db :as db]
             [owlet-ui.config :as config]
             [owlet-ui.firebase :as fb]
+            [camel-snake-kebab.core :refer [->kebab-case]]
+            [owlet-ui.helpers :refer [keywordize-name remove-nil
+                                      parse-platform clean-search-term]]
             [owlet-ui.auth0 :as auth0]
-            [owlet-ui.helpers
-             :refer
-             [keywordize-name remove-nil parse-platform clean-search-term]]
             [owlet-ui.app :refer [toggle-sidebar]]))
 
 
@@ -63,7 +63,10 @@
                                               :title)
                   :branch-activities-view (-> db
                                               :activities-by-branch-in-view
-                                              :display-name)}
+                                              :display-name)
+                  :search-results-view (-> db
+                                           :activities-by-branch-in-view
+                                           :display-name)}
           default-title (:welcome-view titles)
           document-title (or (titles active-view) (clj-str/capitalize (or val "")))
           title-template (str document-title " | " config/project-name)
@@ -247,22 +250,26 @@
 (re/reg-event-db
   :set-activities-by-branch-in-view
   (fn [db [_ branch-name activities-by-branch]]
-    (let [activities-by-branch ((keyword branch-name) (or (:activities-by-branch db) activities-by-branch))]
-      (assoc db :activities-by-branch-in-view activities-by-branch))))
-
+    (if-let [activities-by-branch ((keyword branch-name) (or (:activities-by-branch db) activities-by-branch))]
+      (assoc db :activities-by-branch-in-view activities-by-branch)
+      (assoc db :activities-by-branch-in-view "error"))))
 
 (re/reg-event-db
   :set-activity-in-view
   (fn [db [_ activity-id all-activities]]
-    (assoc db :activity-in-view (some #(when (= (get-in % [:sys :id]) activity-id) %)
-                                      (or (:activities db) all-activities)))))
-
+    (if-let [activity-match (some #(when (= (get-in % [:sys :id]) activity-id) %)
+                                  (or (:activities db) all-activities))]
+      (assoc db :activity-in-view activity-match)
+      (assoc db :activity-in-view "error"))))
 
 (re/reg-event-db
   :filter-activities-by-search-term
-  [(re/inject-cofx :navigate-to-view! :branch-activities-view)]
+  [(re/inject-cofx :navigate-to-view! :search-results-view)]
   (fn [db [_ term]]
-    (set! (.-location js/window) (str "/#/search/" term))
+
+    (set! (.-location js/window) (str "/#/search/" (->kebab-case term)))
+    (re/dispatch [:set-active-document-title! term])
+    
     ;; by branch
     ;; ---------
 
@@ -297,7 +304,7 @@
                   (if (seq filtered-set)
                     (assoc db :activities-by-branch-in-view (hash-map :activities filtered-set
                                                                       :display-name term))
-                    db))))))))))
+                    (assoc db :activities-by-branch-in-view "none")))))))))))
 
 
 (re/reg-event-fx
