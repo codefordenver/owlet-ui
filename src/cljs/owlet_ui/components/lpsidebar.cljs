@@ -9,8 +9,12 @@
 
 (defn lpsidebar-component []
   (if @(rf/subscribe [:open-sidebar?])
-    (swap! toggle-classes conj "opened-sidebar")
-    (swap! toggle-classes disj "opened-sidebar"))
+    (do
+      (swap! toggle-classes disj "closed-sidebar")
+      (swap! toggle-classes conj "opened-sidebar"))
+    (do
+      (swap! toggle-classes conj "closed-sidebar")
+      (swap! toggle-classes disj "opened-sidebar")))
   [:div
    [:div {:class    (class-names @toggle-classes)
           :on-click #(rf/dispatch [:set-sidebar-state false])}]
@@ -25,7 +29,6 @@
                       :on-click #(rf/dispatch [:set-active-view :branches-view])}
        [:img {:src "img/icon1.png"}]]]]]
    [:img.lpsidebar-open.hidden-md-up {:src      "img/owlet-tab-closed.png"
-                                      :on-click #(rf/dispatch [:set-sidebar-state true])
-                                      :style {:z-index "3"}}]
+                                      :on-click #(rf/dispatch [:set-sidebar-state true])}]
    [:img.lpsidebar-close.hidden-md-up {:src      "img/owlet-tab-opened.png"
                                        :on-click #(rf/dispatch [:set-sidebar-state false])}]])

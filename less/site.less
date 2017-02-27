@@ -197,11 +197,18 @@ a:hover {
 
 .lpsidebar-open, .lpsidebar-close {
   cursor: pointer;
-  transition: left 0.3s;
   border-left: 1px solid #6A2569;
   position: fixed;
   top: 2px;
   height: 86px;
+}
+
+.lpsidebar-open {
+  z-index: 3;
+}
+
+.lpsidebar-close {
+  z-index: 0;
 }
 
 .closed-sidebar {
@@ -222,9 +229,11 @@ a:hover {
     width: 0px;
   }
   + .lpsidebar-open {
+    transition: left 0.3s;
     z-index: 3;
     left: 0px;
     + .lpsidebar-close {
+      transition: left 0.3s;
       z-index: 0;
       left: 0px;
     }
@@ -249,9 +258,11 @@ a:hover {
     width: 80px;
   }
   + .lpsidebar-open {
+    transition: left 0.3s;
     z-index: 0;
     left: 80px;
     + .lpsidebar-close {
+      transition: left 0.3s;
       z-index: 3;
       left: 80px;
     }
