@@ -444,6 +444,55 @@
         (js/console.log "upload-file:" err-msg)))))
 
 
+(defn ez-upload-file
+  "Provides a straightforward way for a GUI to upload a local file to Firebase
+  Storage and receive the URL pointing to the new file there.
+
+  When called, ez-upload-file initiates the upload of the file selected in an
+  <input type=\"file\" id=input-elem-id> element in the current document,
+  where input-elem-id is the string given in the first argument. The given
+  destination directory string must be relative to the root of Firebase
+  Storage. As the upload proceeds, atom progress-pct-atom is periodically
+  updated with a number: the percentage of uploaded bytes. Atom error-atom will
+  contain the nil value unless the user did not provide a file in the input
+  element or if there was some other problem preventing the upload. In this
+  case error-atom will contain an error message.
+
+  Finally, when the upload is complete, a re-frame event is dispatched, which
+  is a vector of the given event-id, the new URL string, and any provided args.
+  "
+  [input-elem-id dest-dir progress-pct-atom error-atom event-id & args]
+
+  (when progress-pct-atom (reset! progress-pct-atom 0))
+  (when error-atom        (reset! error-atom        nil))
+  (apply
+    upload-file
+
+    ; JS File object, or nil if none selected:
+    (-> input-elem-id js/document.getElementById (aget "files" 0))
+
+    ; Upload options:
+    (concat
+      [:into-dir               dest-dir
+       :complete-with-snapshot (fn [snapshot]
+                                 (->> snapshot          ; The firebase.storage.UploadTaskSnapshot
+                                      .-downloadURL     ; The new URL of the stored file.
+                                      (conj args)       ; Makes (url arg1 arg2 ...)
+                                      (into [event-id]) ; Makes [event-id url arg1 arg2 ...)
+                                      rf/dispatch))]
+      (and progress-pct-atom
+           [:next (fn [task-snapshot]
+                    ; What to do after each batch of bytes has been transfered.
+                    ; Argument is a firebase.storage.UploadTaskSnapshot. See
+                    ; https://firebase.google.com/docs/reference/js/firebase.storage.UploadTaskSnapshot
+                    (let [total      (.-totalBytes task-snapshot)
+                          transfered (.-bytesTransferred task-snapshot)]
+                      (reset! progress-pct-atom
+                              (js/Math.round (* 100 (/ transfered total))))))])
+      (and error-atom
+           [:error (fn [error]
+                     (reset! error-atom (.-message error)))]))))
+
 
 (defn delete-file-at-url
   "Returns a Promise containing void, which deletes the file at the given URL.

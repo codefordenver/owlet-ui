@@ -47,6 +47,7 @@
 
 (reg-getter :my-identity [:my-identity])
 
+(reg-getter :showing-bg-img-upload [:showing-bg-img-upload])
 
 (rf/reg-sub
   :my-background-image-url
