@@ -23,5 +23,9 @@
        [login-component]]
       [:a.navigation {:href     "#/branches"
                       :on-click #(rf/dispatch [:set-active-view :branches-view])}
-       [:img {:src "img/icon1.png"}]]]]]])
-
+       [:img {:src "img/icon1.png"}]]]]]
+   [:img.lpsidebar-open.hidden-md-up {:src      "img/owlet-tab-closed.png"
+                                      :on-click #(rf/dispatch [:set-sidebar-state true])
+                                      :style {:z-index "3"}}]
+   [:img.lpsidebar-close.hidden-md-up {:src      "img/owlet-tab-opened.png"
+                                       :on-click #(rf/dispatch [:set-sidebar-state false])}]])

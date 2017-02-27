@@ -56,10 +56,6 @@
         [show-view @active-view]
         [:div#main
          [lpsidebar-component]
-         [:img.lpsidebar-open.hidden-md-up {:src      "img/owlet-tab-closed.png"
-                                            :on-click #(rf/dispatch [:set-sidebar-state true])}]
-         [:img.lpsidebar-close.hidden-md-up {:src      "img/owlet-tab-opened.png"
-                                             :on-click #(rf/dispatch [:set-sidebar-state false])}]
          [:div#sidebar-wrap.hidden-sm-down
           [sidebar-component]]
          [:div.outer-height-wrap

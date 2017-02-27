@@ -204,14 +204,6 @@ a:hover {
   height: 86px;
 }
 
-.lpsidebar-open {
-  z-index: 3;
-}
-
-.lpsidebar-close {
-  z-index: 0;
-}
-
 .closed-sidebar {
   cursor: pointer;
   position: fixed;
@@ -230,11 +222,11 @@ a:hover {
     width: 0px;
   }
   + .lpsidebar-open {
-    left: 0px;
     z-index: 3;
+    left: 0px;
     + .lpsidebar-close {
-      left: 0px;
       z-index: 0;
+      left: 0px;
     }
   }
 }
@@ -257,11 +249,11 @@ a:hover {
     width: 80px;
   }
   + .lpsidebar-open {
-    left: 80px;
     z-index: 0;
+    left: 80px;
     + .lpsidebar-close {
-      left: 80px;
       z-index: 3;
+      left: 80px;
     }
   }
 }
