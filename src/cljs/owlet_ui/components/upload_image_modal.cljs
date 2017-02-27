@@ -9,23 +9,27 @@
 (defn upload-form
   []
   (let [upload-error (r/atom nil)
-        progress-pct (r/atom 0)]
+        progress-pct (r/atom 0)
+        me           (rf/subscribe [:my-identity])]
     (fn []
       [:form
        [:b "Upload a background image file"]
        [:br]
        [:br]
-       [:input#upload-file {:type "file"}]
+       [:input#upload-input-id {:type "file"}]
        [:br]
        [:br]
        [:button
         {:class    "btn btn-primary"
          :type     "button"
-         :on-click #(fb/ez-upload-file "upload-file"
-                                       "user-background-images"
-                                       progress-pct
-                                       upload-error
+         :on-click #(fb/ez-upload-file "upload-input-id"  ; Input DOM id.
+                                       (str "users/"      ; Firebase stor. dir.
+                                            (:firebase-id @me)
+                                            "/background-image")
+                                       progress-pct       ; Tracking pct. done.
+                                       upload-error       ; Tracking any error.
                                        :update-user-background!)}
+                                                          ; Evt. id to send URL.
         "UPLOAD "
         [:span.fa.fa-upload]]
        [:br]
