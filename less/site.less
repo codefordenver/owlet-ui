@@ -137,7 +137,7 @@ a:hover {
   }
 }
 
-#lpsidebar {
+.lpsidebar {
   position: fixed;
   z-index: 3;
   width: 0px;
@@ -185,7 +185,7 @@ a:hover {
   }
 }
 
-#lpsidebar-wrap {
+.lpsidebar-wrap {
   position: fixed;
   top: 0;
   right: 0;
@@ -195,7 +195,7 @@ a:hover {
   z-index: 2;
 }
 
-#lpsidebar-open, #lpsidebar-close {
+.lpsidebar-open, .lpsidebar-close {
   cursor: pointer;
   transition: left 0.3s;
   border-left: 1px solid #6A2569;
@@ -204,15 +204,15 @@ a:hover {
   height: 86px;
 }
 
-#lpsidebar-open {
+.lpsidebar-open {
   z-index: 3;
 }
 
-#lpsidebar-close {
+.lpsidebar-close {
   z-index: 0;
 }
 
-#closed-sidebar {
+.closed-sidebar {
   cursor: pointer;
   position: fixed;
   min-width: 100%;
@@ -223,23 +223,23 @@ a:hover {
   transition: background-color 0.3s;
 }
 
-#closed-sidebar + #lpsidebar-wrap {
+.closed-sidebar + .lpsidebar-wrap {
   width: 0px;
-  #lpsidebar {
+  .lpsidebar {
     z-index: 3;
     width: 0px;
   }
-  + #lpsidebar-open {
+  + .lpsidebar-open {
     left: 0px;
     z-index: 3;
-    + #lpsidebar-close {
+    + .lpsidebar-close {
       left: 0px;
       z-index: 0;
     }
   }
 }
 
-#opened-sidebar {
+.opened-sidebar {
   cursor: pointer;
   position: fixed;
   min-width: 100%;
@@ -250,16 +250,16 @@ a:hover {
   transition: background-color 0.3s;
 }
 
-#opened-sidebar + #lpsidebar-wrap {
+.opened-sidebar + .lpsidebar-wrap {
   width: 80px;
-  #lpsidebar {
+  .lpsidebar {
     z-index: 3;
     width: 80px;
   }
-  + #lpsidebar-open {
+  + .lpsidebar-open {
     left: 80px;
     z-index: 0;
-    + #lpsidebar-close {
+    + .lpsidebar-close {
       left: 80px;
       z-index: 3;
     }

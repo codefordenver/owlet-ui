@@ -31,14 +31,6 @@
 (defn show-view [view-name]
   [views view-name])
 
-(defn toggle-sidebar [closed]
-  (let [overlay (js->clj (js/document.getElementById "lpsidebar-overlay"))]
-    (if (= true closed)
-      (fn []
-        (set! (-> overlay .-id) "opened-sidebar"))
-      (fn []
-        (set! (-> overlay .-id) "closed-sidebar")))))
-
 (def show? (reagent/atom false))
 
 (defn main-view []
@@ -63,13 +55,11 @@
       (if (= @active-view :welcome-view)
         [show-view @active-view]
         [:div#main
-         [:div#lpsidebar-overlay.hidden-md-up {:on-click (toggle-sidebar true)}]
-         [:div#lpsidebar-wrap.hidden-md-up
-          [lpsidebar-component]]
-         [:img#lpsidebar-open.hidden-md-up {:src "img/owlet-tab-closed.png"
-                                            :on-click (toggle-sidebar true)}]
-         [:img#lpsidebar-close.hidden-md-up {:src "img/owlet-tab-opened.png"
-                                             :on-click (toggle-sidebar false)}]
+         [lpsidebar-component]
+         [:img.lpsidebar-open.hidden-md-up {:src      "img/owlet-tab-closed.png"
+                                            :on-click #(rf/dispatch [:set-sidebar-state true])}]
+         [:img.lpsidebar-close.hidden-md-up {:src      "img/owlet-tab-opened.png"
+                                             :on-click #(rf/dispatch [:set-sidebar-state false])}]
          [:div#sidebar-wrap.hidden-sm-down
           [sidebar-component]]
          [:div.outer-height-wrap
