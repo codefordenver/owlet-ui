@@ -31,8 +31,6 @@
 (defn show-view [view-name]
   [views view-name])
 
-(def show? (reagent/atom false))
-
 (defn main-view []
 
   (auth0/on-authenticated auth0/lock
@@ -47,9 +45,7 @@
   (let [active-view (rf/subscribe [:active-view])
         loading? (rf/subscribe [:set-loading-state?])
         src (rf/subscribe [:my-background-image-url])
-        is-user-logged-in? (rf/subscribe [:my-identity])
-        open-modal (fn [] (reset! show? true))
-        close-modal (fn [] (reset! show? false))]
+        is-user-logged-in? (rf/subscribe [:my-identity])]
     (fn []
       (set! (-> js/document .-title) @(rf/subscribe [:app-title]))
       (if (= @active-view :welcome-view)
@@ -63,7 +59,7 @@
           [:div.inner-height-wrap
              [:div.content {:style {:background-image (str "url(" @src ")")
                                     :background-size  "cover"}}
-                [upload-image-component show? close-modal]
+                [upload-image-component]
                 [:button#change-header-btn
                  {:type     "button"
                   :class    "btn btn-secondary"
@@ -72,7 +68,7 @@
                              :display   (if @is-user-logged-in?
                                           "block"
                                           "none")}
-                  :on-click open-modal}
+                  :on-click #(rf/dispatch [:show-bg-img-upload true])}
                  [:i.fa.fa-pencil-square-o]]
                 (when @loading?
                   [loading-component])

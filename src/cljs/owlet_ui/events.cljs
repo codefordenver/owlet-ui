@@ -125,10 +125,14 @@
     (assoc db :active-view active-view)))
 
 
+(reg-setter :show-bg-img-upload [:showing-bg-img-upload])
+
+
 (re/reg-event-fx
   :update-user-background!
   (fn [{{{my-db-ref :firebase-db-ref} :my-identity} :db} [_ url]]
-    {:firebase-reset-into-ref [my-db-ref {:background-image-url url}]}))
+    {:firebase-reset-into-ref [my-db-ref {:background-image-url url}]
+     :dispatch                [:show-bg-img-upload false]}))
 
 
 (re/reg-event-fx
