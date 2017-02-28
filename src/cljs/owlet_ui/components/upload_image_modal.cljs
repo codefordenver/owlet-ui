@@ -12,40 +12,46 @@
         progress-pct (r/atom 0)
         me           (rf/subscribe [:my-identity])]
     (fn []
-      [:form
-       [:b "Upload a background image file"]
-       [:br]
-       [:br]
-       [:input#upload-input-id {:type "file"}]
-       [:br]
-       [:br]
-       [:button
-        {:class    "btn btn-primary"
-         :type     "button"
-         :on-click #(fb/ez-upload-file "upload-input-id"  ; Input DOM id.
-                                       (str "users/"      ; Firebase stor. dir.
-                                            (:firebase-id @me)
-                                            "/background-image")
-                                       progress-pct       ; Tracking pct. done.
-                                       upload-error       ; Tracking any error.
-                                       :update-user-background!)}
-                                                          ; Evt. id to send URL.
-        "UPLOAD "
-        [:span.fa.fa-upload]]
-       [:br]
-       [:br]
+      (if @me        ; Uploading a file is only permitted with a :firebase-id.
+        [:form
+         [:b "Upload a background image file"]
+         [:br]
+         [:br]
+         [:input#upload-input-id {:type "file"}]
+         [:br]
+         [:br]
+         [:button
+          {:class    "btn btn-primary"
+           :type     "button"
+           :on-click #(fb/ez-upload-file "upload-input-id" ; Input DOM id.
+                                         (str "users/"     ; Firebase Strg dir.
+                                              (name (:firebase-id @me))
+                                              "/background-image")
+                                         progress-pct      ; Tracking pct done.
+                                         upload-error      ; Tracking any error.
+                                         :update-user-background!)}
+                                                           ; Evt id to send URL.
+          "UPLOAD "
+          [:span.fa.fa-upload]]
+         [:br]
+         [:br]
 
-       (if @upload-error
-         [alert-box                 ; Have error. Show its message.
-          :alert-type :warning
-          :body       @upload-error
-          :padding    "12px"]
-         [:div                      ; No error. Show progress bar.
-          [:br]
-          [progress-bar
-           :striped? true
-           :model    progress-pct
-           :width    "350px"]])])))
+         (if @upload-error
+           [alert-box                 ; Have error. Show its message.
+            :alert-type :warning
+            :body       @upload-error
+            :padding    "12px"]
+           [:div                      ; No error. Show progress bar.
+            [:br]
+            [progress-bar
+             :striped? true
+             :model    progress-pct
+             :width    "350px"]])]
+
+        [alert-box
+         :alert-type :danger
+         :body       "You must be logged in to upload a file."
+         :padding    "12px"]))))
 
 
 (defn upload-image-component
