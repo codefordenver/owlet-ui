@@ -1,6 +1,7 @@
 (ns owlet-ui.views.welcome
   (:require
-    [owlet-ui.components.login :refer [login-component]]))
+    [owlet-ui.components.login :refer [login-component]]
+    [re-frame.core :as rf]))
 
 (defn welcome-view []
   [:div.flexcontainer {:style {:height "100vh"}}
@@ -12,7 +13,8 @@
             [:div.welcome-text.text-shadow
               [:p "Explore some of the awesome things you can do with coding & multimedia, by yourself and with others. Enjoy!"]
               [:p "¡Bienvenidx a Owlet! Explora algunas de las cosas increíbles que puedes hacer con programación y con multimedios tú solx o en equipo. ¡Adelante!"]]
-            [:a {:href "#/branches"}
+            [:a {:href "#/branches"
+                 :on-click #(rf/dispatch [:set-active-view :branches-view])}
               [:button.btn.btn-branches "Go to Activities"]]]]
     [:div.login-landing
       [login-component]]
