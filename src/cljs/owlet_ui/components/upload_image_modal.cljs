@@ -1,74 +1,75 @@
 (ns owlet-ui.components.upload-image-modal
   (:require
-    [reagent.core :as reagent]
-    [re-frame.core :as re-frame]
-    [owlet-ui.firebase :as firebase]
-    [cljsjs.jquery]
+    [reagent.core :as r]
+    [re-frame.core :as rf]
+    [owlet-ui.firebase :as fb]
     [re-com.core :refer [v-box h-box modal-panel button alert-box progress-bar]]))
 
-(def show-upload-error (reagent/atom false))
 
-(defn handle-firebase-upload
-  [element-id close-modal progress]
-  (let [el (.getElementById js/document element-id)
-        file (aget (.-files el) 0)]
-    (try
-      (firebase/upload-file
-        file
-        :into-dir "user-background-images"
-        :next (fn [p]
-                (let [total (.-totalBytes p)
-                      transfered (.-bytesTransferred p)
-                      percentage (js/Math.round (* (/ transfered total) 100))]
-                     (reset! progress percentage)))
-        :complete-with-snapshot #(let [url (.-downloadURL %)]
-                                  (close-modal)
-                                  (re-frame/dispatch [:update-user-background! url])))
-      (catch js/Object _
-        (reset! show-upload-error true)))))
+(defn upload-form
+  []
+  (let [upload-error (r/atom nil)
+        progress-pct (r/atom 0)
+        me           (rf/subscribe [:my-identity])]
+    (fn []
+      (if @me        ; Uploading a file is only permitted with a :firebase-id.
+        [:form
+         [:b "Upload a background image file"]
+         [:br]
+         [:br]
+         [:input#upload-input-id {:type "file"}]
+         [:br]
+         [:br]
+         [:button
+          {:class    "btn btn-primary"
+           :type     "button"
+           :on-click #(fb/ez-upload-file "upload-input-id" ; Input DOM id.
+                                         (str "users/"     ; Firebase Strg dir.
+                                              (name (:firebase-id @me))
+                                              "/background-image")
+                                         progress-pct      ; Tracking pct done.
+                                         upload-error      ; Tracking any error.
+                                         :update-user-background!)}
+                                                           ; Evt id to send URL.
+          "UPLOAD "
+          [:span.fa.fa-upload]]
+         [:br]
+         [:br]
 
+         (if @upload-error
+           [alert-box                 ; Have error. Show its message.
+            :alert-type :warning
+            :body       @upload-error
+            :padding    "12px"]
+           [:div                      ; No error. Show progress bar.
+            [:br]
+            [progress-bar
+             :striped? true
+             :model    progress-pct
+             :width    "350px"]])]
 
-(defn upload-form [close-modal]
-  (let [error-msg "Please select a file to be uploaded."
-        progress (reagent/atom 0)]
-    [:form
-     [:b "Select Image: "]
-     [:br]
-     [:br]
-     [:input#upload-file
-      {:type "file"
-       :name "upload-file"
-       :on-change #(reset! show-upload-error false)}]
-     [:br]
-     [:br]
-     [:button {:class    "btn btn-primary" :type "button"
-               :on-click #(handle-firebase-upload "upload-file" close-modal progress)}
-      "UPLOAD " [:span.fa.fa-upload]]
-     (when @show-upload-error
-       [:div
-        [:br]
         [alert-box
-         :alert-type :warning
-         :body       error-msg
-         :padding    "6px"]])
-     [:br]
-     [:br]
-     [progress-bar
-      :striped? true
-      :model    progress
-      :width    "350px"]]))
+         :alert-type :danger
+         :body       "You must be logged in to upload a file."
+         :padding    "12px"]))))
 
 
-(defn upload-image-component [show? close-modal]
-  (fn []
-    (when @show?
-      [v-box
-       :children [[modal-panel
-                   :backdrop-color "grey"
-                   :backdrop-opacity 0.4
-                   :child [h-box
-                           :children [[upload-form close-modal]
-                                      [button
-                                       :class "btn-secondary"
-                                       :label "x"
-                                       :on-click close-modal]]]]]])))
+(defn upload-image-component
+  []
+  (when @(rf/subscribe [:showing-bg-img-upload])
+    [v-box
+
+     :children
+     [[modal-panel
+       :backdrop-color "grey"
+       :backdrop-opacity 0.4
+
+       :child
+       [h-box
+
+        :children
+        [[upload-form]
+         [button
+          :class "btn-secondary"
+          :label "x"
+          :on-click #(rf/dispatch [:show-bg-img-upload false])]]]]]]))
