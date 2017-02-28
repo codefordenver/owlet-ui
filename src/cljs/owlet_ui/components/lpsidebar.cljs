@@ -5,7 +5,7 @@
             [re-frame.core :as rf]))
 
 (defonce toggle-classes
-         (reagent/atom #{"lpsidebar-overlay" "lpsidebar-close" "closed-sidebar"}))
+         (reagent/atom #{"hidden-md-up" "lpsidebar-overlay" "lpsidebar-close" "closed-sidebar"}))
 
 (defn lpsidebar-component []
   (if @(rf/subscribe [:open-sidebar?])
