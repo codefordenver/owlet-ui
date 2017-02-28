@@ -21,5 +21,5 @@
           "SKILLS: "]
         (for [c skills]
          ^{:key (gensym "skill-")}
-          [:div {:on-click #(rf/dispatch [:filter-activities-by-search-term c])}
-            [:span.tag c]])])]))
+          [:div.tag {:on-click #(rf/dispatch [:filter-activities-by-search-term c])}
+            [:span c]])])]))
