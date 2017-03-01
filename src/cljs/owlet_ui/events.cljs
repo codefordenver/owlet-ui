@@ -7,10 +7,8 @@
             [owlet-ui.config :as config]
             [owlet-ui.firebase :as fb]
             [camel-snake-kebab.core :refer [->kebab-case]]
-            [owlet-ui.helpers :refer [keywordize-name remove-nil
-                                      parse-platform clean-search-term]]
-            [owlet-ui.auth0 :as auth0]
-            [owlet-ui.app :refer [toggle-sidebar]]))
+            [owlet-ui.helpers :refer
+             [keywordize-name remove-nil parse-platform clean-search-term]]))
 
 
 (defonce library-content-url
@@ -36,8 +34,7 @@
   (fn [cofx]
     (let [db (:db cofx)]
       (when-not (= (db :active-view) :welcome-view)
-        (toggle-sidebar false))
-      (assoc-in cofx [:db :app :open-sidebar] true))))
+        (assoc-in cofx [:db :app :open-sidebar] false)))))
 
 
 (re/reg-cofx
@@ -272,8 +269,9 @@
   (fn [db [_ term]]
 
     (set! (.-location js/window) (str "/#/search/" (->kebab-case term)))
+
     (re/dispatch [:set-active-document-title! term])
-    
+
     ;; by branch
     ;; ---------
 
@@ -387,3 +385,6 @@
 
 
 (reg-setter :firebase-users-change [:users])
+
+
+(reg-setter :set-sidebar-state [:app :open-sidebar])

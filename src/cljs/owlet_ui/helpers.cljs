@@ -6,6 +6,8 @@
 
 (s/def ::string? string?)
 
+(s/def ::set? set?)
+
 (defn check-and-throw
   "throw an exception if value doesn't match the spec"
   [a-spec val]
@@ -33,3 +35,10 @@
 
 ;; for parsing markdown with showdown
 (def showdown (js/showdown.Converter.))
+
+(defn class-names
+  "utility for converting a clojure Set #{a b c}
+  to a list of unique CSS classes"
+  [cset]
+  (check-and-throw ::set? cset)
+  (clj->str/join " " (map str cset)))

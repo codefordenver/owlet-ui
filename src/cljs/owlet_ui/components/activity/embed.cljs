@@ -1,4 +1,5 @@
-(ns owlet-ui.components.activity.embed)
+(ns owlet-ui.components.activity.embed
+  (:require [re-frame.core :as rf]))
 
 (defn- generic-responsive-iframe
   "returns an responsive iframe"
@@ -19,5 +20,6 @@
         [:div.skills
           "SKILLS: "]
         (for [c skills]
-          ^{:key (gensym "skill-")}
-          [:span.tag c])])]))
+         ^{:key (gensym "skill-")}
+          [:div.tag {:on-click #(rf/dispatch [:filter-activities-by-search-term c])}
+            [:span c]])])]))

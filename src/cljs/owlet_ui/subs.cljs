@@ -89,6 +89,8 @@
 
 (reg-getter :app-title [:app :title])
 
+(reg-getter :open-sidebar? [:app :open-sidebar])
+
 (reg-getter :skills [:skills])
 
 (reg-getter :activity-titles [:activity-titles])
