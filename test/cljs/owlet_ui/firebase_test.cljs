@@ -2,7 +2,7 @@
   (:require
     [cljs.test :refer-macros [use-fixtures async deftest testing is]]
     [cljs.core.async :refer [<! chan]]
-    [re-frame.core :as re]
+    [re-frame.core :as rf]
     [re-frame.db :refer [app-db]]
     [owlet-ui.subscription-viewer :as view]
     [owlet-ui.firebase :as fb]
@@ -81,7 +81,7 @@
       ; waits for the render to complete, the data should be available now.
       (is (= "Ready" ((view/results "app") [:status-sub])))
 
-      (re/dispatch [:change-status "Running"])
+      (rf/dispatch [:change-status "Running"])
       (prn "Waiting for browser ...")
       (go-loop [ch (chan)]
         (as/continue-after-pause! ch)   ; Returns immediately,
@@ -201,7 +201,7 @@
     (async done
       (is (= "Running" ((view/results "app") [:status-sub])))
 
-      (re/dispatch [:change-status "Finished"])
+      (rf/dispatch [:change-status "Finished"])
       (go-loop [ch (chan)]
         (as/continue-after-pause! ch)
         (<! ch)
@@ -209,4 +209,3 @@
 
         (print "Finished testing.")
         (done)))))
-

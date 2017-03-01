@@ -6,10 +6,10 @@
             [owlet-ui.components.activity.challenge :refer [activity-challenge]]
             [owlet-ui.components.activity.image-gallery :refer [activity-image-gallery]]
             [owlet-ui.components.back :refer [back]]
-            [re-frame.core :as re]))
+            [re-frame.core :as rf]))
 
 (defn activity-view []
-  (let [activity @(re/subscribe [:activity-in-view])]
+  (let [activity @(rf/subscribe [:activity-in-view])]
     (if-not activity
       [:div.branch-activities-wrap
         [:h2 [:mark.white.box.box-shadow [:b "Loading..."]]]]
@@ -31,7 +31,7 @@
                         preRequisites
                         techRequirements
                         image-gallery-urls]} fields]
-            (re/dispatch [:set-active-document-title! title])
+            (rf/dispatch [:set-active-document-title! title])
             [:div.activity
              [:div.activity-wrap
               [:div.activity-header.col-xs-12
