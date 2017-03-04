@@ -65,7 +65,11 @@
             (re/dispatch [:set-active-view :activity-view]))
 
   (defroute "*" []
-            (set! (.-location js/window) "/#/404"))
+            (let [uri (-> js/window .-location .-href)]
+              (if (boolean (re-find #"%23" uri))
+                (let [new-uri (clojure.string/replace uri #"%23" "#")]
+                  (set! (-> js/window .-location .-href) new-uri))
+                (set! (.-location js/window) "/#/404"))))
 
   ; Ensure browser history uses Secretary to dispatch.
   (doto (History.)
