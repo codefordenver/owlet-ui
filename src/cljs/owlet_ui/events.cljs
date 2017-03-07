@@ -199,7 +199,7 @@
     (let [branches (:branches res)
           skills (:skills res)
           all-activities (:activities db)
-          platforms (remove-nil (map #(get-in % [:fields :techRequirements]) all-activities))
+          platforms (remove-nil (map #(get-in % [:fields :platform ]) all-activities))
           platforms-nomalized (->> platforms (map parse-platform))
           activity-titles (remove-nil (map #(get-in % [:fields :title]) all-activities))
           branches-template (->> (mapv (fn [branch]
@@ -300,7 +300,7 @@
                 ;; by platform
                 ;; -----------
 
-                (let [filtered-set (filterv #(let [platform (-> (get-in % [:fields :techRequirements])
+                (let [filtered-set (filterv #(let [platform (-> (get-in % [:fields :platform ])
                                                                 parse-platform)]
                                                (when (= platform term) %)) activities)]
                   (if (seq filtered-set)
