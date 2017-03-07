@@ -11,3 +11,5 @@ out
 .lein-repl-history
 .nrepl-port
 /bin/
+
+.project
