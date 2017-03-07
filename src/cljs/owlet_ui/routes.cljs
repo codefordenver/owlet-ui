@@ -67,7 +67,7 @@
   (defroute "*" []
             (let [uri (-> js/window .-location .-href)]
               (if (boolean (re-find #"%23" uri))
-                (let [new-uri (clojure.string/replace uri #"%23" "#")]
+                (let [new-uri (.-decodeURIComponent uri)]
                   (set! (-> js/window .-location .-href) new-uri))
                 (set! (.-location js/window) "/#/404"))))
 
