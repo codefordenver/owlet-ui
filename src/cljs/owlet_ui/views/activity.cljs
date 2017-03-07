@@ -29,7 +29,7 @@
                         unplugged
                         inspiration
                         preRequisites
-                        techRequirements
+                        platform 
                         image-gallery-urls]} fields]
             (re/dispatch [:set-active-document-title! title])
             [:div.activity
@@ -41,7 +41,7 @@
                (when (seq image-gallery-urls)
                 [activity-image-gallery image-gallery-urls])]
               [:div.activity-content.col-xs-12.col-lg-4
-               [activity-info unplugged techRequirements summary why preRequisites materials]
+               [activity-info unplugged platform  summary why preRequisites materials]
                (when challenge
                 [activity-challenge challenge])
                (when inspiration

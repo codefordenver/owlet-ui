@@ -52,7 +52,8 @@
    {:repl-options {:port 8230}}
 
    :figwheel    ; Abitrary key, used in `lein with-profile +figwheel repl`.
-   {:dependencies [[com.cemerick/piggieback "0.2.1"]]  ; Needed by cljs-repl
+   {:dependencies [[com.cemerick/piggieback "0.2.1"]
+                   [org.clojure/tools.nrepl "0.2.10"]]  ; Needed by cljs-repl
     :repl-options {:nrepl-middleware
                    [cemerick.piggieback/wrap-cljs-repl]
 

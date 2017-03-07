@@ -10,3 +10,6 @@ out
 .dirac-chrome-profile/
 .lein-repl-history
 .nrepl-port
+/bin/
+
+.project
