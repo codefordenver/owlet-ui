@@ -28,4 +28,5 @@
       (when skills
         (for [c skills]
           ^{:key (gensym "skill-")}
-          [:span.tag c]))]]))
+          [:div.tag {:on-click #(rf/dispatch [:filter-activities-by-search-term c])}
+            [:span c]]))]]))

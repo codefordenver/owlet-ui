@@ -47,6 +47,7 @@
 
 (reg-getter :my-identity [:my-identity])
 
+(reg-getter :showing-bg-img-upload [:showing-bg-img-upload])
 
 (rf/reg-sub
   :my-background-image-url
@@ -87,6 +88,8 @@
     (get-in db [:app :loading?])))
 
 (reg-getter :app-title [:app :title])
+
+(reg-getter :open-sidebar? [:app :open-sidebar])
 
 (reg-getter :skills [:skills])
 

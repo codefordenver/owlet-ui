@@ -31,34 +31,6 @@
 (defn show-view [view-name]
   [views view-name])
 
-(defn toggle-sidebar [closed]
-  (let [sidebar-wrap (js->clj (js/document.getElementById "lpsidebar-wrap"))
-        sidebar (js->clj (js/document.getElementById "lpsidebar"))
-        open (js->clj (js/document.getElementById "lpsidebar-open"))
-        close (js->clj (js/document.getElementById "lpsidebar-close"))
-        overlay (js->clj (js/document.getElementById "lpsidebar-overlay"))]
-    (if (= true closed)
-      (fn []
-        (set! (-> sidebar-wrap .-style .-width) "80px")
-        (set! (-> sidebar .-style .-width) "80px")
-        (set! (-> open .-style .-left) "80px")
-        (set! (-> open .-style .-zIndex) "0")
-        (set! (-> close .-style .-left) "80px")
-        (set! (-> close .-style .-zIndex) "2")
-        (set! (-> overlay .-style .-backgroundColor) "rgba(0,0,0,0.5)")
-        (set! (-> overlay .-style .-zIndex) "2"))
-      (fn []
-        (set! (-> sidebar-wrap .-style .-width) "0px")
-        (set! (-> sidebar .-style .-width) "0px")
-        (set! (-> open .-style .-left) "0px")
-        (set! (-> open .-style .-zIndex) "3")
-        (set! (-> close .-style .-left) "0px")
-        (set! (-> close .-style .-zIndex) "0")
-        (set! (-> overlay .-style .-backgroundColor) "rgba(0,0,0,0)")
-        (set! (-> overlay .-style .-zIndex) "-1")))))
-
-(def show? (reagent/atom false))
-
 (defn main-view []
 
   (auth0/on-authenticated auth0/lock
@@ -73,22 +45,13 @@
   (let [active-view (rf/subscribe [:active-view])
         loading? (rf/subscribe [:set-loading-state?])
         src (rf/subscribe [:my-background-image-url])
-        is-user-logged-in? (rf/subscribe [:my-identity])
-        open-modal (fn [] (reset! show? true))
-        close-modal (fn [] (reset! show? false))]
+        is-user-logged-in? (rf/subscribe [:my-identity])]
     (fn []
       (set! (-> js/document .-title) @(rf/subscribe [:app-title]))
       (if (= @active-view :welcome-view)
         [show-view @active-view]
         [:div#main
-         [:div#lpsidebar-overlay.hidden-md-up {:on-click (toggle-sidebar true)}]
-         [:div#lpsidebar-wrap.hidden-md-up
-          [lpsidebar-component]]
-         [:img#lpsidebar-open.hidden-md-up {:src "img/owlet-tab-closed.png"
-                                            :on-click (toggle-sidebar true)}]
-         [:img#lpsidebar-close.hidden-md-up {:src "img/owlet-tab-opened.png"
-                                             :on-click (toggle-sidebar false)
-                                             :style {:z-index "0"}}]
+         [lpsidebar-component]
          [:div#sidebar-wrap.hidden-sm-down
           [sidebar-component]]
          [:div.outer-height-wrap
@@ -96,7 +59,7 @@
           [:div.inner-height-wrap
              [:div.content {:style {:background-image (str "url(" @src ")")
                                     :background-size  "cover"}}
-                [upload-image-component show? close-modal]
+                [upload-image-component]
                 [:button#change-header-btn
                  {:type     "button"
                   :class    "btn btn-secondary"
@@ -105,9 +68,8 @@
                              :display   (if @is-user-logged-in?
                                           "block"
                                           "none")}
-                  :on-click open-modal}
+                  :on-click #(rf/dispatch [:show-bg-img-upload true])}
                  [:i.fa.fa-pencil-square-o]]
                 (when @loading?
                   [loading-component])
                 [show-view @active-view]]]]]))))
-
