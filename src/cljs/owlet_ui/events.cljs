@@ -40,7 +40,12 @@
 (re/reg-cofx
   :navigate-to-view!
   (fn [cofx new-view]
-    (assoc-in cofx [:db :active-view] new-view)))
+    (let [search (aget (js->clj (js/document.getElementsByClassName "form-control")) 0)]
+      (when-not (nil? search)
+        (do
+          (set! (.-value search) "")
+          (.blur search)))
+      (assoc-in cofx [:db :active-view] new-view))))
 
 
 (re/reg-event-db
@@ -328,7 +333,7 @@
                                           branches-template)
                                     (into {}))]
       (when-let [route-params (get-in db [:app :route-params])]
-        (let [{:keys [activity branch]} route-params]
+        (let [{:keys [activity branch search]} route-params]
           (when activity
             (re/dispatch [:set-activity-in-view activity all-activities]))
           (when branch
@@ -338,7 +343,9 @@
                         :skills skills
                         :activities-by-branch activities-by-branch
                         :activity-titles activity-titles
-                        :activity-platforms platforms-nomalized)))))
+                        :activity-platforms platforms-nomalized)))
+          (when search
+            (re/dispatch [:filter-activities-by-search-term search]))))
       (assoc db :activity-branches branches
                 :skills skills
                 :activities-by-branch activities-by-branch
@@ -364,7 +371,7 @@
   :filter-activities-by-search-term
   [(re/inject-cofx :navigate-to-view! :branch-activities-view)]
   (fn [db [_ term]]
-
+    (set! (.-location js/window) (str "/#/search/" term))
     ;; by branch
     ;; ---------
 
@@ -400,5 +407,3 @@
                     (assoc db :activities-by-branch-in-view (hash-map :activities filtered-set
                                                                       :display-name term))
                     db))))))))))
-
-

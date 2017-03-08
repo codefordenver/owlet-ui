@@ -51,4 +51,3 @@
                 [:mark (str/join " " name-line2)]])]
             [:div.counter
              [:p counter]]]]]]))))
-
