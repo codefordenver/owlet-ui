@@ -1,6 +1,6 @@
 (ns owlet-ui.components.sidebar
   (:require [owlet-ui.components.login :refer [login-component]]
-            [re-frame.core :as re]))
+            [re-frame.core :as rf]))
 
 (defn sidebar-component []
   [:div#sidebar
@@ -11,5 +11,5 @@
     [:div.login
      [login-component]]
     [:a.navigation {:href "#/branches"
-                    :on-click #(re/dispatch [:set-active-view :branches-view])}
+                    :on-click #(rf/dispatch [:set-active-view :branches-view])}
      [:img {:src "img/icon1.png"}]]]])

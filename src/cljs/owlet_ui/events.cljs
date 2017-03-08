@@ -1,6 +1,6 @@
 (ns owlet-ui.events
   (:require [clojure.string :as clj-str]
-            [re-frame.core :as re]
+            [re-frame.core :as rf]
             [day8.re-frame.http-fx]
             [ajax.core :as ajax :refer [GET POST PUT]]
             [owlet-ui.db :as db]
@@ -23,13 +23,13 @@
               config/owlet-activities-2-space-id))
 
 
-(re/reg-cofx
+(rf/reg-cofx
   :set-loading!
   (fn [cofx val]
     (assoc-in cofx [:db :app :loading?] val)))
 
 
-(re/reg-cofx
+(rf/reg-cofx
   :close-sidebar!
   (fn [cofx]
     (let [db (:db cofx)]
@@ -37,7 +37,7 @@
         (assoc-in cofx [:db :app :open-sidebar] false)))))
 
 
-(re/reg-cofx
+(rf/reg-cofx
   :navigate-to-view!
   (fn [cofx new-view]
     (let [search (aget (js->clj (js/document.getElementsByClassName "form-control")) 0)]
@@ -48,7 +48,7 @@
       (assoc-in cofx [:db :active-view] new-view))))
 
 
-(re/reg-event-db
+(rf/reg-event-db
   :set-active-document-title!
   (fn [db [_ val]]
     (let [active-view (:active-view db)
@@ -97,7 +97,7 @@
    (reg-setter event-key db-path identity))
 
   ([event-key db-path f]
-   (re/reg-event-db
+   (rf/reg-event-db
      event-key
      (fn [db [_ new-data & args]]
        (assoc-in db db-path (apply f new-data args))))))
@@ -112,15 +112,15 @@
   (assoc-in (:db cofx) [:my-identity :pending] msg))
 
 
-(re/reg-event-db
+(rf/reg-event-db
   :initialize-db
   (fn [_ _]
     db/default-db))
 
 
-(re/reg-event-db
+(rf/reg-event-db
   :set-active-view
-  [(re/inject-cofx :close-sidebar!)]
+  [(rf/inject-cofx :close-sidebar!)]
   (fn [db [_ active-view]]
     (assoc db :active-view active-view)))
 
@@ -128,14 +128,14 @@
 (reg-setter :show-bg-img-upload [:showing-bg-img-upload])
 
 
-(re/reg-event-fx
+(rf/reg-event-fx
   :update-user-background!
   (fn [{{{my-db-ref :firebase-db-ref} :my-identity} :db} [_ url]]
     {:firebase-reset-into-ref [my-db-ref {:background-image-url url}]
      :dispatch                [:show-bg-img-upload false]}))
 
 
-(re/reg-event-fx
+(rf/reg-event-fx
   :get-library-content-from-contentful
   (fn [{db :db} [_ route-params]]
     ;; short-circuit xhr request when we have activity data
@@ -148,10 +148,10 @@
                     :on-success      [:get-library-content-from-contentful-successful]}})))
 
 
-(re/reg-event-db
+(rf/reg-event-db
   :get-library-content-from-contentful-successful
   (fn [db [_ res]]
-    (re/dispatch [:get-activity-metadata])
+    (rf/dispatch [:get-activity-metadata])
     ; Obtains the URL for each preview image, and adds a :url field next to
     ; its :id field in [:activities :fields :preview :sys] map.
     (let [url-for-id                                        ; Maps preview image IDs to associated URLs.
@@ -182,19 +182,19 @@
       __db__)))
 
 
-(re/reg-event-db
+(rf/reg-event-db
   :get-activity-metadata
   (fn [db _]
     (GET get-metadata-url
          {:response-format :json
           :keywords?       true
-          :handler         #(re/dispatch [:get-activity-metadata-successful %])
+          :handler         #(rf/dispatch [:get-activity-metadata-successful %])
           :error-handler   #(prn %)})
     db))
 
-(re/reg-event-db
+(rf/reg-event-db
   :get-activity-metadata-successful
-  [(re/inject-cofx :set-loading! false)]
+  [(rf/inject-cofx :set-loading! false)]
   (fn [db [_ res]]
     (let [branches (:branches res)
           skills (:skills res)
@@ -230,17 +230,17 @@
       (when-let [route-params (get-in db [:app :route-params])]
         (let [{:keys [activity branch search]} route-params]
           (when activity
-            (re/dispatch [:set-activity-in-view activity all-activities]))
+            (rf/dispatch [:set-activity-in-view activity all-activities]))
           (when branch
             (let [activities-by-branch-in-view ((keyword branch) activities-by-branch)]
-              (re/dispatch [:set-activities-by-branch-in-view branch activities-by-branch-in-view])
+              (rf/dispatch [:set-activities-by-branch-in-view branch activities-by-branch-in-view])
               (assoc db :activity-branches branches
                         :skills skills
                         :activities-by-branch activities-by-branch
                         :activity-titles activity-titles
                         :activity-platforms platforms-nomalized)))
           (when search
-            (re/dispatch [:filter-activities-by-search-term search]))))
+            (rf/dispatch [:filter-activities-by-search-term search]))))
       (assoc db :activity-branches branches
                 :skills skills
                 :activities-by-branch activities-by-branch
@@ -248,14 +248,14 @@
                 :activity-platforms platforms-nomalized))))
 
 
-(re/reg-event-db
+(rf/reg-event-db
   :set-activities-by-branch-in-view
   (fn [db [_ branch-name activities-by-branch]]
     (if-let [activities-by-branch ((keyword branch-name) (or (:activities-by-branch db) activities-by-branch))]
       (assoc db :activities-by-branch-in-view activities-by-branch)
       (assoc db :activities-by-branch-in-view "error"))))
 
-(re/reg-event-db
+(rf/reg-event-db
   :set-activity-in-view
   (fn [db [_ activity-id all-activities]]
     (if-let [activity-match (some #(when (= (get-in % [:sys :id]) activity-id) %)
@@ -263,14 +263,14 @@
       (assoc db :activity-in-view activity-match)
       (assoc db :activity-in-view "error"))))
 
-(re/reg-event-db
+(rf/reg-event-db
   :filter-activities-by-search-term
-  [(re/inject-cofx :navigate-to-view! :search-results-view)]
+  [(rf/inject-cofx :navigate-to-view! :search-results-view)]
   (fn [db [_ term]]
 
     (set! (.-location js/window) (str "/#/search/" (->kebab-case term)))
 
-    (re/dispatch [:set-active-document-title! term])
+    (rf/dispatch [:set-active-document-title! term])
 
     ;; by branch
     ;; ---------
@@ -309,7 +309,7 @@
                     (assoc db :activities-by-branch-in-view "none")))))))))))
 
 
-(re/reg-event-fx
+(rf/reg-event-fx
   :auth0-authenticated
   (fn [cofx [_ {:keys [auth0-token delegation-token]}]]
     {:firebase-sign-in  [fb/firebase-auth-object
@@ -318,20 +318,20 @@
      :db                (note-pending cofx :log-in)}))
 
 
-(re/reg-event-fx
+(rf/reg-event-fx
   :auth0-error
   (fn [_ [_ error]]
     (js/console.log "*** Error from Auth0: " error)))
 
 
-(re/reg-event-fx
+(rf/reg-event-fx
   :firebase-sign-in-failed
   (fn [_ [_ fb-error]]
     (js/console.log "*** Error signing into Firebase: ", fb-error)
     {}))
 
 
-(re/reg-event-fx
+(rf/reg-event-fx
   :firebase-auth-change
   (fn [cofx [_ fb-user]]
     ; If user is logged into firebase, fb-user is a JS object containing
@@ -346,7 +346,7 @@
         {:change-user [new-id-kw old-identity]}))))
 
 
-(re/reg-fx
+(rf/reg-fx
   :change-user
   (fn [[new-id-kw {:keys [firebase-db-ref presence-off-cb]}]]
     (if new-id-kw
@@ -356,7 +356,7 @@
       ; data is stored, and the callback we'll need to turn off presence when
       ; logging out.
       (let [new-ref (fb/path-str->db-ref (str "users/" (name new-id-kw)))]
-        (re/dispatch
+        (rf/dispatch
           [:my-identity {:firebase-id     new-id-kw
                          :firebase-db-ref new-ref
                          :presence-off-cb (fb/note-presence-changes new-ref)}]))
@@ -371,10 +371,10 @@
             firebase-db-ref
             {:online             false
              :online-change-time fb/timestamp-placeholder})
-          (re/dispatch [:my-identity nil])))))
+          (rf/dispatch [:my-identity nil])))))
 
 
-(re/reg-event-fx
+(rf/reg-event-fx
   :log-out
   (fn [cofx _]
     {:db                (note-pending cofx :log-out)
