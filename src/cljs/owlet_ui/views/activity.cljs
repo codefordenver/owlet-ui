@@ -39,4 +39,4 @@
           [activity-challenge challenge])
          (when inspiration
           [activity-inspiration inspiration])]
-        [:div.activity-content.col-xs-12 [activity-comments]]]])))
+        [:div.activity-content.col-xs-12.col-lg-8 [activity-comments]]]])))

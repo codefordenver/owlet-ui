@@ -1,4 +1,4 @@
-var disqus_shortname = 'owlet-2';
+var disqus_shortname = 'owlet-activities';
 
 /* * * DON'T EDIT BELOW THIS LINE * * */
 (function () {
