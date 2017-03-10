@@ -2,7 +2,7 @@
   (:require
     [cljs.test :refer-macros [use-fixtures async deftest testing is]]
     [cljs.core.async :refer [<! chan]]
-    [re-frame.core :as re]
+    [re-frame.core :as rf]
     [re-frame.db :refer [app-db]]
     [owlet-ui.subscription-viewer :as view]
     [owlet-ui.firebase :as fb]
@@ -47,15 +47,15 @@
 
   {:before
    #(async done
-     ; Push test data onto Firebase, so it exists prior to connecting to it
-     ; with on-change.
-     (let [tests-ref   (fb/db-ref-for-path "tests")
-           on-complete (fn [err]
-                         (if err
-                           (do (prn err) (flush))
-                           (done)))]
-       (reset! test-ref
-               (.push tests-ref init-data on-complete))))
+      ; Push test data onto Firebase, so it exists prior to connecting to it
+      ; with on-change.
+      (let [tests-ref   (fb/path-str->db-ref "tests")
+            on-complete (fn [err]
+                          (if err
+                            (do (prn err) (flush))
+                            (done)))]
+        (reset! test-ref
+                (.push tests-ref init-data on-complete))))
 
    :after
    #(print "Done with Firebase.")}
@@ -69,8 +69,8 @@
      (print "Done with repeatedly-running."))})
 
 
-(subs/register-getter-sub :status-sub [:tests :status])
-(events/register-setter-handler :change-status [:tests :status])
+(subs/reg-getter :status-sub [:tests :status])
+(events/reg-setter :change-status [:tests :status])
 
 
 (deftest status-test
@@ -81,7 +81,7 @@
       ; waits for the render to complete, the data should be available now.
       (is (= "Ready" ((view/results "app") [:status-sub])))
 
-      (re/dispatch [:change-status "Running"])
+      (rf/dispatch [:change-status "Running"])
       (prn "Waiting for browser ...")
       (go-loop [ch (chan)]
         (as/continue-after-pause! ch)   ; Returns immediately,
@@ -97,8 +97,8 @@
     (is (= "tests" (-> @test-ref .-parent .-key)))))
 
 
-(subs/register-getter-sub :notification-sub [:tests :notification])
-(events/register-setter-handler
+(subs/reg-getter :notification-sub [:tests :notification])
+(events/reg-setter
   :test-notify
   [:tests :notification]
   (fn [new-data ch]
@@ -136,9 +136,9 @@
 
         ; Next, let's try directly modifying the data on Firebase to see if
         ; our handler fires and the GUI is updated.
-        (fb/set-ref (.child @test-ref "notification")
-                    "modified"
-                    #(as/continue-chan! ch))
+        (.set (.child @test-ref "notification")
+              "modified"
+              #(as/continue-chan! ch))
         (<! ch)              ; Wait for Firebase to finish.
         (<! ch)              ; Wait for :test-notify handler.
 
@@ -152,7 +152,7 @@
         (done)))))
 
 
-(subs/register-getter-sub :upload-sub [:tests :upload])
+(subs/reg-getter :upload-sub [:tests :upload])
 
 
 (deftest change-on-test
@@ -201,7 +201,7 @@
     (async done
       (is (= "Running" ((view/results "app") [:status-sub])))
 
-      (re/dispatch [:change-status "Finished"])
+      (rf/dispatch [:change-status "Finished"])
       (go-loop [ch (chan)]
         (as/continue-after-pause! ch)
         (<! ch)
@@ -209,4 +209,3 @@
 
         (print "Finished testing.")
         (done)))))
-

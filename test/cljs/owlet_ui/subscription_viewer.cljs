@@ -5,7 +5,7 @@
   see https://github.com/Day8/re-frame#the-2nd-flow"
   [:require [cljs.reader :refer [read-string]]
             [reagent.core :refer [render]]
-            [re-frame.core :as re]])
+            [re-frame.core :as rf]])
 
 
 (defn component-with-subscriptions
@@ -22,7 +22,7 @@
   "
   [dom-id & subscribe-vecs]
   (fn []
-    (let [sub-reactions (map re/subscribe subscribe-vecs)
+    (let [sub-reactions (map rf/subscribe subscribe-vecs)
           sub-count     (count sub-reactions)
           indexed-subs  (map vector (range) subscribe-vecs sub-reactions)
           id->span-id   (fn [& suffix] (keyword
@@ -68,4 +68,3 @@
   (partial render
            [(apply component-with-subscriptions dom-id subscribe-vecs)]
            (.getElementById js/document dom-id)))
-

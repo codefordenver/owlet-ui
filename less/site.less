@@ -137,7 +137,7 @@ a:hover {
   }
 }
 
-#lpsidebar {
+.lpsidebar {
   position: fixed;
   z-index: 3;
   width: 0px;
@@ -185,17 +185,7 @@ a:hover {
   }
 }
 
-#lpsidebar-overlay {
-  cursor: pointer;
-  position: fixed;
-  min-width: 100%;
-  min-height: 100%;
-  z-index: -1;
-  background-color: transparent;
-  transition: background-color 0.3s;
-}
-
-#lpsidebar-wrap {
+.lpsidebar-wrap {
   position: fixed;
   top: 0;
   right: 0;
@@ -205,15 +195,78 @@ a:hover {
   z-index: 2;
 }
 
-#lpsidebar-open, #lpsidebar-close {
+.lpsidebar-open, .lpsidebar-close {
   cursor: pointer;
-  transition: left 0.3s;
   border-left: 1px solid #6A2569;
   position: fixed;
   top: 2px;
-  left: 0px;
   height: 86px;
+}
+
+.lpsidebar-open {
   z-index: 3;
+}
+
+.lpsidebar-close {
+  z-index: 0;
+}
+
+.closed-sidebar {
+  cursor: pointer;
+  position: fixed;
+  min-width: 100%;
+  min-height: 100%;
+  z-index: -1;
+  background-color: transparent;
+  background-color: rgba(0, 0, 0, 0);
+  transition: background-color 0.3s;
+}
+
+.closed-sidebar + .lpsidebar-wrap {
+  width: 0px;
+  .lpsidebar {
+    z-index: 3;
+    width: 0px;
+  }
+  + .lpsidebar-open {
+    transition: left 0.3s;
+    z-index: 3;
+    left: 0px;
+    + .lpsidebar-close {
+      transition: left 0.3s;
+      z-index: 0;
+      left: 0px;
+    }
+  }
+}
+
+.opened-sidebar {
+  cursor: pointer;
+  position: fixed;
+  min-width: 100%;
+  min-height: 100%;
+  z-index: 2;
+  background-color: transparent;
+  background-color: rgba(0, 0, 0, 0.5);
+  transition: background-color 0.3s;
+}
+
+.opened-sidebar + .lpsidebar-wrap {
+  width: 80px;
+  .lpsidebar {
+    z-index: 3;
+    width: 80px;
+  }
+  + .lpsidebar-open {
+    transition: left 0.3s;
+    z-index: 0;
+    left: 80px;
+    + .lpsidebar-close {
+      transition: left 0.3s;
+      z-index: 3;
+      left: 80px;
+    }
+  }
 }
 
 mark {
@@ -503,6 +556,7 @@ img.back {
 }
 
 .tag {
+  cursor: pointer;
   text-transform: uppercase;
   border-radius: 25px;
   margin: 5px;

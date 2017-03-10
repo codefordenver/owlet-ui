@@ -4,7 +4,7 @@
   (:require [secretary.core :as secretary]
             [goog.events :as events]
             [goog.history.EventType :as EventType]
-            [re-frame.core :as re]
+            [re-frame.core :as rf]
             [ajax.core :refer [GET]]
             [owlet-ui.config :as config]))
 
@@ -25,7 +25,7 @@
   [url response->event]
   (GET url {:response-format :json
             :keywords?       true
-            :handler         (comp re/dispatch response->event)
+            :handler         (comp rf/dispatch response->event)
             :error-handler   #(prn %)}))
 
 
@@ -34,39 +34,37 @@
   ;; --------------------
   ;; define routes here
   (defroute "/" []
-            (re/dispatch [:set-active-view :welcome-view]))
+            (rf/dispatch [:set-active-view :welcome-view]))
 
   (defroute "/404" []
-            (re/dispatch [:set-active-view :not-found-view]))
+            (rf/dispatch [:set-active-view :not-found-view]))
 
   (defroute "/about" []
-            (re/dispatch [:set-active-view :about-view]))
+            (rf/dispatch [:set-active-view :about-view]))
 
   (defroute "/settings" []
-            (re/dispatch [:set-active-view :settings-view]))
-
-  (defroute "/search/:search" {:as params}
-            (re/dispatch [:get-library-content-from-contentful params])
-            (re/dispatch [:filter-activities-by-search-term (:search params)])
-            (re/dispatch [:set-active-document-title! (:branch params)]))
+            (rf/dispatch [:set-active-view :settings-view]))
 
   (defroute "/branches" []
-            (re/dispatch [:get-library-content-from-contentful])
-            (re/dispatch [:set-active-view :branches-view])
-            (re/dispatch [:set-active-document-title! "Branches"]))
+            (rf/dispatch [:get-library-content-from-contentful])
+            (rf/dispatch [:set-active-view :branches-view])
+            (rf/dispatch [:set-active-document-title! "Branches"]))
+
+  (defroute "/search/:search" {:as params}
+            (rf/dispatch [:get-library-content-from-contentful params]))
 
   (defroute "/:branch" {:as params}
-            (re/dispatch [:get-library-content-from-contentful params])
-            (re/dispatch [:set-active-view :branch-activities-view])
-            (re/dispatch [:set-active-document-title! (:branch params)]))
+            (rf/dispatch [:get-library-content-from-contentful params])
+            (rf/dispatch [:set-active-view :branch-activities-view])
+            (rf/dispatch [:set-active-document-title! (:branch params)]))
 
   (defroute "/activity/#!:activity" {:as params}
-            (re/dispatch [:get-library-content-from-contentful params])
-            (re/dispatch [:set-active-view :activity-view]))
+            (rf/dispatch [:get-library-content-from-contentful params])
+            (rf/dispatch [:set-active-view :activity-view]))
 
   (defroute "*" []
             (let [uri (-> js/window .-location .-href)]
-              (if (boolean (re-find #"%23" uri))
+              (if (re-find #"%23" uri)
                 (let [new-uri (js/decodeURIComponent uri)]
                   (set! (-> js/window .-location) new-uri))
                 (set! (.-location js/window) "/#/404"))))

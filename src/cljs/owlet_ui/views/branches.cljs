@@ -1,5 +1,5 @@
 (ns owlet-ui.views.branches
-  (:require [re-frame.core :as re]
+  (:require [re-frame.core :as rf]
             [camel-snake-kebab.core :refer [->kebab-case]]
             [owlet-ui.components.branch :refer [branch]]))
 
@@ -11,7 +11,7 @@
     (map vector colors activity-branches)))
 
 (defn branches-view []
-  (let [activity-branches (re/subscribe [:activity-branches])]
+  (let [activity-branches (rf/subscribe [:activity-branches])]
     [:div.branches
      [:section
       [:h1#title [:mark "Get started by choosing a branch below"]]

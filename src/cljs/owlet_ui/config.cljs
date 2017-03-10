@@ -1,38 +1,55 @@
-(ns owlet-ui.config
-  (:require [cljsjs.auth0-lock :as Auth0Lock]
-            [re-frame.core :as re-frame]))
+(ns owlet-ui.config)
+
 
 (def debug?
   ^boolean js/goog.DEBUG)
+(when debug? (enable-console-print!))
 
-(defonce project-name "OWLET")
+
+(def project-name "OWLET")
+
+
+;; TODO:
+;; Use a lein env var like the one above
+;; to toggle this during development
+;; http://localhost:3000
+(def server-url
+  "https://owlet-api.herokuapp.com")
+
 
 (defonce auth0-local-storage-key "owlet:user-token")
 
-(defonce server-url "https://owlet-api.herokuapp.com")
 
-(defonce default-header-bg-image "img/default_background.png")
+(def auth0-init
+  "Credentials for instantiating Auth0 and Auth0Lock objects.
+  "
+  {:clientID "aCHybcxZ3qE6nWta60psS0An1jHUlgMm"
+   :domain   "codefordenver.auth0.com"})
 
-(defonce lock
-  (new js/Auth0Lock
-       "aCHybcxZ3qE6nWta60psS0An1jHUlgMm"
-       "codefordenver.auth0.com"
-       (clj->js {:auth {:redirect false
-                        :responseType "token"}})))
 
-(defonce owlet-activities-2-space-id "ir2v150dybog")
+(def auth0-del-opts-for-firebase
+  "The options needed by function Auth0.getDelegationToken. Omit key :id_token,
+  since it will be provided by owlet-ui.auth0/on-authenticated. See
+  https://auth0.com/docs/libraries/auth0js#delegation-token-request
+  "
+  {:api      "firebase"
+   :scope    "openid profile"
+   :target   (:clientID auth0-init)})
+
 
 (defonce firebase-app-init
-         {:apiKey        "AIzaSyAbs6wXxPGX-8XEWR6nyj7iCETOL6dZjzY"
-          :authDomain    "owlet-users.firebaseapp.com"
-          :databaseURL   "https://owlet-users.firebaseio.com"
-          :storageBucket "owlet-users.appspot.com"})
+  ; Used only by owlet-ui.firebase/firebase-app, which may not be redefined
+  ; while the app is running. So for clarity, we make this var defonce as well.
+  ;
+  {:apiKey        "AIzaSyAbs6wXxPGX-8XEWR6nyj7iCETOL6dZjzY"
+   :authDomain    "owlet-users.firebaseapp.com"
+   :databaseURL   "https://owlet-users.firebaseio.com"
+   :storageBucket "owlet-users.appspot.com"})
 
-(.on lock "authenticated"
-     (fn [auth-res]
-       (let [_auth-res_ (js->clj auth-res :keywordize-keys true)
-             token (:idToken _auth-res_)
-             social-id (-> _auth-res_ :idTokenPayload :sub)]
-         (re-frame/dispatch [:user-has-logged-in-out! true])
-         (re-frame/dispatch [:update-sid-and-get-cms-entries-for social-id])
-         (.setItem js/localStorage auth0-local-storage-key token))))
+
+(def library-space-id "c7i369745nqp")
+(def owlet-activities-2-space-id "ir2v150dybog")
+
+
+(def default-header-bg-image "img/default_background.png")
+

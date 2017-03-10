@@ -13,18 +13,17 @@
   (:require [owlet-ui.config :refer [firebase-app-init]]
             [owlet-ui.async :refer [repeatedly-running]]
             [reagent.ratom :refer-macros [reaction]]
-            [re-frame.core :as re]
+            [re-frame.core :as rf]
 
             ; Adds <script src="https://www.gstatic.com/firebasejs/3.4.0/firebase.js"></script>
             ; to index.html . This is required for def. of js/firebase, etc.
             [cljsjs.firebase]))
 
 
-(def firebase-app
-  "The global firebase.app.App instance for use by this application.
-  There must be only one with a particular name.
-  See https://firebase.google.com/docs/reference/js/firebase.app.App.html .
-  "
+(defonce firebase-app
+  ; The global firebase.app.App instance for use by this application.
+  ; There must be only one with a particular name.
+  ; See https://firebase.google.com/docs/reference/js/firebase.app.App.html .
   (.initializeApp js/firebase
                   (clj->js firebase-app-init)         ; Options.
                   "owlet-ui.firebase/firebase-app"))  ; Just a name.
@@ -40,25 +39,105 @@
 ;  ;  ;  ;  ;  ;  ;  ;  ;   Defining Firebase refs   ;  ;  ;  ;  ;  ;  ;  ;  ;
 
 
+(def firebase-auth-object
+  "The firebase.auth.Auth instance to authenticate users of this firebase-app.
+  "
+  (.auth firebase-app))
+
+
 (def firebase-db-ref
+  "A Firebase ref (a firebase.database.Reference instance) referring to the
+  root of the database of this firebase-app.
+  "
   (-> firebase-app .database .ref))
 
 
-(defn db-ref-for-path
-  "Returns a Firebase ref for the node at the given path string relative to
-  firebase-db-ref.
+(defn vec->path-str
+  "Given a sequence of keywords, strings, or symbols (e.g. a path vector for
+  get-in), returns a string suitable for use as a Firebase path argument.
   "
-  [rel-path]
-  (.child firebase-db-ref rel-path))
+  [v]
+  (->> v (map name) (interleave (repeat "/")) rest (apply str)))
+
+
+(defn path-str->db-ref
+  "Returns a Firebase ref for the node at the given path string relative to
+  firebase-db-ref, or to the first argument if called with two args.
+  "
+  ([rel-path] (path-str->db-ref firebase-db-ref rel-path))
+  ([db-ref rel-path] (.child db-ref rel-path)))
 
 
 (def firebase-storage-ref
+  "A Firebase ref (a firebase.storage.Reference instance) referring to the
+  \"bucket\" root of the storage for this firebase-app.
+  "
   (-> firebase-app .storage .ref))
 
 
 (defn storage-ref-for-url
+  "Returns a Firebase ref (a firebase.storage.Reference instance) referring to
+  the storage in this firebase-app at the given URL.
+  "
   [url]
   (-> firebase-app .storage (.refFromURL url)))
+
+
+;  ;  ;  ;  ;  ;  ;  ;  ;   Firebase authorization   ;  ;  ;  ;  ;  ;  ;  ;  ;
+
+
+(defn sign-in
+  "Signs in to the given firebase.auth.Auth instance using the given custom
+  token, e.g. a Google or Facebook token provided by Auth0 at login. If the
+  token is invalid or expired, a re-frame event is dispatched with first
+  element the given event id (typically a keyword), second element the
+  resulting firebase.auth.Error object as a ClojureScript map with keyword keys,
+  and the remaining elements the given arguments, if any. For error keys and
+  codes, see
+  https://firebase.google.com/docs/reference/js/firebase.auth.Auth#signInWithCustomToken
+  and
+  https://firebase.google.com/docs/reference/js/firebase.auth.Error
+  Returns a firebase.Promise containing the signed-in Firebase user object.
+  To obtain the user object, it is preferable to define a handler and use
+  function on-auth-change to set up an event that triggers it.
+  "
+  [auth-obj fb-token fail-event-id & fail-args]
+  (-> auth-obj
+      (.signInWithCustomToken fb-token)
+      (.catch (fn [fb-error]
+                (rf/dispatch
+                  (apply vector fail-event-id (js->clj fb-error) fail-args))))))
+
+
+(rf/reg-fx
+  :firebase-sign-in
+  ; A list must be provided to this effect function, as for function sign-in,
+  ; above. E.g., your reg-event-fx registred function could return
+  ; {:firebase-sign-in  [fb/firebase-auth-object a-token :some-event]}
+  (partial apply sign-in))
+
+
+(rf/reg-fx
+  :firebase-sign-out
+  ; The desired firebase.auth.Auth instance must be provided for this effect.
+  ; E.g., your reg-event-fx registered function could return
+  ; {:firebase-sign-out fb/firebase-auth-object}.
+  (memfn signOut))
+
+
+(defn on-auth-change
+  "Registers a re-frame event to be fired whenever the state of the given
+  firebase.auth.Auth instance changes. The event is a vector whose first
+  element is the given event id (typically a keyword), followed by the
+  currently signed-in user as a ClojureScript map with keyword keys (or nil if
+  no longer signed in), followed by the given arguments, if any. Returns a
+  no-arg. function, which may be called to stop listening for these changes.
+  "
+  [auth-obj event-id & args]
+  (.onAuthStateChanged auth-obj
+                       (fn [fb-user-obj]
+                         (rf/dispatch
+                           (apply vector event-id fb-user-obj args)))))
 
 
 ;  ;  ;  ;  ;  ;  ;  ;  Communicating with Firebase DB  ;  ;  ;  ;  ;  ;  ;  ;
@@ -66,7 +145,7 @@
 
 (def legal-db-value?
   "Returns true iff the given Clojure value can be stored as a value in the
-  Firebase database, say using set-ref or change-on. Most Clojure values could
+  Firebase database, say using reset-ref or change-on. Most Clojure values could
   be \"converted\" to JSON just using clj->js, but important meaning could be
   lost. So, to enforce explicitness, we require that only \"stringish\" values
   (strings, symbols, or keywords) be used as keys in the case of a map
@@ -75,9 +154,10 @@
   values as defined here.
   "
   (let [stringish? (some-fn string? symbol? keyword?)]
-    (comp boolean (some-fn number?
+    (comp boolean (some-fn nil?
+                           boolean?
+                           number?
                            stringish?
-                           nil?
                            (partial = timestamp-placeholder)
                            (every-pred
                              (some-fn sequential? set?)
@@ -90,28 +170,70 @@
                              #(every? legal-db-value? (vals %)))))))
 
 
-(defn set-ref
-  "Asynchronously assigns the given clojure value v at Firebase reference
-  a-ref. If a no-arg callback function is given as third argument, it is
-  called upon completion.
+(defn- apply-setter-to-ref
 
-  Note that v must pass precondition legal-db-value?, and if v is nil, the
-  location corresponding to a-ref will be deleted. The same applies to empty
-  collections as values, like [], {}, or #{}. (The Firebase databse does not
-  store null values or empty collections.)
+  ([setter db-ref v]
+   (apply-setter-to-ref setter db-ref v :callback-fn #(do)))
 
-  Returns a js/Promise, which will perform (or has performed) the .set method
-  call.
-  "
-  ([a-ref v]
-   (set-ref a-ref v #(do)))
+  ([setter db-ref v event]
+   {:pre [(or (and (vector? event) (seq event))
+              (.log js/console (str "Illegal re-frame event:" (pr-str event))))]}
 
-  ([a-ref v callback]
+   (apply-setter-to-ref setter db-ref v :callback-fn #(rf/dispatch event)))
+
+  ([setter db-ref v _ callback]
    {:pre [(or (legal-db-value? v)
-              (.log js/console (str "Illegal Firebase value:" (pr-str v))))
-          (fn? callback)]}
-   (let [value (clj->js v)]
-     (.set a-ref value callback))))
+              (.log js/console (str "Illegal Firebase value: " (pr-str v))))]}
+
+   (setter db-ref (clj->js v) callback)))
+
+
+(def reset-ref
+  (partial apply-setter-to-ref (memfn set v callback)))
+
+
+(rf/reg-fx
+  :firebase-reset-ref
+
+  ; ([db-ref v] [db-ref v event])
+  ;
+  ; Asynchronously assigns the given clojure value at the given Firebase
+  ; database reference. If an event vector is given as the third argument,
+  ; it will be dispatched upon completion.
+  ;
+  ; Note that the Clojure value v must pass precondition legal-db-value?. If it is nil, the
+  ; location corresponding to the ref will be deleted. The same applies to empty
+  ; collections as values, like [], {}, or #{}. (The Firebase databse does not)
+  ; store null values or empty collections.
+  ;
+  ; Returns a js/Promise, which will perform (or has performed) the db-ref.set
+  ; method call.
+
+  (partial apply reset-ref))
+
+
+(def reset-into-ref
+  (partial apply-setter-to-ref (memfn update v callback)))
+
+(rf/reg-fx
+  :firebase-reset-into-ref
+
+  ; ([db-ref v] [db-ref v event])
+  ;
+  ; Asynchronously merges the key/values of the given associative Clojure value v
+  ; (say a map or vector) into the given Firebase database reference. Any values
+  ; at keys not present in the Clojure value will not be changed. If an event
+  ; vector is given as the third argument, it will be dispatched upon completion.
+  ;
+  ; Note that the Clojure value v must pass precondition legal-db-value?. If it is nil, the
+  ; location corresponding to the ref will be deleted. The same applies to empty
+  ; collections as values, like [], {}, or #{}. (The Firebase databse does not)
+  ; store null values or empty collections.
+  ;
+  ; Returns a js/Promise, which will perform (or has performed) the db-ref.update
+  ; method call.)
+
+  (partial apply reset-into-ref))
 
 
 (defn on-change
@@ -139,67 +261,79 @@
        "value"
        (fn [snapshot]
          (let [snap-as-clj (-> snapshot .val (js->clj :keywordize-keys true))]
-           (re/dispatch (apply vector event-id snap-as-clj args))))
+           (rf/dispatch (apply vector event-id snap-as-clj args))))
        #(.log js/console
               (str "owlet-ui.firebase/on-change"
                    "calling firebase.database.Reference's .on():\n"
                    (.toString %)))))
 
 
-(defn on-presence-change
-  "Exactly like on-change, this listens to the given Firebase database ref and
-  dispatches an event of the given id. In addition, a function is registered
-  to listen to any change in node /.info/connected, which tracks the client's
-  connection to Firebase. The function updates the given ref with a boolean at
-  key \"online\" and the number of milliseconds since the epoch at key
-  \"online-change-time\". Note that the contents of the ref are not replaced;
-  only values for these keys are updated.
+(defn note-presence-changes
+  "Tracks the client's connection to Firebase by registering a function to
+  listen for any change in node /.info/connected in the given database ref.
+  If called with just one argument, this function updates the given ref with a
+  boolean at key \"online\" and the number of milliseconds since the epoch at
+  key \"online-change-time\". If called with three arguments, the second arg.
+  must be a map whose keys and values will be used to update the given db-ref
+  when a connection is established. The update will use the data in the third
+  argument will when the connection is lost.
+
+  Note that not all the contents of the ref are replaced; values for only the
+  keys \"online\" and \"online-change-time\" are written. Similarly, if called
+  with three arguments, only the values for keys in the given maps are written.
 
   Note also that, when disconnected, the \"online-change-time\" integer
-  recorded locally must be from the time known by the LOCAL system. The value
-  recorded on the Firebase server, however, will be from the SERVER'S time.
+  recorded locally must be the time known by the LOCAL system. The value
+  recorded on the Firebase server, however, will be the SERVER'S time.
   Once the connection is reestablished, however, the server's value will be
-  recorded locally, and an event will be dispatched as usual.
+  recorded locally.
 
-  Returns a vector containing two functions. The first is the function
-  listening to node /.info/connected, and the second is listening to db-ref,
-  as in on-change. You can use these with the firebase.database.Reference
-  method off(). See the on-change doc.
+  Returns a function listening to node \".info/connected\". You can use it with
+  the firebase.database.Reference method off() to tell the server to stop
+  listening for presence changes.
   "
-  [db-ref event-id & args]
+  ([db-ref]
+   (note-presence-changes
+     db-ref
+     {:online true,  :online-change-time timestamp-placeholder}
+     {:online false, :online-change-time timestamp-placeholder}))
 
-  (letfn [(update-presence-info [db-obj connected?]
-            ; Note that db-obj may be just db-ref (a firebase.database.Reference
-            ; object), OR its associated firebase.database.OnDisconnect object.
-            ; Notice that timestamp-placeholder works locally too!
-            (.update db-obj
-                     (clj->js {:online             connected?
-                               :online-change-time timestamp-placeholder})
-                     #(when %
-                        (.log js/console
-                              (str "owlet-ui.firebase/on-presence-change \n"
-                                   "calling firebase.database.OnDisconnect's"
-                                   ".uppdate():\n"
-                                   (.toString %))))))]
+  ([db-ref online-vals offline-vals]
+   (letfn [(update-presence-info [target-ref vals]
+             ; Note that target-ref may be just db-ref (a
+             ; firebase.database.Reference object), OR its associated
+             ; OnDisconnect object. Notice that timestamp-placeholder works
+             ; locally too!
+             (.update target-ref
+                      (clj->js vals)
+                      #(when %
+                         (.log js/console
+                               (str "owlet-ui.firebase/note-presence-changes \n"
+                                    "calling firebase.database.OnDisconnect's"
+                                    ".update():\n"
+                                    (.toString %))))))]
 
-    [(.on (db-ref-for-path ".info/connected")
+     (.on (-> db-ref .-root (.child ".info/connected"))
           "value"
-          (fn [snapshot]
-            ; Update db-ref with connection status, incl. time connected.
-            (update-presence-info db-ref (.val snapshot))
-            (when (.val snapshot)
-              ; Tell db-ref to do update on the server only if connection is
-              ; lost. This happens at most once.
-              (update-presence-info (.onDisconnect db-ref) false)))
-          #(.log js/console (str "owlet-ui.firebase/on-presence-change \n"
-                                 "calling firebase.database.Reference's .on():\n"
-                                 (.toString %))))
 
-     ; When a connection or disconnection occurs, dispatch an event vector
-     ; with the new contents of db-ref,
-     ; map { ... :online true, :online-change-time <server-or-local-time> ...}
-     ; as its second element.
-     (apply on-change db-ref event-id args)]))
+          (fn [snapshot]
+            (if (.val snapshot)
+              (do
+                ; We're now online. Set the current state AND prepare the future
+                ; setting, for when the server detects the next disconnection.
+                (update-presence-info db-ref online-vals)
+                (update-presence-info (.onDisconnect db-ref) offline-vals))
+                ; This new firebase.database.OnDisconnect object will be used
+                ; at most once.
+
+              ; Otherwise, we're currently offline, so just record the state
+              ; locally.
+              (update-presence-info db-ref offline-vals)))
+
+          ; Log any error:
+          #(js/console.log (str "owlet-ui.firebase/on-presence-change \n"
+                                "calling firebase.database.Reference's .on():\n"
+                                (.toString %)))))))
 
 
 (defn change-on
@@ -230,8 +364,8 @@
       (swap! owlet-ui.async/repeatedly-running disj the-returned-fn)
   "
   [db-ref & subscription-args]
-  (let [sub-reaction     (re/subscribe (vec subscription-args))
-        sending-reaction (reaction (set-ref db-ref @sub-reaction))
+  (let [sub-reaction     (rf/subscribe (vec subscription-args))
+        sending-reaction (reaction (reset-ref db-ref @sub-reaction))
         repeated-fn      (fn [] @sending-reaction)]
     (swap! repeatedly-running conj repeated-fn)
     repeated-fn))
@@ -244,7 +378,7 @@
   This is handy for ad-hoc queries at the REPL.
   "
   [rel-path callback]
-  (.once (db-ref-for-path rel-path)
+  (.once (path-str->db-ref rel-path)
          "value"
          #(-> % .val js->clj callback)
          #(.log js/console
@@ -270,38 +404,94 @@
   remove all (next, error, or complete) callbacks from the running task, if
   called.
   "
-  [js-file & {:keys [into-dir next error complete-with-snapshot] :as options}]
+  [js-file & {:keys [into-dir error complete-with-snapshot] :as options}]
 
-  (let [dir           (or into-dir "")
-        path          (str dir "/" (.-name js-file))
-        ref           (.child firebase-storage-ref path)
-        task          (.put ref js-file)
-        default-error ; Key-value pair for default "error" function.
-                      [:error
-                       (fn [js-error]
-                         (.log js/console
-                               "upload-file:"
-                               (str "Could not upload file '"
-                                    (.-name js-file)
-                                    "'.")
-                               js-error))]
-        snap-complete ; Key-value pair for the "complete" function expected by
-                      ; firebase.storage.UploadTask's .on method, which is a
-                      ; 0-arg function. So we wrap the given
-                      ; :complete-with-snapshot 1-arg function, passing it the
-                      ; new file URL.
-                      [:complete
-                       #(complete-with-snapshot (.-snapshot task))]]
+  (if js-file
+    (let [dir           (or into-dir "")
+          path          (str dir "/" (.-name js-file))
+          ref           (.child firebase-storage-ref path)
+          task          (.put ref js-file)
+          default-error ; Key-value pair for default "error" function.
+                        [:error
+                         (fn [js-error]
+                           (.log js/console
+                                 "upload-file:"
+                                 (str "Could not upload file '"
+                                      (.-name js-file)
+                                      "'.")
+                                 js-error))]
+          snap-complete ; Key-value pair for the "complete" function expected by
+                        ; firebase.storage.UploadTask's .on method, which is a
+                        ; 0-arg function. So we wrap the given
+                        ; :complete-with-snapshot 1-arg function, passing it the
+                        ; new file URL.
+                        [:complete
+                         #(complete-with-snapshot (.-snapshot task))]]
 
-    ; Execute the file-upload task, substituting :error or :complete functions,
-    ; if necessary.
-    (.on task
-         js/firebase.storage.TaskEvent.STATE_CHANGED
-         (-> options
-             (dissoc :into-dir :complete-with-snapshot)   ; Keys not expected by .on.
-             (conj (when (not error) default-error))
-             (conj (when complete-with-snapshot snap-complete))
-             clj->js))))
+      ; Execute the file-upload task, substituting :error or :complete functions,
+      ; if necessary.
+      (.on task
+           js/firebase.storage.TaskEvent.STATE_CHANGED
+           (-> options
+               (dissoc :into-dir :complete-with-snapshot)   ; Keys not expected by .on.
+               (conj (when-not error default-error))
+               (conj (when complete-with-snapshot snap-complete))
+               clj->js)))
+
+    (let [err-msg "Please select a file to be uploaded."]
+      (if error
+        (error (js/Error. err-msg))
+        (js/console.log "upload-file:" err-msg)))))
+
+
+(defn ez-upload-file
+  "Provides a straightforward way for a GUI to upload a local file to Firebase
+  Storage and receive the URL pointing to the new file there.
+
+  When called, ez-upload-file initiates the upload of the file selected in an
+  <input type=\"file\" id=input-elem-id> element in the current document,
+  where input-elem-id is the string given in the first argument. The given
+  destination directory string must be relative to the root of Firebase
+  Storage. As the upload proceeds, atom progress-pct-atom is periodically
+  updated with a number: the percentage of uploaded bytes. Atom error-atom will
+  contain the nil value unless the user did not provide a file in the input
+  element or if there was some other problem preventing the upload. In this
+  case error-atom will contain an error message.
+
+  Finally, when the upload is complete, a re-frame event is dispatched, which
+  is a vector of the given event-id, the new URL string, and any provided args.
+  "
+  [input-elem-id dest-dir progress-pct-atom error-atom event-id & args]
+
+  (when progress-pct-atom (reset! progress-pct-atom 0))
+  (when error-atom        (reset! error-atom        nil))
+  (apply
+    upload-file
+
+    ; JS File object, or nil if none selected:
+    (-> input-elem-id js/document.getElementById (aget "files" 0))
+
+    ; Upload options:
+    (concat
+      [:into-dir               dest-dir
+       :complete-with-snapshot (fn [snapshot]
+                                 (->> snapshot          ; The firebase.storage.UploadTaskSnapshot
+                                      .-downloadURL     ; The new URL of the stored file.
+                                      (conj args)       ; Makes (url arg1 arg2 ...)
+                                      (into [event-id]) ; Makes [event-id url arg1 arg2 ...)
+                                      rf/dispatch))]
+      (and progress-pct-atom
+           [:next (fn [task-snapshot]
+                    ; What to do after each batch of bytes has been transfered.
+                    ; Argument is a firebase.storage.UploadTaskSnapshot. See
+                    ; https://firebase.google.com/docs/reference/js/firebase.storage.UploadTaskSnapshot
+                    (let [total      (.-totalBytes task-snapshot)
+                          transfered (.-bytesTransferred task-snapshot)]
+                      (reset! progress-pct-atom
+                              (js/Math.round (* 100 (/ transfered total))))))])
+      (and error-atom
+           [:error (fn [error]
+                     (reset! error-atom (.-message error)))]))))
 
 
 (defn delete-file-at-url

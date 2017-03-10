@@ -1,8 +1,9 @@
 (ns owlet-ui.subs
-  (:require [re-frame.core :as re]))
+  (:require [re-frame.core :as rf]
+            [owlet-ui.config :as config]))
 
 
-(defn register-getter-sub
+(defn reg-getter
   "Provides an easy way to register a new subscription that just retrieves the
   value from a given location in app-db. Simply provide the query-key keyword
   designating the new subscription and the path in app-db to the new data of
@@ -11,10 +12,10 @@
   value and elements in the subscription vector following the query key. For
   example, if we called
 
-    (register-getter-sub :my-sub
-                         [:path :in :app-db]
-                         (fn [new-val up?]
-                           (if up? (upper-case new-val) new-val)))
+    (reg-getter :my-sub
+                [:path :in :app-db]
+                (fn [new-val up?]
+                  (if up? (upper-case new-val) new-val)))
 
     (defn some-component []
       (let [the-word (subscribe [:my-sub true])]
@@ -27,70 +28,71 @@
   some-component will render using \"NEW WORDS\" as the value from @the-word."
 
   ([query-key db-path]
-   (register-getter-sub query-key db-path identity))
+   (reg-getter query-key db-path identity))
 
   ([query-key db-path f]
-   (re/reg-sub
+   (rf/reg-sub
      query-key
      (fn [db _ & args]
        (-> db
            (get-in db-path)
            (#(apply f % args)))))))
 
-(re/reg-sub
+
+(rf/reg-sub
   :active-view
   (fn [db _]
     (:active-view db)))
 
-(re/reg-sub
-  :is-user-logged-in?
-  (fn [db]
-    (get-in db [:user :logged-in?])))
 
-(re/reg-sub
-  :social-id-subscription
-  (fn [db]
-    (get-in db [:user :social-id])))
+(reg-getter :my-identity [:my-identity])
 
-(re/reg-sub
-  :user-has-background-image?
-  (fn [db]
-    (get-in db [:user :background-image])))
+(reg-getter :showing-bg-img-upload [:showing-bg-img-upload])
 
-(re/reg-sub
+(rf/reg-sub
+  :my-background-image-url
+  (fn [db]
+    (let [me (rf/subscribe [:my-identity])]
+      (or
+        (get-in db [:users (:firebase-id @me) :background-image-url])
+        config/default-header-bg-image))))
+
+(rf/reg-sub
   :library-activities
   (fn [db]
     (get-in db [:activities])))
 
-(re/reg-sub
+(rf/reg-sub
   :activity-branches
   (fn [db]
     (get-in db [:activity-branches])))
 
-(re/reg-sub
+(rf/reg-sub
   :activities-by-branch
   (fn [db]
     (get-in db [:activities-by-branch])))
 
-(re/reg-sub
+(rf/reg-sub
   :activities-by-branch-in-view
   (fn [db]
     (get-in db [:activities-by-branch-in-view])))
 
-(re/reg-sub
+(rf/reg-sub
   :activity-in-view
   (fn [db]
     (get-in db [:activity-in-view])))
 
-(re/reg-sub
+(rf/reg-sub
   :set-loading-state?
   (fn [db]
     (get-in db [:app :loading?])))
 
-(register-getter-sub :app-title [:app :title])
+(reg-getter :app-title [:app :title])
 
-(register-getter-sub :skills [:skills])
+(reg-getter :open-sidebar? [:app :open-sidebar])
 
-(register-getter-sub :activity-titles [:activity-titles])
+(reg-getter :skills [:skills])
 
-(register-getter-sub :activity-platforms [:activity-platforms])
+(reg-getter :activity-titles [:activity-titles])
+
+(reg-getter :activity-platforms [:activity-platforms])

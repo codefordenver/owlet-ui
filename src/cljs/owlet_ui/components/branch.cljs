@@ -1,5 +1,5 @@
 (ns owlet-ui.components.branch
-  (:require [re-frame.core :as re]
+  (:require [re-frame.core :as rf]
             [clojure.string :as str]
             [reagent.core :as reagent :refer [atom]]
             [camel-snake-kebab.core :refer [->kebab-case]]))
@@ -19,7 +19,7 @@
                                   rand-nth
                                   (or @hover-image))))
         activities-by-branch
-                    (re/subscribe [:activities-by-branch])]
+                    (rf/subscribe [:activities-by-branch])]
     (fn []
       ; Form-2 component needed so hover-image atom is not redefined on
       ; every render.
@@ -40,7 +40,7 @@
                     :background-image (str "linear-gradient(to right, "
                                            color
                                            " 25%, rgba(0,0,0,0) 75%")}}
-           [:a.branch {:on-click #(re/dispatch-sync
+           [:a.branch {:on-click #(rf/dispatch-sync
                                    [:set-activities-by-branch-in-view
                                     (->kebab-case branch-name)])
                        :href     (str "#/" (->kebab-case branch-name))}

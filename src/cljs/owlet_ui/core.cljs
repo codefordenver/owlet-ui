@@ -1,6 +1,6 @@
 (ns owlet-ui.core
     (:require [reagent.core :as reagent]
-              [re-frame.core :as re-frame]
+              [re-frame.core :as rf]
               [devtools.core :as devtools]
               [dirac.runtime :as dirac]
               [owlet-ui.events]
@@ -18,12 +18,12 @@
     (dirac/install!)))
 
 (defn mount-root []
-  (re-frame/clear-subscription-cache!)
+  (rf/clear-subscription-cache!)
   (reagent/render [app/main-view]
                   (.getElementById js/document "app")))
 
 (defn ^:export init []
   (routes/app-routes)
-  (re-frame/dispatch-sync [:initialize-db])
+  (rf/dispatch-sync [:initialize-db])
   (dev-setup)
   (mount-root))
