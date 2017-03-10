@@ -6,7 +6,8 @@
             [owlet-ui.components.activity.challenge :refer [activity-challenge]]
             [owlet-ui.components.activity.image-gallery :refer [activity-image-gallery]]
             [owlet-ui.components.back :refer [back]]
-            [re-frame.core :as rf]))
+            [re-frame.core :as rf]
+            [owlet-ui.components.activity.comments :refer [activity-comments]]))
 
 (defn activity-view []
   (let [activity @(rf/subscribe [:activity-in-view])]
@@ -29,7 +30,7 @@
                         unplugged
                         inspiration
                         preRequisites
-                        platform 
+                        platform
                         image-gallery-urls]} fields]
             (rf/dispatch [:set-active-document-title! title])
             [:div.activity
@@ -45,4 +46,6 @@
                (when challenge
                 [activity-challenge challenge])
                (when inspiration
-                [activity-inspiration inspiration])]]]))))))
+                [activity-inspiration inspiration])]
+              [:div.activity-content.col-xs-12.col-lg-8
+               [activity-comments]]]]))))))

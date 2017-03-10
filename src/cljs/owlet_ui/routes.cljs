@@ -58,12 +58,16 @@
             (rf/dispatch [:set-active-view :branch-activities-view])
             (rf/dispatch [:set-active-document-title! (:branch params)]))
 
-  (defroute "/activity/:activity" {:as params}
+  (defroute "/activity/#!:activity" {:as params}
             (rf/dispatch [:get-library-content-from-contentful params])
             (rf/dispatch [:set-active-view :activity-view]))
 
   (defroute "*" []
-            (set! (.-location js/window) "/#/404"))
+            (let [uri (-> js/window .-location .-href)]
+              (if (re-find #"%23" uri)
+                (let [new-uri (js/decodeURIComponent uri)]
+                  (set! (-> js/window .-location) new-uri))
+                (set! (.-location js/window) "/#/404"))))
 
   ; Ensure browser history uses Secretary to dispatch.
   (doto (History.)
