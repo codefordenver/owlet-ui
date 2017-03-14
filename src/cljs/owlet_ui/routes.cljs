@@ -52,8 +52,7 @@
 
   (defroute "/search/:search" {:as params}
             (rf/dispatch [:get-library-content-from-contentful params])
-            (rf/dispatch [:set-active-view :branch-activities-view]))
-
+            (rf/dispatch [:set-active-view :search-results-view]))
 
   (defroute "/:branch" {:as params}
             (rf/dispatch [:get-library-content-from-contentful params])
@@ -76,5 +75,6 @@
     (events/listen
       EventType/NAVIGATE
       (fn [event]
+        (prn (.-token event))
         (secretary/dispatch! (.-token event))))
     (.setEnabled true)))

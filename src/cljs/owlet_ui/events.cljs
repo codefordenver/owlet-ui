@@ -37,16 +37,6 @@
         (assoc-in cofx [:db :app :open-sidebar] false)))))
 
 
-(rf/reg-cofx
-  :navigate-to-view!
-  (fn [cofx new-view]
-    (let [search (aget (js->clj (js/document.getElementsByClassName "form-control")) 0)]
-      (when-not (nil? search)
-        (set! (.-value search) "")
-        (.blur search))
-      (assoc-in cofx [:db :active-view] new-view))))
-
-
 (rf/reg-event-db
   :set-active-document-title!
   (fn [db [_ val]]
@@ -268,7 +258,6 @@
 
 (rf/reg-event-db
   :filter-activities-by-search-term
-  [(rf/inject-cofx :navigate-to-view! :search-results-view)]
   (fn [db [_ term]]
 
     (set! (.-location js/window) (str "/#/search/" (->kebab-case term)))
