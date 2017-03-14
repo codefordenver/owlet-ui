@@ -42,9 +42,8 @@
   (fn [cofx new-view]
     (let [search (aget (js->clj (js/document.getElementsByClassName "form-control")) 0)]
       (when-not (nil? search)
-        (do
-          (set! (.-value search) "")
-          (.blur search)))
+        (set! (.-value search) "")
+        (.blur search))
       (assoc-in cofx [:db :active-view] new-view))))
 
 
@@ -122,7 +121,11 @@
   :set-active-view
   [(rf/inject-cofx :close-sidebar!)]
   (fn [db [_ active-view]]
-    (assoc db :active-view active-view)))
+    (let [search (aget (js->clj (js/document.getElementsByClassName "form-control")) 0)]
+      (when-not (nil? search)
+        (set! (.-value search) "")
+        (.blur search))
+      (assoc db :active-view active-view))))
 
 
 (reg-setter :show-bg-img-upload [:showing-bg-img-upload])
@@ -300,7 +303,7 @@
                 ;; by platform
                 ;; -----------
 
-                (let [filtered-set (filterv #(let [platform (-> (get-in % [:fields :platform ])
+                (let [filtered-set (filterv #(let [platform (-> (get-in % [:fields :platform])
                                                                 parse-platform)]
                                                (when (= platform term) %)) activities)]
                   (if (seq filtered-set)
