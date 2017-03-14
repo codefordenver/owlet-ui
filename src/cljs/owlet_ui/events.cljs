@@ -262,6 +262,7 @@
 
     (set! (.-location js/window) (str "/#/search/" (->kebab-case term)))
 
+    (rf/dispatch [:set-active-view :search-results-view])
     (rf/dispatch [:set-active-document-title! term])
 
     ;; by branch
