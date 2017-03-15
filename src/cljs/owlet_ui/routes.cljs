@@ -74,6 +74,5 @@
     (events/listen
       EventType/NAVIGATE
       (fn [event]
-        (prn (.-token event))
         (secretary/dispatch! (.-token event))))
     (.setEnabled true)))
