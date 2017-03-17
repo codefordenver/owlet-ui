@@ -96,7 +96,7 @@
   :cljsbuild
   {:builds
    [{:id             "dev"
-     :notify-command ["script/notify_command.cljs"]
+     :notify-command ["script/notify_command.sh"]
      :source-paths   ["src/cljs" "test/cljs"]
      :figwheel       {:on-jsload "owlet-ui.core/mount-root"}
      :compiler       {:main                 owlet-ui.core

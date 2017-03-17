@@ -93,6 +93,16 @@ as you experiment extensively and learn at the REPL.
 > The rest of this "Running the application" section extends the above to show how
 > you can employ even more powerful development tools.
 
+#### Optional Terminal Notification on complete
+
+Install `terminal-notifier` with `brew install`
+
+```
+terminal-notifier -title "OWLET ^OvO^ UI" -subtitle "cljsbuild dev" -message "Build completed successfully" -activate "com.googlecode.iTerm2"
+```
+
+Save at `~/.owlet_repo_ready`
+
 #### Figwheel ClojureScript REPL in Cursive/IntelliJ IDEA
 
 To work on this project, all you really need is a terminal, a browser, and any
