@@ -8,7 +8,7 @@ script: "lein cljsbuild once min && lein less once"
 notifications:
   webhooks:
     urls:
-      - https://api.ghostinspector.com/v1/suites/owlet-frontend/execute/?apiKey=${CFD_GHOST_INSPECTOR}
+      - https://api.ghostinspector.com/v1/suites/${CFD_GHOST_INSPECTOR_SUITE_ID}/execute/?apiKey=${CFD_GHOST_INSPECTOR_API_KEY}
     on_success: always
     on_failure: never
 
@@ -23,7 +23,7 @@ deploy:
     skip_cleanup: true
     on:
       branch: master
-      condition: $TRAVIS_PULL_REQUEST = false  
+      condition: $TRAVIS_PULL_REQUEST = false
   - #Production Release
     provider: s3
     access_key_id: ${CFD_OWLET_AWS_ACCESS_KEY_ID}
