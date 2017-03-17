@@ -93,15 +93,21 @@ as you experiment extensively and learn at the REPL.
 > The rest of this "Running the application" section extends the above to show how
 > you can employ even more powerful development tools.
 
-#### Optional Terminal Notification on complete
+#### Optional Terminal Notification on `cljs` build complete
 
-Install `terminal-notifier` with `brew install`
+Install `terminal-notifier` with `brew install terminal-notifier`
+
+Example using OSX Growl notifier:
 
 ```
 terminal-notifier -title "OWLET ^OvO^ UI" -subtitle "cljsbuild dev" -message "Build completed successfully" -activate "com.googlecode.iTerm2"
 ```
 
 Save at `~/.owlet_repo_ready`
+
+**Note: don't forget to chmod `~/.owlet_repo_ready`**
+
+`sudo chmod a+x ~/.owlet_repo_ready`
 
 #### Figwheel ClojureScript REPL in Cursive/IntelliJ IDEA
 
