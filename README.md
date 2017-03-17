@@ -25,7 +25,7 @@ A [re-frame](https://github.com/Day8/re-frame) application for the Owlet Project
   Note how the version — in this case "112" — matches the file you
   downloaded.
 
-- You'll also need the command-line utilities [`git`](https://git-scm.com),
+  You'll also need the command-line utilities [`git`](https://git-scm.com),
   [`lein`](https://leiningen.org), and [`rlwrap`](https://github.com/hanslub42/rlwrap)
   installed on your system. On a Mac, the easiest way to get them is to first
   install [Homebrew](http://brew.sh), then in a terminal command line,
@@ -92,6 +92,23 @@ as you experiment extensively and learn at the REPL.
 
 > The rest of this "Running the application" section extends the above to show how
 > you can employ even more powerful development tools.
+
+#### Optional Terminal Notification on `cljs` build complete
+
+Example using OSX Growl notifier:
+
+- Install `terminal-notifier` with `brew install terminal-notifier`
+
+- Create this file `~/.owlet_repo_ready`
+
+- Add these contents to `~/.owlet_repo_ready`
+
+    ```
+    terminal-notifier -title "OWLET ^OvO^ UI" -subtitle "cljsbuild dev" -message "Build completed successfully" -activate "com.googlecode.iTerm2"
+    ```
+
+- Make it executable `sudo chmod a+x ~/.owlet_repo_ready` 
+
 
 #### Figwheel ClojureScript REPL in Cursive/IntelliJ IDEA
 
