@@ -5,6 +5,12 @@ sudo: true
 
 #Build
 script: "lein cljsbuild once min && lein less once"
+notifications:
+  webhooks:
+    urls:
+      - https://api.ghostinspector.com/v1/suites/owlet-frontend/execute/?apiKey=${CFD_GHOST_INSPECTOR}
+    on_success: always
+    on_failure: never
 
 #Deploy
 before_deploy: "cd resources/public"
