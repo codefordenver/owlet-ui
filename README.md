@@ -95,19 +95,20 @@ as you experiment extensively and learn at the REPL.
 
 #### Optional Terminal Notification on `cljs` build complete
 
-Install `terminal-notifier` with `brew install terminal-notifier`
-
 Example using OSX Growl notifier:
 
-```
-terminal-notifier -title "OWLET ^OvO^ UI" -subtitle "cljsbuild dev" -message "Build completed successfully" -activate "com.googlecode.iTerm2"
-```
+- Install `terminal-notifier` with `brew install terminal-notifier`
 
-Save at `~/.owlet_repo_ready`
+- Create this file `~/.owlet_repo_ready`
 
-**Note: don't forget to chmod `~/.owlet_repo_ready`**
+- Add these contents to `~/.owlet_repo_ready`
 
-`sudo chmod a+x ~/.owlet_repo_ready`
+    ```
+    terminal-notifier -title "OWLET ^OvO^ UI" -subtitle "cljsbuild dev" -message "Build completed successfully" -activate "com.googlecode.iTerm2"
+    ```
+
+- Make it executable `sudo chmod a+x ~/.owlet_repo_ready` 
+
 
 #### Figwheel ClojureScript REPL in Cursive/IntelliJ IDEA
 
