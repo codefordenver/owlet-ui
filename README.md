@@ -25,7 +25,6 @@ A [re-frame](https://github.com/Day8/re-frame) application for the Owlet Project
   Note how the version — in this case "112" — matches the file you
   downloaded.
 
-- You'll also need the command-line utilities [`git`](https://git-scm.com), [`terminal-notifier`](https://github.com/julienXX/terminal-notifier),
   [`lein`](https://leiningen.org), and [`rlwrap`](https://github.com/hanslub42/rlwrap)
   installed on your system. On a Mac, the easiest way to get them is to first
   install [Homebrew](http://brew.sh), then in a terminal command line,
