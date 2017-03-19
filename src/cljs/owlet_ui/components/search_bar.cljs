@@ -30,7 +30,7 @@
                 (take @suggestion-count
                       (for [n (distinct search-collections)
                             :when (try (re-find (re-pattern (str "(?i)" s)) n)
-                                       (catch js/Error e))]
+                                       (catch js/Object e))]
                         (result-formatter n)))))
         change-handler #(rf/dispatch [:filter-activities-by-search-term (:term %)])]
     [:div.search-bar-wrap {:on-blur #(toggle-suggestions)
