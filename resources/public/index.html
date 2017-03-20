@@ -27,6 +27,38 @@
 </div>
 <script src="js/vendor/disqus.js"></script>
 <script src="js/compiled/app.js"></script>
+<script type="text/javascript">
+function showSearch() {
+  var lastScroll = 0;
+  var thisScroll = 0;
+  var search = document.getElementsByClassName('form-control')[0];
+  search.style.height = "50px";
+  search.placeholder = "Search...";
+  lastScroll = thisScroll;
+}
+
+function searchScroll() {
+  var lastScroll = 0;
+  var thisScroll = 0;
+  var content = document.getElementsByClassName('content')[0];
+  var search = document.getElementsByClassName('form-control')[0];
+
+  content.onscroll = function() {
+    thisScroll = content.scrollTop;
+    if (thisScroll - lastScroll >= 50) {
+      search.style.height = "0px";
+      search.placeholder = "";
+      search.blur();
+      lastScroll = thisScroll;
+    }
+    if (thisScroll - lastScroll <= -50) {
+      search.style.height = "50px";
+      search.placeholder = "Search...";
+      lastScroll = thisScroll;
+    }
+  }
+}
+</script>
 <script>owlet_ui.core.init();</script>
 <script src="js/vendor/initPhotoSwipeFromDOM.js"></script>
 </body>

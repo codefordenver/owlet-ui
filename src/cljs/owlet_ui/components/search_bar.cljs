@@ -15,33 +15,39 @@
         (set! (.-hidden suggestions) (not hidden))))))
 
 (defn search-bar []
-  (let [branches (rf/subscribe [:activity-branches])
-        skills (rf/subscribe [:skills])
-        activity-titles (rf/subscribe [:activity-titles])
-        activity-platforms (rf/subscribe [:activity-platforms])
-        search-collections (concat @skills @branches @activity-titles @activity-platforms)
-        result-formatter #(-> {:term %})
-        suggestions-for-search
-        (fn [s]
-          (if (< 1 (count s))
-            (reset! suggestion-count 16)
-            (reset! suggestion-count 0))
-          (into []
-                (take @suggestion-count
-                      (for [n (distinct search-collections)
-                            :when (re-find (re-pattern (str "(?i)" s)) n)]
-                        (result-formatter n)))))
-        change-handler #(rf/dispatch [:filter-activities-by-search-term (:term %)])]
-    [:div.search-bar-wrap {:on-blur #(toggle-suggestions)
-                           :on-focus #(toggle-suggestions)}
-     [typeahead
-      :width "100%"
-      :on-change change-handler
-      :suggestion-to-string #(:term %)
-      :debounce-delay 100
-      :change-on-blur? true
-      :rigid? true
-      :data-source suggestions-for-search
-      :model search-model
-      :placeholder "Search..."
-      :render-suggestion #(:term %)]]))
+  (reagent/create-class
+    {:component-did-mount
+     #(js/searchScroll)
+     :reagent-render
+      (fn []
+        (let [branches (rf/subscribe [:activity-branches])
+              skills (rf/subscribe [:skills])
+              activity-titles (rf/subscribe [:activity-titles])
+              activity-platforms (rf/subscribe [:activity-platforms])
+              search-collections (concat @skills @branches @activity-titles @activity-platforms)
+              result-formatter #(-> {:term %})
+              suggestions-for-search
+              (fn [s]
+                (if (< 1 (count s))
+                  (reset! suggestion-count 16)
+                  (reset! suggestion-count 0))
+                (into []
+                      (take @suggestion-count
+                            (for [n (distinct search-collections)
+                                  :when (re-find (re-pattern (str "(?i)" s)) n)]
+                              (result-formatter n)))))
+              change-handler #(rf/dispatch [:filter-activities-by-search-term (:term %)])]
+          [:div.search-bar-wrap {:on-blur #(toggle-suggestions)
+                                 :on-focus #(toggle-suggestions)
+                                 :on-click #(js/showSearch)}
+           [typeahead
+            :width "100%"
+            :on-change change-handler
+            :suggestion-to-string #(:term %)
+            :debounce-delay 100
+            :change-on-blur? true
+            :rigid? true
+            :data-source suggestions-for-search
+            :model search-model
+            :placeholder "Search..."
+            :render-suggestion #(:term %)]]))}))
