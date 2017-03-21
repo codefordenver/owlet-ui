@@ -8,14 +8,15 @@
 
 (defonce suggestion-count (reagent/atom 16))
 
+(defonce this-scroll (atom 0))
+
+(defonce last-scroll (atom 0))
+
 (defn toggle-suggestions []
   (if-let [suggestions (aget (js->clj (js/document.getElementsByClassName "rc-typeahead-suggestions-container")) 0)]
     (let [hidden (.-hidden suggestions)]
       (when-not (nil? suggestions)
         (set! (.-hidden suggestions) (not hidden))))))
-
-(def this-scroll (atom 0))
-(def last-scroll (atom 0))
 
 (defn show-search []
   (let [search (aget (js->clj (js/document.getElementsByClassName "form-control")) 0)]
@@ -43,8 +44,7 @@
     {:component-did-mount
       (fn []
         (let [content (aget (js->clj (js/document.getElementsByClassName "content")) 0)]
-          (set! (.-onscroll content) (fn []
-                                      (check-scroll)))))
+          (js/document.addEventListener "scroll" content #(check-scroll))))
      :reagent-render
       (fn []
         (let [branches (rf/subscribe [:activity-branches])
