@@ -2,8 +2,7 @@
   (:require [owlet-ui.helpers :refer [clean-search-term]]
             [re-com.core :refer [typeahead]]
             [re-frame.core :as rf]
-            [reagent.core :as reagent]
-            [goog.events :as events]))
+            [reagent.core :as reagent]))
 
 (defonce search-model (reagent/atom {}))
 
