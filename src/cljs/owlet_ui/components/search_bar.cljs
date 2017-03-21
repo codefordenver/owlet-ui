@@ -31,20 +31,19 @@
     (.blur search)
     (reset! last-scroll @this-scroll)))
 
-(defn check-scroll []
-  (let [content (aget (js->clj (js/document.getElementsByClassName "content")) 0)]
-    (reset! this-scroll (-> content .-scrollTop))
-    (when (>= (- @this-scroll @last-scroll) 50)
-      (hide-search))
-    (when (<= (- @this-scroll @last-scroll) -50)
-      (show-search))))
+(defn check-scroll [contentNodeRef]
+  (reset! this-scroll (-> contentNodeRef .-scrollTop))
+  (when (>= (- @this-scroll @last-scroll) 50)
+    (hide-search))
+  (when (<= (- @this-scroll @last-scroll) -50)
+    (show-search)))
 
 (defn search-bar []
   (reagent/create-class
     {:component-did-mount
       (fn []
-        (let [content (aget (js->clj (js/document.getElementsByClassName "content")) 0)]
-          (js/document.addEventListener "scroll" content #(check-scroll))))
+        (let [contentNodeRef (aget (js->clj (js/document.getElementsByClassName "content")) 0)]
+          (js/document.addEventListener "scroll" contentNodeRef #(check-scroll contentNodeRef))))
      :reagent-render
       (fn []
         (let [branches (rf/subscribe [:activity-branches])
