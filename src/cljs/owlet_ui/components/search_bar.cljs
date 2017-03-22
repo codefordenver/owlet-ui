@@ -8,14 +8,15 @@
 
 (defonce suggestion-count (reagent/atom 16))
 
+(defonce this-scroll (atom 0))
+
+(defonce last-scroll (atom 0))
+
 (defn toggle-suggestions []
   (if-let [suggestions (aget (js->clj (js/document.getElementsByClassName "rc-typeahead-suggestions-container")) 0)]
     (let [hidden (.-hidden suggestions)]
       (when-not (nil? suggestions)
         (set! (.-hidden suggestions) (not hidden))))))
-
-(def this-scroll (atom 0))
-(def last-scroll (atom 0))
 
 (defn show-search []
   (let [search (aget (js->clj (js/document.getElementsByClassName "form-control")) 0)]
@@ -30,21 +31,19 @@
     (.blur search)
     (reset! last-scroll @this-scroll)))
 
-(defn check-scroll []
-  (let [content (aget (js->clj (js/document.getElementsByClassName "content")) 0)]
-    (reset! this-scroll (-> content .-scrollTop))
-    (when (>= (- @this-scroll @last-scroll) 50)
-      (hide-search))
-    (when (<= (- @this-scroll @last-scroll) -50)
-      (show-search))))
+(defn check-scroll [contentNodeRef]
+  (reset! this-scroll (-> contentNodeRef .-scrollTop))
+  (when (>= (- @this-scroll @last-scroll) 50)
+    (hide-search))
+  (when (<= (- @this-scroll @last-scroll) -50)
+    (show-search)))
 
 (defn search-bar []
   (reagent/create-class
     {:component-did-mount
       (fn []
-        (let [content (aget (js->clj (js/document.getElementsByClassName "content")) 0)]
-          (set! (.-onscroll content) (fn []
-                                      (check-scroll)))))
+        (let [contentNodeRef (aget (js->clj (js/document.getElementsByClassName "content")) 0)]
+          (js/document.addEventListener "scroll" contentNodeRef #(check-scroll contentNodeRef))))
      :reagent-render
       (fn []
         (let [branches (rf/subscribe [:activity-branches])
