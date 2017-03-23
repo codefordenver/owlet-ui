@@ -2,15 +2,22 @@
   (:require [owlet-ui.helpers :refer [clean-search-term]]
             [re-com.core :refer [typeahead]]
             [re-frame.core :as rf]
-            [reagent.core :as reagent]))
+            [reagent.core :as reagent]
+            [owlet-ui.helpers :refer [class-names]]))
 
 (defonce search-model (reagent/atom {}))
 
 (defonce suggestion-count (reagent/atom 16))
 
-(defonce this-scroll (atom 0))
+(defonce search-classes
+  (reagent/atom #{"search"}))
 
-(defonce last-scroll (atom 0))
+(def scroll-delta (atom `(0 0)))
+
+(def push-scroll (comp (partial drop-last 1) conj))
+
+(defn change-scroll! [n]
+  (swap! scroll-delta push-scroll n))
 
 (defn toggle-suggestions []
   (if-let [suggestions (aget (js->clj (js/document.getElementsByClassName "rc-typeahead-suggestions-container")) 0)]
@@ -18,32 +25,22 @@
       (when-not (nil? suggestions)
         (set! (.-hidden suggestions) (not hidden))))))
 
-(defn show-search []
-  (let [search (aget (js->clj (js/document.getElementsByClassName "form-control")) 0)]
-    (set! (-> search .-style .-height) "50px")
-    (set! (.-placeholder search) "Search...")
-    (reset! last-scroll @this-scroll)))
-
-(defn hide-search []
-  (let [search (aget (js->clj (js/document.getElementsByClassName "form-control")) 0)]
-    (set! (-> search .-style .-height) "0px")
-    (set! (.-placeholder search) "")
-    (.blur search)
-    (reset! last-scroll @this-scroll)))
-
 (defn check-scroll [contentNodeRef]
-  (reset! this-scroll (-> contentNodeRef .-scrollTop))
-  (when (>= (- @this-scroll @last-scroll) 50)
-    (hide-search))
-  (when (<= (- @this-scroll @last-scroll) -50)
-    (show-search)))
+  (change-scroll! (.-scrollTop contentNodeRef))
+  (let [delta (apply - @scroll-delta)
+        search (aget (js->clj (js/document.getElementsByClassName "form-control")) 0)]
+    (when (<= 0 delta)
+      (swap! search-classes conj "hidden-search")
+      (.blur search))
+   (when (>= 0 delta)
+      (swap! search-classes disj "hidden-search"))))
 
 (defn search-bar []
   (reagent/create-class
     {:component-did-mount
       (fn []
         (let [contentNodeRef (aget (js->clj (js/document.getElementsByClassName "content")) 0)]
-          (js/document.addEventListener "scroll" contentNodeRef #(check-scroll contentNodeRef))))
+          (set! (.-onscroll contentNodeRef) #(check-scroll contentNodeRef))))
      :reagent-render
       (fn []
         (let [branches (rf/subscribe [:activity-branches])
@@ -65,8 +62,9 @@
               change-handler #(rf/dispatch [:filter-activities-by-search-term (:term %)])]
           [:div.search-bar-wrap {:on-blur #(toggle-suggestions)
                                  :on-focus #(toggle-suggestions)
-                                 :on-click #(show-search)}
+                                 :on-click #(swap! search-classes disj "hidden-search")}
            [typeahead
+            :class (class-names @search-classes)
             :width "100%"
             :on-change change-handler
             :suggestion-to-string #(:term %)
