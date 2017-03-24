@@ -14,10 +14,7 @@
 
 (def scroll-delta (atom `(0 0)))
 
-(def push-scroll (comp (partial drop-last 1) conj))
-
-(defn change-scroll! [n]
-  (swap! scroll-delta push-scroll n))
+(def swap-scroll (comp (partial drop-last) conj))
 
 (defn toggle-suggestions []
   (if-let [suggestions (aget (js->clj (js/document.getElementsByClassName "rc-typeahead-suggestions-container")) 0)]
@@ -25,22 +22,34 @@
       (when-not (nil? suggestions)
         (set! (.-hidden suggestions) (not hidden))))))
 
+(defn push-scroll [collection n]
+  (conj (drop 1 collection) n))
+
+(defn update-scroll! [n]
+  (swap! scroll-delta push-scroll n))
+
+(defn change-scroll! [n]
+  (swap! scroll-delta swap-scroll n))
+
 (defn check-scroll [contentNodeRef]
-  (change-scroll! (.-scrollTop contentNodeRef))
+  (update-scroll! (.-scrollTop contentNodeRef))
   (let [delta (apply - @scroll-delta)
         search (aget (js->clj (js/document.getElementsByClassName "form-control")) 0)]
-    (when (<= 0 delta)
-      (swap! search-classes conj "hidden-search")
-      (.blur search))
-   (when (>= 0 delta)
-      (swap! search-classes disj "hidden-search"))))
+    (when (>= delta 50)
+      (do
+        (swap! search-classes conj "hidden-search")
+        (.blur search)
+        (change-scroll! (.-scrollTop contentNodeRef))))
+    (when (<= delta -50)
+        (swap! search-classes disj "hidden-search")
+        (change-scroll! (.-scrollTop contentNodeRef)))))
 
 (defn search-bar []
   (reagent/create-class
     {:component-did-mount
       (fn []
         (let [contentNodeRef (aget (js->clj (js/document.getElementsByClassName "content")) 0)]
-          (set! (.-onscroll contentNodeRef) #(check-scroll contentNodeRef))))
+          (.addEventListener contentNodeRef "scroll" #(check-scroll contentNodeRef))))
      :reagent-render
       (fn []
         (let [branches (rf/subscribe [:activity-branches])
