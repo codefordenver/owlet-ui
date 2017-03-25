@@ -10,7 +10,7 @@ branches:
 script: "lein cljsbuild once min && lein less once"
 
 #On build success
-after_success: "curl -X GET 'https://api.ghostinspector.com/v1/suites/${CFD_GHOST_INSPECTOR_SUITE_ID}/execute/?apiKey=${CFD_GHOST_INSPECTOR_API_KEY}'"
+after_success: "curl -X GET '"https://api.ghostinspector.com/v1/suites/$CFD_GHOST_INSPECTOR_SUITE_ID}/execute/?apiKey=${CFD_GHOST_INSPECTOR_API_KEY"'"
 
 #Deploy
 before_deploy: "cd resources/public"
