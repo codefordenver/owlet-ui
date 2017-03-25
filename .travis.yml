@@ -2,15 +2,21 @@
 language: clojure
 lein: 2.5.3
 sudo: true
+branches:
+  only:
+    - master
 
 #Build
 script: "lein cljsbuild once min && lein less once"
-notifications:
-  webhooks:
-    urls:
-      - https://api.ghostinspector.com/v1/suites/${CFD_GHOST_INSPECTOR_SUITE_ID}/execute/?apiKey=${CFD_GHOST_INSPECTOR_API_KEY}
-    on_success: always
-    on_failure: never
+
+#On build success
+after_success:
+  notifications:
+    webhooks:
+      urls:
+        - https://api.ghostinspector.com/v1/suites/${CFD_GHOST_INSPECTOR_SUITE_ID}/execute/?apiKey=${CFD_GHOST_INSPECTOR_API_KEY}
+      on_success: always
+      on_failure: never
 
 #Deploy
 before_deploy: "cd resources/public"
@@ -36,4 +42,3 @@ deploy:
 
 #Test
 #after_deploy:
-
