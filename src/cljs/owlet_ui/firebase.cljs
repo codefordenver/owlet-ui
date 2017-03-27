@@ -251,21 +251,31 @@
   as a way to set up a sort of VIRTUAL component to receive data from a
   Firebase database ref and dispatch to a handler we specify.
 
+  The first argument must be one of the strings \"value\", \"child_added\",
+  \"child_changed\", \"child_removed\", or \"child_moved\", as in
+  firebase.database.Reference's on() method. Use \"value\", for instance, if
+  you want to capture changes to a single node in the database, or
+  \"child_changed\" to watch for changes to individual children of the node. See
+  https://firebase.google.com/docs/reference/js/firebase.database.Reference#on
+
   Returns the callback function passed to the ref's .on method. It can be used
   to turn off observation as follows:
   (.off \"value\" db-ref the-returned-function). See
   https://firebase.google.com/docs/reference/js/firebase.database.Reference#off
   "
-  [db-ref event-id & args]
+  [event-type db-ref event-id & args]
   (.on db-ref
-       "value"
+       event-type
+
        (fn [snapshot]
          (let [snap-as-clj (-> snapshot .val (js->clj :keywordize-keys true))]
            (rf/dispatch (apply vector event-id snap-as-clj args))))
-       #(.log js/console
-              (str "owlet-ui.firebase/on-change"
-                   "calling firebase.database.Reference's .on():\n"
-                   (.toString %)))))
+
+       (fn [auth-error]
+         (js/console.log
+           (str "owlet-ui.firebase/on-change "
+                "calling firebase.database.Reference's .on():\n"
+                auth-error)))))
 
 
 (defn note-presence-changes

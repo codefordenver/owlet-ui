@@ -119,7 +119,7 @@
       ; any change there will fire our :test-notify event with the new
       ; notification data.
       (go-loop [ch (chan)]
-        (fb/on-change (.child @test-ref "notification") :test-notify ch)
+        (fb/on-change "value" (.child @test-ref "notification") :test-notify ch)
         (reset! test-notify-chan ch)    ; change-on-test below uses this chan.
 
         ; Wait for the :test-notify handler to run. This confirms that we've

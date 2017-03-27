@@ -10,7 +10,7 @@
   []
   (let [upload-error (r/atom nil)
         progress-pct (r/atom 0)
-        me           (rf/subscribe [:my-identity])]
+        me           (rf/subscribe [:my-id])]
     (fn []
       (if @me        ; Uploading a file is only permitted with a :firebase-id.
         [:form

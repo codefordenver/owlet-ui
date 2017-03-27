@@ -45,17 +45,15 @@
     (:active-view db)))
 
 
-(reg-getter :my-identity [:my-identity])
+(reg-getter :my-id [:my-identity :firebase-id])
 
 (reg-getter :showing-bg-img-upload [:showing-bg-img-upload])
 
 (rf/reg-sub
   :my-background-image-url
   (fn [db]
-    (let [me (rf/subscribe [:my-identity])]
-      (or
-        (get-in db [:users (:firebase-id @me) :background-image-url])
-        config/default-header-bg-image))))
+    (or (get-in db [:my-identity :private :background-image-url])
+        config/default-header-bg-image)))
 
 (rf/reg-sub
   :library-activities

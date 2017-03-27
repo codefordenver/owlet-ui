@@ -123,7 +123,7 @@
 
 (rf/reg-event-fx
   :update-user-background!
-  (fn [{{{my-db-ref :firebase-db-ref} :my-identity} :db} [_ url]]
+  (fn [{{{my-db-ref :private-ref} :my-identity} :db} [_ url]]
     {:firebase-reset-into-ref [my-db-ref {:background-image-url url}]
      :dispatch                [:show-bg-img-upload false]}))
 
@@ -336,32 +336,41 @@
       ; Compare user-id with FORMER value at :my-user-id in app-db.
       (if (= new-id-kw (:firebase-id old-identity))
         {}
-        {:change-user [new-id-kw old-identity]}))))
+        {:change-user [new-id-kw :default old-identity]}))))
+
+
+(reg-setter :private [:my-identity :private])
 
 
 (rf/reg-fx
   :change-user
-  (fn [[new-id-kw {:keys [firebase-db-ref presence-off-cb]}]]
-    (if new-id-kw
+  (fn [[new-id class-id {:keys [private-ref presence-ref presence-off-cb]}]]
+    (if new-id
 
       ; User just logged in, so track presence and save the user's firebase id,
       ; the location (ref) in the firebase database where his/her persisted
       ; data is stored, and the callback we'll need to turn off presence when
       ; logging out.
-      (let [new-ref (fb/path-str->db-ref (str "users/" (name new-id-kw)))]
+      (let [private-ref  (fb/path-str->db-ref (str "users/" (name new-id)))
+            class-ref    (fb/path-str->db-ref (str "classes/" (name class-id)))
+            presence-ref (fb/path-str->db-ref class-ref (name new-id))]
+        (fb/on-change "value" private-ref :private)
+        (fb/note-presence-changes presence-ref)
         (rf/dispatch
-          [:my-identity {:firebase-id     new-id-kw
-                         :firebase-db-ref new-ref
-                         :presence-off-cb (fb/note-presence-changes new-ref)}]))
+          [:my-identity {:firebase-id      new-id
+                         :current-class-id class-id
+                         :private-ref      private-ref
+                         :presence-ref     presence-ref}]))
 
       ; Else just logged out. Turn off presence tracking and set :online false.
       ; Also flag that we're logged out with nil for :my-user-id.
-      (do (.off firebase-db-ref "value" presence-off-cb)
+      (do (.off private-ref)
+          (.off presence-ref)
           ; TODO: Does .off really work? Try logging out, :online is false -- OK.
           ;       Disconnect from network, then reconnect. :online becomes true. How?
           ;       We're still logged out, so shouldn't know which user's :online to set.
           (fb/reset-into-ref
-            firebase-db-ref
+            presence-ref
             {:online             false
              :online-change-time fb/timestamp-placeholder})
           (rf/dispatch [:my-identity nil])))))

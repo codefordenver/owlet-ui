@@ -7,7 +7,7 @@
 
 (defn header-component []
   (let [src (rf/subscribe [:my-background-image-url])
-        is-user-logged-in? (rf/subscribe [:my-identity])]
+        is-user-logged-in? (rf/subscribe [:my-id])]
     (fn []
       [:div#header {:style {:position "fixed"
                             :width "100%"
