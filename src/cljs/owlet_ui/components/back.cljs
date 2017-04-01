@@ -2,6 +2,5 @@
   (:require [re-frame.core :as rf]))
 
 (defn back []
-  [:a {:href "#/branches"
-       :on-click #(rf/dispatch [:set-active-view :branches-view])}
+  [:a {:href "#/branches"}
     [:img.back {:src "/img/back-filled.png"}]])
