@@ -20,7 +20,7 @@
        [:div.platform-wrap
         [:span "Platform: "]
         [:div.platform.btn
-          [set-as-showdown platform ]]]
+          [set-as-showdown platform]]]
        [:div.platform-wrap
         [:div.unplugged.btn
          "UNPLUGGED"]])

@@ -8,4 +8,4 @@
         [:mark.white.box-shadow "Error 404 - Not Found"]]
    [:h3 [:mark.white "Hey there, this activity has moved to another URL."]]
    [:h3 [:mark.white "Chances are you'll find it inside a branch on the"]]
-   [:h3 [:mark.white [:a {:href "/branches"} "Branches page :)"]]]])
+   [:h3 [:mark.white [:a {:href "#/branches"} "Branches page :)"]]]])

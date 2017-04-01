@@ -29,14 +29,6 @@
     (assoc-in cofx [:db :app :loading?] val)))
 
 
-(rf/reg-cofx
-  :close-sidebar!
-  (fn [cofx]
-    (let [db (:db cofx)]
-      (when-not (= (db :active-view) :welcome-view)
-        (assoc-in cofx [:db :app :open-sidebar] false)))))
-
-
 (rf/reg-event-db
   :set-active-document-title!
   (fn [db [_ val]]
@@ -109,13 +101,14 @@
 
 (rf/reg-event-db
   :set-active-view
-  [(rf/inject-cofx :close-sidebar!)]
   (fn [db [_ active-view]]
     (let [search (aget (js->clj (js/document.getElementsByClassName "form-control")) 0)]
       (when-not (nil? search)
         (set! (.-value search) "")
         (.blur search))
-      (assoc db :active-view active-view))))
+      (-> db
+        (assoc :active-view active-view)
+        (assoc-in [:app :open-sidebar] false)))))
 
 
 (reg-setter :show-bg-img-upload [:showing-bg-img-upload])
