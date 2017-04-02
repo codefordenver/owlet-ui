@@ -39,9 +39,6 @@
                           :auth0-error)
   (fb/on-auth-change fb/firebase-auth-object :firebase-auth-change)
 
-  (let [users-db-path (fb/path-str->db-ref "users")]
-    (fb/on-change "value" users-db-path :firebase-users-change))
-
   (let [active-view (rf/subscribe [:active-view])
         loading? (rf/subscribe [:set-loading-state?])
         src (rf/subscribe [:my-background-image-url])

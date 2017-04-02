@@ -317,6 +317,17 @@
     {}))
 
 
+(defn- id-details
+  [fb-id class-id]
+  (let [private-ref  (fb/path-str->db-ref (str "users/" (name fb-id)))
+        class-ref    (fb/path-str->db-ref (str "classes/" (name class-id)))
+        presence-ref (fb/path-str->db-ref class-ref (name fb-id))]
+    {:firebase-id      fb-id
+     :current-class-id class-id
+     :private-ref      private-ref
+     :presence-ref     presence-ref}))
+
+
 (rf/reg-event-fx
   :firebase-auth-change
   (fn [cofx [_ fb-user]]
@@ -324,49 +335,42 @@
     ; a string in its uid property. Otherwise, fb-user is nil. Thus we will
     ; know whether we're logged-in simply from (:my-user-id db). Also, if
     ; non-nil user-id changed (from nil), then turn on the presence watcher.
-    (let [new-id-kw    (some-> fb-user .-uid keyword)
+    (let [new-fb-id    (some-> fb-user .-uid keyword)
           old-identity (-> cofx :db :my-identity)]
-      ; Compare user-id with FORMER value at :my-user-id in app-db.
-      (if (= new-id-kw (:firebase-id old-identity))
-        {}
-        {:change-user [new-id-kw :default old-identity]}))))
+      ; Compare my new id with FORMER :firebase-id.
+      (if (= new-fb-id (:firebase-id old-identity))
+        {}                       ; No change in id. Do nothing.
+        (if new-fb-id            ; Id changed. I logged in or out.
 
+          ; I just now logged in.
+          (let [new-identity (id-details new-fb-id :default)]
+            {:db (assoc-in (:db cofx) [:my-identity] new-identity)
+             :start-authorized-listening new-identity})
 
-(reg-setter :private [:my-identity :private])
+          ; I just now logged out.
+          {:db (assoc (:db cofx) :my-identity nil)
+           :stop-authorized-listening old-identity})))))
 
 
 (rf/reg-fx
-  :change-user
-  (fn [[new-id class-id {:keys [private-ref presence-ref presence-off-cb]}]]
-    (if new-id
+  :start-authorized-listening
+  (fn [{:keys [private-ref presence-ref]}]
+    (fb/on-change "value" private-ref :private)
+    (fb/note-presence-changes presence-ref)))
 
-      ; User just logged in, so track presence and save the user's firebase id,
-      ; the location (ref) in the firebase database where his/her persisted
-      ; data is stored, and the callback we'll need to turn off presence when
-      ; logging out.
-      (let [private-ref  (fb/path-str->db-ref (str "users/" (name new-id)))
-            class-ref    (fb/path-str->db-ref (str "classes/" (name class-id)))
-            presence-ref (fb/path-str->db-ref class-ref (name new-id))]
-        (fb/on-change "value" private-ref :private)
-        (fb/note-presence-changes presence-ref)
-        (rf/dispatch
-          [:my-identity {:firebase-id      new-id
-                         :current-class-id class-id
-                         :private-ref      private-ref
-                         :presence-ref     presence-ref}]))
 
-      ; Else just logged out. Turn off presence tracking and set :online false.
-      ; Also flag that we're logged out with nil for :my-user-id.
-      (do (.off private-ref)
-          (.off presence-ref)
-          ; TODO: Does .off really work? Try logging out, :online is false -- OK.
-          ;       Disconnect from network, then reconnect. :online becomes true. How?
-          ;       We're still logged out, so shouldn't know which user's :online to set.
-          (fb/reset-into-ref
-            presence-ref
-            {:online             false
-             :online-change-time fb/timestamp-placeholder})
-          (rf/dispatch [:my-identity nil])))))
+(rf/reg-fx
+  :stop-authorized-listening
+  (fn [{:keys [private-ref presence-ref]}]
+    (.off private-ref)
+    (.off presence-ref)
+    ; TODO: Does .off really work? Try logging out, :online is false -- OK.
+    ;       Disconnect from network, then reconnect. :online becomes true. How?
+    ;       We're still logged out, so shouldn't know which user's :online to set.
+    (fb/reset-into-ref
+      presence-ref
+      {:online             false
+       :online-change-time fb/timestamp-placeholder})))
 
 
 (rf/reg-event-fx
@@ -376,10 +380,7 @@
      :firebase-sign-out fb/firebase-auth-object}))
 
 
-(reg-setter :my-identity [:my-identity])
-
-
-(reg-setter :firebase-users-change [:users])
+(reg-setter :private [:my-identity :private])
 
 
 (reg-setter :set-sidebar-state [:app :open-sidebar])
