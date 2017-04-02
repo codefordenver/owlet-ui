@@ -344,7 +344,7 @@
 
           ; I just now logged in.
           (let [new-identity (id-details new-fb-id :default)]
-            {:db (assoc-in (:db cofx) [:my-identity] new-identity)
+            {:db (assoc (:db cofx) :my-identity new-identity)
              :start-authorized-listening new-identity})
 
           ; I just now logged out.
