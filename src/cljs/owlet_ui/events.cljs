@@ -84,15 +84,6 @@
        (assoc-in db db-path (apply f new-data args))))))
 
 
-(defn- note-pending
-  "Records a \"pending\" message (e.g. a keyword) in the :my-identity map,
-  indicating to the GUI that the indicated process has started but not yet
-  completed.
-  "
-  [cofx msg]
-  (assoc-in (:db cofx) [:my-identity :pending] msg))
-
-
 (rf/reg-event-db
   :initialize-db
   (fn [_ _]
@@ -295,6 +286,15 @@
                     (assoc db :activities-by-branch-in-view "none")))))))))))
 
 
+(defn- note-pending
+  "Records a \"pending\" message (e.g. a keyword) in the :my-identity map,
+  indicating to the GUI that the indicated process has started but not yet
+  completed.
+  "
+  [cofx msg]
+  (assoc-in (:db cofx) [:my-identity :pending] msg))
+
+
 (rf/reg-event-fx
   :auth0-authenticated
   (fn [cofx [_ {:keys [auth0-token delegation-token]}]]
@@ -331,12 +331,16 @@
 (rf/reg-event-fx
   :firebase-auth-change
   (fn [cofx [_ fb-user]]
-    ; If user is logged into firebase, fb-user is a JS object containing
-    ; a string in its uid property. Otherwise, fb-user is nil. Thus we will
-    ; know whether we're logged-in simply from (:my-user-id db). Also, if
-    ; non-nil user-id changed (from nil), then turn on the presence watcher.
+    ; If I'm logged into firebase, fb-user is a JS object containing a string
+    ; in its uid property. Otherwise, fb-user is nil. We now record this ID in
+    ; subtree :my-identity. Thus, we know I am logged-in simply if and only if
+    ; (get-in db [:my-identity :firebase-id]) is not nil. If this value changed
+    ; then we also need to turn on/off listening for events about me or of
+    ; interest to me, which are dispatched by owlet-ui.firebase/on-change.
+
     (let [new-fb-id    (some-> fb-user .-uid keyword)
-          old-identity (-> cofx :db :my-identity)]
+          old-identity (get-in cofx [:db :my-identity])]
+
       ; Compare my new id with FORMER :firebase-id.
       (if (= new-fb-id (:firebase-id old-identity))
         {}                       ; No change in id. Do nothing.
@@ -345,6 +349,14 @@
           ; I just now logged in.
           (let [new-identity (id-details new-fb-id :default)]
             {:db (assoc (:db cofx) :my-identity new-identity)
+             ; Note that this :my-identity subtree REPLACES the existing one,
+             ; if any. So it is important that this takes place BEFORE any
+             ; events that modify the subtree, such as produced by the :private
+             ; listener registration in :start-authorized-listening, below.
+             ; This is ensured here because both the change to app-db and the
+             ; registration are effects scheduled for the next tick. So any
+             ; event dispatched as the result of the latter cannot preceed the
+             ; former.
              :start-authorized-listening new-identity})
 
           ; I just now logged out.
