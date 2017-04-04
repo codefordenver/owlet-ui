@@ -23,18 +23,18 @@
               config/owlet-activities-2-space-id))
 
 
-(rf/reg-cofx
+(rf/reg-event-db
   :set-loading!
-  (fn [cofx val]
-    (assoc-in cofx [:db :app :loading?] val)))
+  (fn [db [_ val]]
+    (assoc-in db [:app :loading?] val)))
 
 
-(rf/reg-cofx
+(rf/reg-event-db
   :close-sidebar!
-  (fn [cofx]
-    (let [db (:db cofx)]
-      (when-not (= (db :active-view) :welcome-view)
-        (assoc-in cofx [:db :app :open-sidebar] false)))))
+  (fn [db _]
+    (if-not (= (db :active-view) :welcome-view)
+      (assoc-in db [:app :open-sidebar] false)
+      db)))
 
 
 (rf/reg-event-db
@@ -50,9 +50,9 @@
                   :branch-activities-view (-> db
                                               :activities-by-branch-in-view
                                               :display-name)
-                  :search-results-view (-> db
-                                           :activities-by-branch-in-view
-                                           :display-name)}
+                  :search-results-view    (-> db
+                                              :activities-by-branch-in-view
+                                              :display-name)}
           default-title (:welcome-view titles)
           document-title (or (titles active-view) (clj-str/capitalize (or val "")))
           title-template (str document-title " | " config/project-name)
@@ -107,15 +107,16 @@
     db/default-db))
 
 
-(rf/reg-event-db
+(rf/reg-event-fx
   :set-active-view
-  [(rf/inject-cofx :close-sidebar!)]
-  (fn [db [_ active-view]]
-    (let [search (aget (js->clj (js/document.getElementsByClassName "form-control")) 0)]
-      (when-not (nil? search)
-        (set! (.-value search) "")
-        (.blur search))
-      (assoc db :active-view active-view))))
+  (fn [{:keys [db]} [_ active-view]]
+    {:db
+     (let [search (aget (js->clj (js/document.getElementsByClassName "form-control")) 0)]
+       (when-not (nil? search)
+         (set! (.-value search) "")
+         (.blur search))
+       (assoc db :active-view active-view))
+     :dispatch [:close-sidebar!]}))
 
 
 (reg-setter :show-bg-img-upload [:showing-bg-img-upload])
@@ -185,60 +186,61 @@
           :error-handler   #(prn %)})
     db))
 
-(rf/reg-event-db
+(rf/reg-event-fx
   :get-activity-metadata-successful
-  [(rf/inject-cofx :set-loading! false)]
-  (fn [db [_ res]]
-    (let [branches (:branches res)
-          skills (:skills res)
-          all-activities (:activities db)
-          platforms (remove-nil (map #(get-in % [:fields :platform ]) all-activities))
-          platforms-nomalized (->> platforms (map parse-platform))
-          activity-titles (remove-nil (map #(get-in % [:fields :title]) all-activities))
-          branches-template (->> (mapv (fn [branch]
-                                         (hash-map (keywordize-name branch)
-                                                   {:activities   []
-                                                    :display-name branch
-                                                    :count        0
-                                                    :preview-urls []})) branches)
-                                 (into {}))
+  (fn [{:keys [db]} [_ res]]
+    {:dispatch [:set-loading! false] ;; side-effecting
+     :db
+     (let [branches (:branches res)
+           skills (:skills res)
+           all-activities (:activities db)
+           platforms (remove-nil (map #(get-in % [:fields :platform]) all-activities))
+           platforms-nomalized (->> platforms (map parse-platform))
+           activity-titles (remove-nil (map #(get-in % [:fields :title]) all-activities))
+           branches-template (->> (mapv (fn [branch]
+                                          (hash-map (keywordize-name branch)
+                                                    {:activities   []
+                                                     :display-name branch
+                                                     :count        0
+                                                     :preview-urls []})) branches)
+                                  (into {}))
 
-          activities-by-branch (->> (mapv (fn [branch]
-                                            (let [[branch-key branch-vals] branch]
-                                              (let [display-name (:display-name branch-vals)
-                                                    matches (filterv (fn [activity]
-                                                                       (some #(= display-name %)
-                                                                             (get-in activity [:fields :branch])))
-                                                                     all-activities)
-                                                    preview-urls (mapv #(get-in % [:fields :preview :sys :url]) matches)]
-                                                (if (seq matches)
-                                                  (hash-map branch-key
-                                                            {:activities   matches
-                                                             :display-name display-name
-                                                             :count        (count matches)
-                                                             :preview-urls preview-urls})
-                                                  branch))))
-                                          branches-template)
-                                    (into {}))]
-      (when-let [route-params (get-in db [:app :route-params])]
-        (let [{:keys [activity branch search]} route-params]
-          (when activity
-            (rf/dispatch [:set-activity-in-view activity all-activities]))
-          (when branch
-            (let [activities-by-branch-in-view ((keyword branch) activities-by-branch)]
-              (rf/dispatch [:set-activities-by-branch-in-view branch activities-by-branch-in-view])
-              (assoc db :activity-branches branches
-                        :skills skills
-                        :activities-by-branch activities-by-branch
-                        :activity-titles activity-titles
-                        :activity-platforms platforms-nomalized)))
-          (when search
-            (rf/dispatch [:filter-activities-by-search-term search]))))
-      (assoc db :activity-branches branches
-                :skills skills
-                :activities-by-branch activities-by-branch
-                :activity-titles activity-titles
-                :activity-platforms platforms-nomalized))))
+           activities-by-branch (->> (mapv (fn [branch]
+                                             (let [[branch-key branch-vals] branch]
+                                               (let [display-name (:display-name branch-vals)
+                                                     matches (filterv (fn [activity]
+                                                                        (some #(= display-name %)
+                                                                              (get-in activity [:fields :branch])))
+                                                                      all-activities)
+                                                     preview-urls (mapv #(get-in % [:fields :preview :sys :url]) matches)]
+                                                 (if (seq matches)
+                                                   (hash-map branch-key
+                                                             {:activities   matches
+                                                              :display-name display-name
+                                                              :count        (count matches)
+                                                              :preview-urls preview-urls})
+                                                   branch))))
+                                           branches-template)
+                                     (into {}))]
+       (when-let [route-params (get-in db [:app :route-params])]
+         (let [{:keys [activity branch search]} route-params]
+           (when activity
+             (rf/dispatch [:set-activity-in-view activity all-activities]))
+           (when branch
+             (let [activities-by-branch-in-view ((keyword branch) activities-by-branch)]
+               (rf/dispatch [:set-activities-by-branch-in-view branch activities-by-branch-in-view])
+               (assoc db :activity-branches branches
+                         :skills skills
+                         :activities-by-branch activities-by-branch
+                         :activity-titles activity-titles
+                         :activity-platforms platforms-nomalized)))
+           (when search
+             (rf/dispatch [:filter-activities-by-search-term search]))))
+       (assoc db :activity-branches branches
+                 :skills skills
+                 :activities-by-branch activities-by-branch
+                 :activity-titles activity-titles
+                 :activity-platforms platforms-nomalized))}))
 
 
 (rf/reg-event-db
