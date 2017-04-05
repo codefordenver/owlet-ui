@@ -1,10 +1,9 @@
 (defproject owlet-ui "0.1.0-SNAPSHOT"
   :dependencies [[org.clojure/clojure "1.9.0-alpha14"]
                  [org.clojure/clojurescript "1.9.293"]
-                 [reagent "0.6.0"]
                  [binaryage/devtools "RELEASE"]
                  [binaryage/dirac "RELEASE"]
-                 [re-frame "0.9.1"]
+                 [re-frame "0.9.2"]
                  [secretary "1.2.3"]
                  [compojure "1.5.0"]
                  [yogthos/config "0.8"]
@@ -15,14 +14,14 @@
                  [cljsjs/auth0-lock "10.4.0-0"]
                  [reagent-utils "0.1.7"]
                  [cljsjs/bootstrap "3.3.6-1"]
-                 [cljsjs/firebase "3.2.1-0"]
+                 [cljsjs/firebase "3.5.3-1"]
                  [cljsjs/showdown "1.4.2-0"]
                  [org.clojure/core.async "0.2.385"]
                  [camel-snake-kebab "0.4.0"]
                  [cljsjs/google-analytics "2015.04.13-0"]
                  [cljsjs/photoswipe "4.1.1-0"]
                  [re-com "1.0.0"]
-                 [re-frisk "0.3.2"]
+                 [re-frisk "0.4.4"]
                  [day8.re-frame/http-fx "0.1.3"]]
 
   :plugins [[lein-cljsbuild "1.1.5"]
@@ -44,7 +43,7 @@
 
   :profiles
   {:dev
-   {:dependencies [[figwheel-sidecar "0.5.8"]]
+   {:dependencies [[figwheel-sidecar "0.5.9"]]
     :source-paths ["src/cljs" "test/cljs"]  ; Needed to run Figwheel from nrepl.
     :plugins      [[lein-doo "0.1.6"]]}
 
