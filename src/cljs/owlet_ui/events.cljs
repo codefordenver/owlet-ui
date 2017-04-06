@@ -318,12 +318,10 @@
 
 
 (defn- id-details
-  [fb-id class-id]
+  [fb-id]
   (let [private-ref  (fb/path-str->db-ref (str "users/" (name fb-id)))
-        class-ref    (fb/path-str->db-ref (str "classes/" (name class-id)))
-        presence-ref (fb/path-str->db-ref class-ref (name fb-id))]
+        presence-ref (fb/path-str->db-ref (str "presence/" (name fb-id)))]
     {:firebase-id      fb-id
-     :current-class-id class-id
      :private-ref      private-ref
      :presence-ref     presence-ref}))
 
@@ -347,7 +345,7 @@
         (if new-fb-id            ; Id changed. I logged in or out.
 
           ; I just now logged in.
-          (let [new-identity (id-details new-fb-id :default)]
+          (let [new-identity (id-details new-fb-id)]
             {:db (assoc (:db cofx) :my-identity new-identity)
              ; Note that this :my-identity subtree REPLACES the existing one,
              ; if any. So it is important that this takes place BEFORE any

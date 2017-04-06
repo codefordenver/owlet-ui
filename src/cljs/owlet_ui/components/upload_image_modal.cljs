@@ -25,7 +25,7 @@
            :type     "button"
            :on-click #(fb/ez-upload-file "upload-input-id" ; Input DOM id.
                                          (str "users/"     ; Firebase Strg dir.
-                                              (name (:firebase-id @me))
+                                              (name @me)
                                               "/background-image")
                                          progress-pct      ; Tracking pct done.
                                          upload-error      ; Tracking any error.
