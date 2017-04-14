@@ -13,7 +13,7 @@
 ;; Use a lein env var like the one above
 ;; to toggle this during development
 ;; http://localhost:3000
-(def server-url "http://localhost:3000")
+(def server-url "https://owlet-api.herokuapp.com")
 
 
 (def auth0-init
