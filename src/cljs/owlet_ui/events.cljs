@@ -10,18 +10,10 @@
             [owlet-ui.helpers :refer
              [keywordize-name remove-nil parse-platform clean-search-term]]))
 
-
-(defonce library-content-url
+(defonce space-endpoint
          (str config/server-url
-              "/api/content/entries?library-view=true&space-id="
+              "/api/content/space?library-view=true&space-id="
               config/owlet-activities-2-space-id))
-
-
-(defonce get-metadata-url
-         (str config/server-url
-              "/api/content/metadata/"
-              config/owlet-activities-2-space-id))
-
 
 (rf/reg-cofx
   :set-loading!
@@ -129,26 +121,29 @@
       {:db         (merge (assoc-in db [:app :loading?] true)
                           (assoc-in db [:app :route-params] route-params))
        :http-xhrio {:method          :get
-                    :uri             library-content-url
+                    :uri             space-endpoint
                     :response-format (ajax/json-response-format {:keywords? true})
                     :on-success      [:get-library-content-from-contentful-successful]}})))
 
 
 (rf/reg-event-db
   :get-library-content-from-contentful-successful
-  (fn [db [_ res]]
-    (rf/dispatch [:get-activity-metadata])
+  (fn [db [_ {entries :entries metadata :metadata}]]
+
+    (rf/dispatch [:process-activity-metadata metadata])
+
     ; Obtains the URL for each preview image, and adds a :url field next to
     ; its :id field in [:activities :fields :preview :sys] map.
+
     (let [url-for-id                                        ; Maps preview image IDs to associated URLs.
-          (->> (get-in res [:includes :Asset])
+          (->> (get-in entries [:includes :Asset])
                (map (juxt (comp :id :sys)
                           (comp :url :file :fields)))
                (into {}))
           _db_ (assoc db                                    ; Return new db, adding :url field to its [... :sys] map.
                  :activities
                  (into []
-                       (for [item (:items res)
+                       (for [item (:items entries)
                              :let [activity (update-in item [:fields :preview :sys]
                                                        (fn [{id :id :as sys}]
                                                          (assoc sys :url (url-for-id id))))
@@ -167,23 +162,11 @@
 
       __db__)))
 
-
 (rf/reg-event-db
-  :get-activity-metadata
-  (fn [db _]
-    (GET get-metadata-url
-         {:response-format :json
-          :keywords?       true
-          :handler         #(rf/dispatch [:get-activity-metadata-successful %])
-          :error-handler   #(prn %)})
-    db))
-
-(rf/reg-event-db
-  :get-activity-metadata-successful
-  [(rf/inject-cofx :set-loading! false)]
-  (fn [db [_ res]]
-    (let [branches (:branches res)
-          skills (:skills res)
+  :process-activity-metadata
+  (fn [db [_ metadata]]
+    (let [branches (:branches metadata)
+          skills (:skills metadata)
           all-activities (:activities db)
           platforms (remove-nil (map #(get-in % [:fields :platform ]) all-activities))
           platforms-nomalized (->> platforms (map parse-platform))
