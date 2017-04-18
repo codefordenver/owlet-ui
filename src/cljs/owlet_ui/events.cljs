@@ -247,7 +247,7 @@
 
       (if-let [filtered-set (search-term (:activities-by-branch db))]
         (do
-          (set! (.-location js/window) (str "/#/" (clojure.string/lower-case term)))
+          (set! (.-location js/window) (str "/#/" (->kebab-case term)))
           (assoc db :activities-by-branch-in-view filtered-set))
 
         ;; by skill
