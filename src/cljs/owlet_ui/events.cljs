@@ -236,8 +236,6 @@
   :filter-activities-by-search-term
   (fn [db [_ term]]
 
-    (set! (.-location js/window) (str "/#/search/" (->kebab-case term)))
-
     (rf/dispatch [:set-active-view :search-results-view])
     (rf/dispatch [:set-active-document-title! term])
 
@@ -248,23 +246,29 @@
           activities (:activities db)]
 
       (if-let [filtered-set (search-term (:activities-by-branch db))]
-        (assoc db :activities-by-branch-in-view filtered-set)
+        (do
+          (set! (.-location js/window) (str "/#/" (->kebab-case term)))
+          (assoc db :activities-by-branch-in-view filtered-set))
 
         ;; by skill
         ;; --------
 
         (let [filtered-set (filterv #(when (contains? (:skill-set %) search-term) %) activities)]
           (if (seq filtered-set)
-            (assoc db :activities-by-branch-in-view (hash-map :activities filtered-set
-                                                              :display-name term))
+            (do
+              (set! (.-location js/window) (str "/#/search/" (->kebab-case term)))
+              (assoc db :activities-by-branch-in-view (hash-map :activities filtered-set
+                                                                :display-name term)))
 
             ;; by activity name (title)
             ;; ------------------------
 
             (let [filtered-set (filterv #(when (= (get-in % [:fields :title]) term) %) activities)]
               (if (seq filtered-set)
-                (assoc db :activities-by-branch-in-view (hash-map :activities filtered-set
-                                                                  :display-name term))
+                (let [activity (first filtered-set)
+                      activity-id (get-in activity [:sys :id])]
+                  (set! (.-location js/window) (str "/#/activity/#!" activity-id))
+                  (assoc db :activity-in-view activity))
 
                 ;; by platform
                 ;; -----------
@@ -273,8 +277,10 @@
                                                                 parse-platform)]
                                                (when (= platform term) %)) activities)]
                   (if (seq filtered-set)
-                    (assoc db :activities-by-branch-in-view (hash-map :activities filtered-set
-                                                                      :display-name term))
+                    (do
+                      (set! (.-location js/window) (str "/#/search/" (->kebab-case term)))
+                      (assoc db :activities-by-branch-in-view (hash-map :activities filtered-set
+                                                                        :display-name term)))
                     (assoc db :activities-by-branch-in-view "none")))))))))))
 
 
