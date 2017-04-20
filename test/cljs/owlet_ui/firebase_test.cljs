@@ -8,7 +8,7 @@
     [owlet-ui.firebase :as fb]
     [owlet-ui.async :as as]
     [owlet-ui.subs :as subs]
-    [owlet-ui.events :as events])
+    [owlet-ui.events.helpers :refer [reg-setter]])
   (:require-macros
     [cljs.core.async.macros :refer [go-loop]]))
 
@@ -70,7 +70,7 @@
 
 
 (subs/reg-getter :status-sub [:tests :status])
-(events/reg-setter :change-status [:tests :status])
+(reg-setter :change-status [:tests :status])
 
 
 (deftest status-test
@@ -98,7 +98,7 @@
 
 
 (subs/reg-getter :notification-sub [:tests :notification])
-(events/reg-setter
+(reg-setter
   :test-notify
   [:tests :notification]
   (fn [new-data ch]
