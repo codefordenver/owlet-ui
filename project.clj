@@ -1,22 +1,22 @@
 (defproject owlet-ui "0.1.0-SNAPSHOT"
-  :dependencies [[org.clojure/clojure "1.9.0-alpha14"]
-                 [org.clojure/clojurescript "1.9.293"]
+  :dependencies [[org.clojure/clojure "1.9.0-alpha15"]
+                 [org.clojure/clojurescript "1.9.456"]
+                 [org.clojure/tools.nrepl "0.2.13"]   ; Dirac needs recent vers.
                  [binaryage/devtools "RELEASE"]
                  [binaryage/dirac "RELEASE"]
                  [re-frame "0.9.2"]
                  [secretary "1.2.3"]
-                 [compojure "1.5.0"]
-                 [yogthos/config "0.8"]
-                 [ring "1.4.0"]
+                 [compojure "1.5.2"]
+                 [yogthos/config "0.8"]       ; For env in owlet-ui.server
+                 [ring "1.4.0"]               ; For owlet-ui.server & .handler
                  [cljsjs/jquery "2.2.2-0"]
                  [cljs-ajax "0.5.4"]
                  [cljsjs/auth0 "7.0.4-0"]
                  [cljsjs/auth0-lock "10.4.0-0"]
-                 [reagent-utils "0.1.7"]
                  [cljsjs/bootstrap "3.3.6-1"]
                  [cljsjs/firebase "3.5.3-1"]
                  [cljsjs/showdown "1.4.2-0"]
-                 [org.clojure/core.async "0.2.385"]
+                 [org.clojure/core.async "0.3.442"]
                  [camel-snake-kebab "0.4.0"]
                  [cljsjs/google-analytics "2015.04.13-0"]
                  [cljsjs/photoswipe "4.1.1-0"]
@@ -43,7 +43,7 @@
 
   :profiles
   {:dev
-   {:dependencies [[figwheel-sidecar "0.5.9"]]
+   {:dependencies [[figwheel-sidecar "0.5.10"]]
     :source-paths ["src/cljs" "test/cljs"]  ; Needed to run Figwheel from nrepl.
     :plugins      [[lein-doo "0.1.6"]]}
 
@@ -51,13 +51,12 @@
    {:repl-options {:port 8230}}
 
    :figwheel    ; Abitrary key, used in `lein with-profile +figwheel repl`.
-   {:dependencies [[com.cemerick/piggieback "0.2.1"]
-                   [org.clojure/tools.nrepl "0.2.10"]]  ; Needed by cljs-repl
+   {:dependencies [[com.cemerick/piggieback "0.2.1"]]
     :repl-options {:nrepl-middleware
                    [cemerick.piggieback/wrap-cljs-repl]
 
                    :timeout
-                   180000
+                   600000         ; Wait up to 10 minutes for compilation.
 
                    :init
                    (do (require 'figwheel-sidecar.repl-api)
@@ -123,6 +122,5 @@
 
   :main owlet-ui.server
 
-  :aot [owlet-ui.server]
+  :aot [owlet-ui.server])
 
-  :prep-tasks [["cljsbuild" "once" "min"] "compile"])

@@ -26,7 +26,7 @@ Usage:  $0 [--][no-readline | no-clean | dirac | help] ...
         the --dirac option, instead evaluate (dirac! :join)."
 
 maybe_rlwrap='rlwrap'
-maybe_clean='do clean,'
+maybe_clean='clean,'
 profile='+figwheel'
 
 for opt in $@; do
@@ -47,6 +47,10 @@ for opt in $@; do
     esac
 done
 
-echo "$maybe_rlwrap lein $maybe_clean with-profile $profile repl"
-$maybe_rlwrap lein $maybe_clean with-profile $profile repl
+echo "$maybe_rlwrap lein do $maybe_clean cljsbuild once, with-profile $profile repl"
+$maybe_rlwrap lein do $maybe_clean cljsbuild once, with-profile $profile repl
+#
+# Here we explicitly invoked cljsbuild, so you'll see it in STDOUT running
+# twice. This seems to be needed to avoid an error, "REPL server launch timed
+# out."
 
