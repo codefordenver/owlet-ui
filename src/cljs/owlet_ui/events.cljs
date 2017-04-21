@@ -132,25 +132,30 @@
 
     (rf/dispatch [:process-activity-metadata metadata])
 
-    ; Obtains the URL for each preview image, and adds a :url field next to
-    ; its :id field in [:activities :fields :preview :sys] map.
+    ; Obtains the URL, width, and height for each image (asset), and
+    ;  - for each *preview* image, adds a :url field next to its :id field in [:activities :fields :preview :sys] map.
+    ;  - for each *gallery* image, adds a map to :image-gallery-items field in [:activities :fields] map.
 
-    (let [url-for-id                                        ; Maps preview image IDs to associated URLs.
-          (->> (get-in entries [:includes :Asset])
-               (map (juxt (comp :id :sys)
-                          (comp :url :file :fields)))
-               (into {}))
+    (let [image-by-id                                       ; Maps image IDs to associated URL, width, and height.
+           (zipmap
+             (->> (get-in entries [:includes :Asset])
+                  (mapv (comp :id :sys)))
+             (->> (get-in entries [:includes :Asset])
+                  (mapv #(hash-map :url (get-in % [:fields :file :url])
+                                   :w (get-in % [:fields :file :details :image :width])
+                                   :h (get-in % [:fields :file :details :image :height])))))
+
           _db_ (assoc db                                    ; Return new db, adding :url field to its [... :sys] map.
                  :activities
                  (into []
                        (for [item (:items entries)
                              :let [activity (update-in item [:fields :preview :sys]
                                                        (fn [{id :id :as sys}]
-                                                         (assoc sys :url (url-for-id id))))
+                                                         (assoc sys :url (get-in image-by-id [id :url]))))
                                    image-gallery (get-in activity [:fields :imageGallery])
                                    image-gallery-ids (map #(-> % :sys :id) image-gallery)
-                                   image-gallery-urls (map #(url-for-id %) image-gallery-ids)]]
-                         (update-in activity [:fields] #(assoc % :image-gallery-urls image-gallery-urls)))))
+                                   image-gallery-items (map #(image-by-id %) image-gallery-ids)]]
+                         (update-in activity [:fields] #(assoc % :image-gallery-items image-gallery-items)))))
 
           __db__ (update _db_
                          :activities                        ; Return new db, adding :skills-set

@@ -3,9 +3,9 @@
             [cljsjs.photoswipe-ui-default]
             [reagent.core :as reagent :refer [atom]]))
 
-(defn prepare-image-items [image-urls]
+(defn prepare-image-items [image-items]
   ; TODO: pass in image width and height
-  (mapv #(hash-map :src % :w 800 :h 600) image-urls))
+  (mapv #(hash-map :src (:url %) :w (:w %) :h (:h %)) image-items))
 
 (defn full-screen-gallery []
   [:div.activity-image-gallery-wrap
@@ -35,13 +35,13 @@
        [:div.pswp__caption__center]]]]]])
 
 
-(defn activity-image-gallery [image-urls]
+(defn activity-image-gallery [image-items]
   (reagent/create-class
     {:component-did-mount
      #(js/initPhotoSwipeFromDOM ".img-gallery")
      :reagent-render
      (fn []
-       (let [images (prepare-image-items image-urls)]
+       (let [images (prepare-image-items image-items)]
          [:div.activity-gallery-wrap
            [:h4 [:mark "See what other people made..."]]
            [:div {:class "img-gallery"
