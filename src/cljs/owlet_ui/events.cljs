@@ -132,25 +132,31 @@
 
     (rf/dispatch [:process-activity-metadata metadata])
 
-    ; Obtains the URL for each preview image, and adds a :url field next to
-    ; its :id field in [:activities :fields :preview :sys] map.
+    ; Obtains the URL, width, and height for each image (asset), and
+    ;  - for each *preview* image, adds a :url field next to its :id field in [:activities :fields :preview :sys] map.
+    ;  - for each *gallery* image, adds a map to :image-gallery-items field in [:activities :fields] map.
 
-    (let [url-for-id                                        ; Maps preview image IDs to associated URLs.
-          (->> (get-in entries [:includes :Asset])
-               (map (juxt (comp :id :sys)
-                          (comp :url :file :fields)))
-               (into {}))
+    (let [assets (get-in entries [:includes :Asset])
+          image-by-id                                       ; Maps image IDs to associated URL, width, and height.
+           (zipmap
+             (->> assets
+                  (mapv (comp :id :sys)))
+             (->> assets
+                  (mapv #(hash-map :url (get-in % [:fields :file :url])
+                                   :w (get-in % [:fields :file :details :image :width])
+                                   :h (get-in % [:fields :file :details :image :height])))))
+
           _db_ (assoc db                                    ; Return new db, adding :url field to its [... :sys] map.
                  :activities
                  (into []
                        (for [item (:items entries)
                              :let [activity (update-in item [:fields :preview :sys]
                                                        (fn [{id :id :as sys}]
-                                                         (assoc sys :url (url-for-id id))))
+                                                         (assoc sys :url (get-in image-by-id [id :url]))))
                                    image-gallery (get-in activity [:fields :imageGallery])
                                    image-gallery-ids (map #(-> % :sys :id) image-gallery)
-                                   image-gallery-urls (map #(url-for-id %) image-gallery-ids)]]
-                         (update-in activity [:fields] #(assoc % :image-gallery-urls image-gallery-urls)))))
+                                   image-gallery-items (map #(image-by-id %) image-gallery-ids)]]
+                         (update-in activity [:fields] #(assoc % :image-gallery-items image-gallery-items)))))
 
           __db__ (update _db_
                          :activities                        ; Return new db, adding :skills-set
@@ -169,7 +175,7 @@
           skills (:skills metadata)
           all-activities (:activities db)
           platforms (remove-nil (map #(get-in % [:fields :platform ]) all-activities))
-          platforms-nomalized (->> platforms (map parse-platform))
+          platforms-normalized (->> platforms (map parse-platform))
           activity-titles (remove-nil (map #(get-in % [:fields :title]) all-activities))
           branches-template (->> (mapv (fn [branch]
                                          (hash-map (keywordize-name branch)
@@ -207,14 +213,14 @@
                         :skills skills
                         :activities-by-branch activities-by-branch
                         :activity-titles activity-titles
-                        :activity-platforms platforms-nomalized)))
+                        :activity-platforms platforms-normalized)))
           (when search
             (rf/dispatch [:filter-activities-by-search-term search]))))
       (assoc db :activity-branches branches
                 :skills skills
                 :activities-by-branch activities-by-branch
                 :activity-titles activity-titles
-                :activity-platforms platforms-nomalized))))
+                :activity-platforms platforms-normalized))))
 
 
 (rf/reg-event-db
@@ -239,15 +245,17 @@
     (rf/dispatch [:set-active-view :search-results-view])
     (rf/dispatch [:set-active-document-title! term])
 
-    ;; by branch
-    ;; ---------
-
     (let [search-term (keywordize-name term)
-          activities (:activities db)]
+          activities (:activities db)
+          set-path (fn [path]
+                    (set! (.-location js/window) (str "/#/" path)))]
+
+      ;; by branch
+      ;; ---------
 
       (if-let [filtered-set (search-term (:activities-by-branch db))]
         (do
-          (set! (.-location js/window) (str "/#/" (->kebab-case term)))
+          (set-path (->kebab-case term))
           (assoc db :activities-by-branch-in-view filtered-set))
 
         ;; by skill
@@ -256,7 +264,7 @@
         (let [filtered-set (filterv #(when (contains? (:skill-set %) search-term) %) activities)]
           (if (seq filtered-set)
             (do
-              (set! (.-location js/window) (str "/#/search/" (->kebab-case term)))
+              (set-path (str "search/" (->kebab-case term)))
               (assoc db :activities-by-branch-in-view (hash-map :activities filtered-set
                                                                 :display-name term)))
 
@@ -267,7 +275,7 @@
               (if (seq filtered-set)
                 (let [activity (first filtered-set)
                       activity-id (get-in activity [:sys :id])]
-                  (set! (.-location js/window) (str "/#/activity/#!" activity-id))
+                  (set-path (str "activity/#!" activity-id))
                   (assoc db :activity-in-view activity))
 
                 ;; by platform
@@ -278,7 +286,7 @@
                                                (when (= platform term) %)) activities)]
                   (if (seq filtered-set)
                     (do
-                      (set! (.-location js/window) (str "/#/search/" (->kebab-case term)))
+                      (set-path (str "search/" (->kebab-case term)))
                       (assoc db :activities-by-branch-in-view (hash-map :activities filtered-set
                                                                         :display-name term)))
                     (assoc db :activities-by-branch-in-view "none")))))))))))

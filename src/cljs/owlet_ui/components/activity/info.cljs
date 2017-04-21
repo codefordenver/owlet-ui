@@ -29,7 +29,7 @@
                   :close-button? false
                   :title "What does this mean?"
                   :body "UNPLUGGED activities do not require a computer or device"]]
-       [set-as-showdown "<b>Platform</b><br>" platform ])
+       [set-as-showdown "<b>Platform</b><br>" platform])
      [set-as-showdown "<b>Summary</b><br>" summary]
      (when why
       [set-as-showdown "<b>Why?</b><br>" why])
