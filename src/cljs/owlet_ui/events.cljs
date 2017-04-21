@@ -136,11 +136,12 @@
     ;  - for each *preview* image, adds a :url field next to its :id field in [:activities :fields :preview :sys] map.
     ;  - for each *gallery* image, adds a map to :image-gallery-items field in [:activities :fields] map.
 
-    (let [image-by-id                                       ; Maps image IDs to associated URL, width, and height.
+    (let [assets (get-in entries [:includes :Asset])
+          image-by-id                                       ; Maps image IDs to associated URL, width, and height.
            (zipmap
-             (->> (get-in entries [:includes :Asset])
+             (->> assets
                   (mapv (comp :id :sys)))
-             (->> (get-in entries [:includes :Asset])
+             (->> assets
                   (mapv #(hash-map :url (get-in % [:fields :file :url])
                                    :w (get-in % [:fields :file :details :image :width])
                                    :h (get-in % [:fields :file :details :image :height])))))
