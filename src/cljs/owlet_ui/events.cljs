@@ -169,7 +169,7 @@
           skills (:skills metadata)
           all-activities (:activities db)
           platforms (remove-nil (map #(get-in % [:fields :platform ]) all-activities))
-          platforms-nomalized (->> platforms (map parse-platform))
+          platforms-normalized (->> platforms (map parse-platform))
           activity-titles (remove-nil (map #(get-in % [:fields :title]) all-activities))
           branches-template (->> (mapv (fn [branch]
                                          (hash-map (keywordize-name branch)
@@ -207,14 +207,14 @@
                         :skills skills
                         :activities-by-branch activities-by-branch
                         :activity-titles activity-titles
-                        :activity-platforms platforms-nomalized)))
+                        :activity-platforms platforms-normalized)))
           (when search
             (rf/dispatch [:filter-activities-by-search-term search]))))
       (assoc db :activity-branches branches
                 :skills skills
                 :activities-by-branch activities-by-branch
                 :activity-titles activity-titles
-                :activity-platforms platforms-nomalized))))
+                :activity-platforms platforms-normalized))))
 
 
 (rf/reg-event-db
@@ -239,15 +239,17 @@
     (rf/dispatch [:set-active-view :search-results-view])
     (rf/dispatch [:set-active-document-title! term])
 
-    ;; by branch
-    ;; ---------
-
     (let [search-term (keywordize-name term)
-          activities (:activities db)]
+          activities (:activities db)
+          set-path (fn [path]
+                    (set! (.-location js/window) (str "/#/" path)))]
+
+      ;; by branch
+      ;; ---------
 
       (if-let [filtered-set (search-term (:activities-by-branch db))]
         (do
-          (set! (.-location js/window) (str "/#/" (->kebab-case term)))
+          (set-path (->kebab-case term))
           (assoc db :activities-by-branch-in-view filtered-set))
 
         ;; by skill
@@ -256,7 +258,7 @@
         (let [filtered-set (filterv #(when (contains? (:skill-set %) search-term) %) activities)]
           (if (seq filtered-set)
             (do
-              (set! (.-location js/window) (str "/#/search/" (->kebab-case term)))
+              (set-path (str "search/" (->kebab-case term)))
               (assoc db :activities-by-branch-in-view (hash-map :activities filtered-set
                                                                 :display-name term)))
 
@@ -267,7 +269,7 @@
               (if (seq filtered-set)
                 (let [activity (first filtered-set)
                       activity-id (get-in activity [:sys :id])]
-                  (set! (.-location js/window) (str "/#/activity/#!" activity-id))
+                  (set-path (str "activity/#!" activity-id))
                   (assoc db :activity-in-view activity))
 
                 ;; by platform
@@ -278,7 +280,7 @@
                                                (when (= platform term) %)) activities)]
                   (if (seq filtered-set)
                     (do
-                      (set! (.-location js/window) (str "/#/search/" (->kebab-case term)))
+                      (set-path (str "search/" (->kebab-case term)))
                       (assoc db :activities-by-branch-in-view (hash-map :activities filtered-set
                                                                         :display-name term)))
                     (assoc db :activities-by-branch-in-view "none")))))))))))
