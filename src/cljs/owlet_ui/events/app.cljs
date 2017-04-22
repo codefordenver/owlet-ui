@@ -99,11 +99,14 @@
     ;; ---------
 
     (let [search-term (keywordize-name term)
-          activities (:activities db)]
+          activities (:activities db)
+          set-path (fn [path]
+                    (set! (.-location js/window) (str "/#/" path)))]
+
 
       (if-let [filtered-set (search-term (:activities-by-branch db))]
         (do
-          (set! (.-location js/window) (str "/#/" (->kebab-case term)))
+          (set-path (->kebab-case term))
           (assoc db :activities-by-branch-in-view filtered-set))
 
         ;; by skill
@@ -112,7 +115,7 @@
         (let [filtered-set (filterv #(when (contains? (:skill-set %) search-term) %) activities)]
           (if (seq filtered-set)
             (do
-              (set! (.-location js/window) (str "/#/search/" (->kebab-case term)))
+              (set-path (str "search/" (->kebab-case term)))
               (assoc db :activities-by-branch-in-view (hash-map :activities filtered-set
                                                                 :display-name term)))
 
@@ -123,7 +126,7 @@
               (if (seq filtered-set)
                 (let [activity (first filtered-set)
                       activity-id (get-in activity [:sys :id])]
-                  (set! (.-location js/window) (str "/#/activity/#!" activity-id))
+                  (set-path (str "activity/#!" activity-id))
                   (assoc db :activity-in-view activity))
 
                 ;; by platform
@@ -134,7 +137,7 @@
                                                (when (= platform term) %)) activities)]
                   (if (seq filtered-set)
                     (do
-                      (set! (.-location js/window) (str "/#/search/" (->kebab-case term)))
+                      (set-path (str "search/" (->kebab-case term)))
                       (assoc db :activities-by-branch-in-view (hash-map :activities filtered-set
                                                                         :display-name term)))
                     (assoc db :activities-by-branch-in-view "none")))))))))))
