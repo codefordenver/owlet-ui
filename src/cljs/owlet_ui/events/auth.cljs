@@ -1,16 +1,8 @@
-(ns owlet-ui.events.firebase
+(ns owlet-ui.events.auth
   (:require [re-frame.core :as rf]
-            [owlet-ui.events.helpers :refer [reg-setter]]
-            [owlet-ui.firebase :as fb]))
-
-(defn- note-pending
-  "Records a \"pending\" message (e.g. a keyword) in the :my-identity map,
-  indicating to the GUI that the indicated process has started but not yet
-  completed.
-  "
-  [cofx msg]
-  (assoc-in (:db cofx) [:my-identity :pending] msg))
-
+            [owlet-ui.rf-util :refer [reg-setter]]
+            [owlet-ui.firebase :as fb]
+            [owlet-ui.events.app :as app]))
 
 (reg-setter :my-identity [:my-identity])
 
@@ -20,7 +12,7 @@
 (rf/reg-event-fx
   :log-out
   (fn [cofx _]
-    {:db                (note-pending cofx :log-out)
+    {:db                (app/note-pending cofx :log-out)
      :firebase-sign-out fb/firebase-auth-object}))
 
 
@@ -30,7 +22,7 @@
     {:firebase-sign-in [fb/firebase-auth-object
                         delegation-token
                         :firebase-sign-in-failed]
-     :db               (note-pending cofx :log-in)}))
+     :db               (app/note-pending cofx :log-in)}))
 
 
 (rf/reg-event-fx

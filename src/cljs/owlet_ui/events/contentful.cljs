@@ -1,13 +1,13 @@
-(ns owlet-ui.events.contenful
+(ns owlet-ui.events.contentful
   (:require [re-frame.core :as rf]
             [day8.re-frame.http-fx]
             [ajax.core :as ajax :refer [GET POST PUT]]
             [owlet-ui.db :as db]
             [owlet-ui.config :as config]
-            [owlet-ui.events.helpers :refer [reg-setter]]
+            [owlet-ui.rf-util :refer [reg-setter]]
             [camel-snake-kebab.core :refer [->kebab-case]]
             [owlet-ui.helpers :refer
-             [keywordize-name remove-nil parse-platform clean-search-term]]))
+             [keywordize-name remove-nil parse-platform]]))
 
 (defonce space-endpoint
          (str config/server-url

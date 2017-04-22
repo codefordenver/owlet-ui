@@ -1,11 +1,24 @@
 (ns owlet-ui.events.app
   (:require [clojure.string :as clj-str]
             [re-frame.core :as rf]
+            [camel-snake-kebab.core :refer [->kebab-case]]
             [owlet-ui.config :as config]
-            [owlet-ui.events.helpers :refer [reg-setter]]
-            [owlet-ui.db :as db]))
+            [owlet-ui.rf-util :refer [reg-setter]]
+            [owlet-ui.db :as db]
+            [owlet-ui.helpers :refer [keywordize-name parse-platform]]))
+
+
+(defn note-pending
+  "Records a \"pending\" message (e.g. a keyword) in the :my-identity map,
+  indicating to the GUI that the indicated process has started but not yet
+  completed.
+  "
+  [cofx msg]
+  (assoc-in (:db cofx) [:my-identity :pending] msg))
+
 
 (reg-setter :set-sidebar-state [:app :open-sidebar])
+
 
 (reg-setter :show-bg-img-upload [:showing-bg-img-upload])
 
