@@ -7,8 +7,7 @@
     [owlet-ui.subscription-viewer :as view]
     [owlet-ui.firebase :as fb]
     [owlet-ui.async :as as]
-    [owlet-ui.subs :as subs]
-    [owlet-ui.events :as events])
+    [owlet-ui.rf-util :refer [reg-getter reg-setter]])
   (:require-macros
     [cljs.core.async.macros :refer [go-loop]]))
 
@@ -69,8 +68,8 @@
      (print "Done with repeatedly-running."))})
 
 
-(subs/reg-getter :status-sub [:tests :status])
-(events/reg-setter :change-status [:tests :status])
+(reg-getter :status-sub [:tests :status])
+(reg-setter :change-status [:tests :status])
 
 
 (deftest status-test
@@ -97,8 +96,8 @@
     (is (= "tests" (-> @test-ref .-parent .-key)))))
 
 
-(subs/reg-getter :notification-sub [:tests :notification])
-(events/reg-setter
+(reg-getter :notification-sub [:tests :notification])
+(reg-setter
   :test-notify
   [:tests :notification]
   (fn [new-data ch]
@@ -152,7 +151,7 @@
         (done)))))
 
 
-(subs/reg-getter :upload-sub [:tests :upload])
+(reg-getter :upload-sub [:tests :upload])
 
 
 (deftest change-on-test
