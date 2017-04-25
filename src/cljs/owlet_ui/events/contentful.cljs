@@ -52,29 +52,29 @@
                    :url (get-in % [:fields :file :url])
                    :w   (get-in % [:fields :file :details :image :width])
                    :h   (get-in % [:fields :file :details :image :height]))))
-            (into {}))]
+            (into {}))
+
+          image-gallery-vec-for-item
+          #(->> (get-in % [:fields :imageGallery])
+             (map (comp :id :sys))                   ; Gallery image ids.
+             (mapv image-by-id))]                    ; Their images.
 
       (-> db
         (assoc
           :activities
           (into []
-            (for [item (:items entries)
-                  :let [image-gallery-items
-                        (-> item
-                          (get-in [:fields :imageGallery]) ; Gallery list.
-                          (map (comp :id :sys))            ; Gall. img. ids.
-                          (map image-by-id))]]             ; Their images.
+            (for [item (:items entries)]
               (-> item
-                (update-in [:fields :preview :sys]       ; Add img. URL at
-                           (fn [{id :id :as sys}]        ;  [.. :sys :url]
+                (update-in [:fields :preview :sys]   ; Add img. URL at
+                           (fn [{id :id :as sys}]    ;  [.. :sys :url]
                              (assoc sys
                                :url
                                (get-in image-by-id [id :url]))))
                 (assoc-in [:fields :image-gallery-items] ; Add gallery imgs.
-                          image-gallery-items)))))
+                          (image-gallery-vec-for-item item))))))
 
         (update
-          :activities                                    ; Add :skills-set
+          :activities                                ; Add :skills-set
           (partial mapv (fn [activity]
                           (or (some->> activity
                                 :fields
