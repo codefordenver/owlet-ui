@@ -59,11 +59,10 @@
           :activities
           (into []
             (for [item (:items entries)
-                  :let [image-gallery-items
-                        (-> item
-                          (get-in [:fields :imageGallery]) ; Gallery list.
-                          (map (comp :id :sys))            ; Gall. img. ids.
-                          (map image-by-id))]]             ; Their images.
+                  :let [image-gallery (get-in item [:fields :imageGallery])
+                        image-gallery-items (->> image-gallery               ; Gallery list.
+                                                 (map (comp :sys :id))     ; Gall. img. ids.
+                                                 (map image-by-id))]]        ; Their images.
               (-> item
                 (update-in [:fields :preview :sys]       ; Add img. URL at
                            (fn [{id :id :as sys}]        ;  [.. :sys :url]
@@ -140,4 +139,3 @@
                 :activities-by-branch activities-by-branch
                 :activity-titles activity-titles
                 :activity-platforms platforms-normalized))))
-
