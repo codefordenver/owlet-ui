@@ -31,7 +31,7 @@
                         inspiration
                         preRequisites
                         platform
-                        image-gallery-urls]} fields]
+                        image-gallery-items]} fields]
             (rf/dispatch [:set-active-document-title! title])
             [:div.activity
              [:div.activity-wrap
@@ -39,8 +39,8 @@
                [activity-title title author]]
               [:div.activity-content.col-xs-12.col-lg-8
                [activity-embed embed skills preview]
-               (when (seq image-gallery-urls)
-                [activity-image-gallery image-gallery-urls])]
+               (when (seq image-gallery-items)
+                [activity-image-gallery image-gallery-items])]
               [:div.activity-content.col-xs-12.col-lg-4
                [activity-info unplugged platform  summary why preRequisites materials]
                (when challenge

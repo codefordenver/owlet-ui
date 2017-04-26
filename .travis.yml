@@ -5,6 +5,7 @@ sudo: true
 branches:
   only:
     - master
+    - prod
 
 #Build
 script: "lein cljsbuild once min && lein less once"
