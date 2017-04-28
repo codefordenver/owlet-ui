@@ -12,7 +12,7 @@
 (defonce space-endpoint
          (str config/server-url
               "/api/content/space?library-view=true&space-id="
-              config/owlet-activities-2-space-id))
+              config/owlet-activities-3-space-id))
 
 
 (rf/reg-event-fx
@@ -40,7 +40,19 @@
     ;  - for each *gallery* image, adds a map to :image-gallery-items field in
     ;    [:activities :fields] map.
 
-    (let [assets
+    (let [filter-entries
+          (fn [type entries]
+            (filterv #(= type
+                         (-> % (get-in [:sys :contentType :sys :id])))
+              (:items entries)))
+
+          platforms
+          (filter-entries "platform" entries)
+
+          activities
+          (filter-entries "activity" entries)
+
+          assets
           (get-in entries [:includes :Asset])
 
           image-by-id     ; Maps image IDs to associated URL, width, and height.
@@ -63,7 +75,7 @@
         (assoc
           :activities
           (into []
-            (for [item (:items entries)]
+            (for [item activities]
               (-> item
                 (update-in [:fields :preview :sys]   ; Add img. URL at
                            (fn [{id :id :as sys}]    ;  [.. :sys :url]
@@ -93,8 +105,8 @@
     (let [branches (:branches metadata)
           skills (:skills metadata)
           all-activities (:activities db)
-          platforms (remove-nil (map #(get-in % [:fields :platform ]) all-activities))
-          platforms-normalized (->> platforms (map parse-platform))
+          ; platforms (remove-nil (map #(get-in % [:fields :platform ]) all-activities))
+          ; platforms-normalized (->> platforms (map parse-platform))
           activity-titles (remove-nil (map #(get-in % [:fields :title]) all-activities))
           branches-template (->> (mapv (fn [branch]
                                          (hash-map (keywordize-name branch)
@@ -131,13 +143,12 @@
               (assoc db :activity-branches branches
                         :skills skills
                         :activities-by-branch activities-by-branch
-                        :activity-titles activity-titles
-                        :activity-platforms platforms-normalized)))
+                        :activity-titles activity-titles)))
+                        ; :activity-platforms platforms-normalized)))
           (when search
             (rf/dispatch [:filter-activities-by-search-term search]))))
       (assoc db :activity-branches branches
                 :skills skills
                 :activities-by-branch activities-by-branch
-                :activity-titles activity-titles
-                :activity-platforms platforms-normalized))))
-
+                :activity-titles activity-titles))))
+                ; :activity-platforms platforms-normalized))))
