@@ -1,6 +1,5 @@
 (ns owlet-ui.db
-  (:require [owlet-ui.config :as config]
-            [owlet-ui.routes :refer [library-url]]))
+  (:require [owlet-ui.config :as config]))
 
 
 (def default-db
