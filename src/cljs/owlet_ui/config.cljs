@@ -9,11 +9,7 @@
 (def project-name "OWLET")
 
 
-;; TODO:
-;; Use a lein env var like the one above
-;; to toggle this during development
-;; http://localhost:3000
-(def server-url "https://owlet-api.herokuapp.com")
+(def server-url "https://mmmanyfold-api.herokuapp.com")
 
 
 (def auth0-init
@@ -43,9 +39,6 @@
    :storageBucket "owlet-users.appspot.com"})
 
 
-(def library-space-id "c7i369745nqp")
-(def owlet-activities-2-space-id "ir2v150dybog")
-
+(def owlet-activities-3-space-id "0okl2i5aeorb")
 
 (def default-header-bg-image "img/default_background.png")
-
