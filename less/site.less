@@ -573,6 +573,32 @@ img.back {
   }
 }
 
+.platform, .unplugged {
+  font-size: 1em;
+  padding: 5px 6px;
+}
+
+.platform {
+  color: white;
+  margin-bottom: 15px;
+  background-color: #00A79D;
+  &:hover {
+    background-color: #65D2C0;
+  }
+}
+
+.unplugged {
+  color: white;
+  background-color: #ec971f;
+  &:hover {
+    background-color: #f0ad4e;
+  }
+}
+
+.rc-popover-anchor-wrapper {
+  margin-bottom: 15px;
+}
+
 .activity-thumbnail-wrap {
   font-size: 0.9em;
   @media (max-width: 1187px) {
@@ -618,28 +644,11 @@ img.back {
     text-align: right;
   }
   .unplugged, .platform {
-    margin-top: 3px;
+    margin: 3px 0 0 0;
     padding: 5px 6px 4px 6px;
     font-size: 1.1em;
     p {
       margin: 0;
-    }
-  }
-  .platform {
-    background-color: #00A79D;
-    &:hover {
-      background-color: #65D2C0;
-    }
-    a {
-      text-decoration: none;
-      color: white;
-    }
-  }
-  .unplugged {
-    color: white;
-    background-color: #ec971f;
-    &:hover {
-      background-color: #f0ad4e;
     }
   }
   .tag {
@@ -694,7 +703,7 @@ img.back {
 
 .activity-info-wrap, .activity-inspiration-wrap, .activity-challenge-wrap {
   background-color: white;
-  padding: 10px 12px 2px 12px;
+  padding: 10px 12px 2px 15px;
 }
 
 .activity-challenge-wrap {
