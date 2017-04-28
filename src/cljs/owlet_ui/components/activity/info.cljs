@@ -19,9 +19,7 @@
         :showing? showing?
         :position :right-below
         :anchor [:button
-                 {:class         "btn btn-warning unplugged"
-                  :style         {:margin-bottom "10px"
-                                  :padding "5px 6px"};
+                 {:class         "btn unplugged"
                   :on-mouse-over (handler-fn (reset! showing? true))
                   :on-mouse-out  (handler-fn (reset! showing? false))}
                  "UNPLUGGED"]
@@ -29,7 +27,9 @@
                   :close-button? false
                   :title "What does this mean?"
                   :body "UNPLUGGED activities do not require a computer or device"]]
-       [set-as-showdown "<b>Platform</b><br>" platform])
+       [:div
+         [:b "Platform"] [:br]
+         [:button.btn.platform platform]])
      [set-as-showdown "<b>Summary</b><br>" summary]
      (when why
       [set-as-showdown "<b>Why?</b><br>" why])

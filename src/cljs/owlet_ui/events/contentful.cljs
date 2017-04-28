@@ -7,7 +7,7 @@
             [owlet-ui.rf-util :refer [reg-setter]]
             [camel-snake-kebab.core :refer [->kebab-case]]
             [owlet-ui.helpers :refer
-             [keywordize-name remove-nil parse-platform]]))
+             [keywordize-name remove-nil]]))
 
 (defonce space-endpoint
          (str config/server-url
@@ -34,16 +34,10 @@
 
     (rf/dispatch [:process-activity-metadata metadata])
 
-    ; Obtains the URL, width, and height for each image (asset), and
-    ;  - for each *preview* image, adds a :url field next to its :id field in
-    ;    [:activities :fields :preview :sys] map.
-    ;  - for each *gallery* image, adds a map to :image-gallery-items field in
-    ;    [:activities :fields] map.
-
     (let [filter-entries
           (fn [type entries]
-            (filterv #(= type
-                         (-> % (get-in [:sys :contentType :sys :id])))
+            (filter #(= type
+                        (-> % (get-in [:sys :contentType :sys :id])))
               (:items entries)))
 
           platforms
@@ -51,6 +45,12 @@
 
           activities
           (filter-entries "activity" entries)
+
+          ; Obtains the URL, width, and height for each image (asset), and
+          ;  - for each *preview* image, adds a :url field next to its :id field in
+          ;    [:activities :fields :preview :sys] map.
+          ;  - for each *gallery* image, adds a map to :image-gallery-items field in
+          ;    [:activities :fields] map.
 
           assets
           (get-in entries [:includes :Asset])
@@ -73,17 +73,24 @@
 
       (-> db
         (assoc
+          :activity-platforms (map #(get-in % [:fields :name]) platforms)
           :activities
           (into []
-            (for [item activities]
-              (-> item
+            (for [activity activities]
+              (-> activity
+                (assoc-in [:fields :platform]
+                          (-> (filter #(= (get-in activity [:fields :platformRef :sys :id])
+                                          (get-in % [:sys :id])) platforms)
+                              first
+                              :fields
+                              :name))
                 (update-in [:fields :preview :sys]   ; Add img. URL at
                            (fn [{id :id :as sys}]    ;  [.. :sys :url]
                              (assoc sys
                                :url
                                (get-in image-by-id [id :url]))))
                 (assoc-in [:fields :image-gallery-items] ; Add gallery imgs.
-                          (image-gallery-vec-for-item item))))))
+                          (image-gallery-vec-for-item activity))))))
 
         (update
           :activities                                ; Add :skills-set
@@ -92,7 +99,7 @@
                                 :fields
                                 :skills
                                 remove-nil
-                                seq           ; some->> gives nil if empty
+                                seq                 ; some->> gives nil if empty
                                 (map keywordize-name)
                                 set
                                 (assoc activity :skill-set))
@@ -105,8 +112,6 @@
     (let [branches (:branches metadata)
           skills (:skills metadata)
           all-activities (:activities db)
-          ; platforms (remove-nil (map #(get-in % [:fields :platform ]) all-activities))
-          ; platforms-normalized (->> platforms (map parse-platform))
           activity-titles (remove-nil (map #(get-in % [:fields :title]) all-activities))
           branches-template (->> (mapv (fn [branch]
                                          (hash-map (keywordize-name branch)
@@ -144,11 +149,9 @@
                         :skills skills
                         :activities-by-branch activities-by-branch
                         :activity-titles activity-titles)))
-                        ; :activity-platforms platforms-normalized)))
           (when search
             (rf/dispatch [:filter-activities-by-search-term search]))))
       (assoc db :activity-branches branches
                 :skills skills
                 :activities-by-branch activities-by-branch
                 :activity-titles activity-titles))))
-                ; :activity-platforms platforms-normalized))))
