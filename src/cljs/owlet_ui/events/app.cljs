@@ -5,7 +5,7 @@
             [owlet-ui.config :as config]
             [owlet-ui.rf-util :refer [reg-setter]]
             [owlet-ui.db :as db]
-            [owlet-ui.helpers :refer [keywordize-name parse-platform]]))
+            [owlet-ui.helpers :refer [keywordize-name]]))
 
 
 (defn note-pending
@@ -132,8 +132,7 @@
                 ;; by platform
                 ;; -----------
 
-                (let [filtered-set (filterv #(let [platform (-> (get-in % [:fields :platform])
-                                                                parse-platform)]
+                (let [filtered-set (filterv #(let [platform (get-in % [:fields :platform])]
                                                (when (= platform term) %)) activities)]
                   (if (seq filtered-set)
                     (do
