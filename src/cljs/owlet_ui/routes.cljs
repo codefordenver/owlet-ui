@@ -4,29 +4,7 @@
   (:require [secretary.core :as secretary]
             [goog.events :as events]
             [goog.history.EventType :as EventType]
-            [re-frame.core :as rf]
-            [ajax.core :refer [GET]]
-            [owlet-ui.config :as config]))
-
-
-(def library-url
-  "URL to obtain JSON containing the list of available activities.
-  "
-  (str config/server-url
-       "/api/content/entries?library-view=true&space-id="
-       config/owlet-activities-2-space-id))
-
-
-(defn get-then-dispatch
-  "Submits a GET request to the given URL and return immediately. The given
-  callback function, response->event, will be called with the response body
-  as argument, an EDN map.
-  "
-  [url response->event]
-  (GET url {:response-format :json
-            :keywords?       true
-            :handler         (comp rf/dispatch response->event)
-            :error-handler   #(prn %)}))
+            [re-frame.core :as rf]))
 
 
 (defn app-routes []
