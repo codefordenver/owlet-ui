@@ -11,7 +11,7 @@
 
 (defonce space-endpoint
          (str config/server-url
-              "/api/content/space?library-view=true&space-id="
+              "/owlet/api/content/space?library-view=true&space-id="
               config/owlet-activities-2-space-id))
 
 
