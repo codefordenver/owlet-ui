@@ -18,7 +18,7 @@
         [:mark.title title]]]
       (if platform
        [:div.platform-wrap
-        [:span "Platform: "]
+        [:b "Platform: "]
         [:div.platform.btn
           [set-as-showdown platform]]]
        [:div.platform-wrap
