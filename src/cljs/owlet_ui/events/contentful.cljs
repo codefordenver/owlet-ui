@@ -9,10 +9,11 @@
             [owlet-ui.helpers :refer
              [keywordize-name remove-nil]]))
 
+
 (defonce space-endpoint
          (str config/server-url
-              "/api/content/space?library-view=true&space-id="
-              config/owlet-activities-3-space-id))
+              "/owlet/api/content/space?library-view=true&space-id="
+              config/owlet-activities-2-space-id))
 
 
 (rf/reg-event-fx
