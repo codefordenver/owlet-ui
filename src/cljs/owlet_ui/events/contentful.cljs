@@ -74,7 +74,7 @@
 
       (-> db
         (assoc
-          :activity-platforms (map #(get-in % [:fields :name]) platforms)
+          :activity-platforms (map #(:fields %) platforms)
           :activities
           (into []
             (for [activity activities]

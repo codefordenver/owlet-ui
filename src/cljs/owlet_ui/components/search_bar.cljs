@@ -56,7 +56,8 @@
               skills (rf/subscribe [:skills])
               activity-titles (rf/subscribe [:activity-titles])
               activity-platforms (rf/subscribe [:activity-platforms])
-              search-collections (concat @skills @branches @activity-titles @activity-platforms)
+              platform-names (map #(:name %) @activity-platforms)
+              search-collections (concat @skills @branches @activity-titles platform-names)
               result-formatter #(-> {:term %})
               suggestions-for-search
               (fn [s]

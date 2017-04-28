@@ -92,9 +92,6 @@
   :filter-activities-by-search-term
   (fn [db [_ term]]
 
-    (rf/dispatch [:set-active-view :search-results-view])
-    (rf/dispatch [:set-active-document-title! term])
-
     ;; by branch
     ;; ---------
 
@@ -116,6 +113,7 @@
           (if (seq filtered-set)
             (do
               (set-path (str "search/" (->kebab-case term)))
+              (rf/dispatch [:set-active-document-title! term])
               (assoc db :activities-by-branch-in-view (hash-map :activities filtered-set
                                                                 :display-name term)))
 

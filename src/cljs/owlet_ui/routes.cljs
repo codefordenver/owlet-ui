@@ -29,6 +29,7 @@
             (rf/dispatch [:set-active-document-title! "Branches"]))
 
   (defroute "/search/:search" {:as params}
+            (rf/dispatch [:set-active-view :search-results-view])
             (rf/dispatch [:get-library-content-from-contentful params]))
 
   (defroute "/:branch" {:as params}
