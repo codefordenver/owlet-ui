@@ -19,14 +19,14 @@
       (if platform
        [:div.platform-wrap
         [:b "Platform: "]
-        [:div.platform.btn
+        [:div.platform.btn {:on-click #(rf/dispatch [:filter-activities-by-search-term platform])}
           [set-as-showdown platform]]]
        [:div.platform-wrap
         [:div.unplugged.btn
          "UNPLUGGED"]])
       [:div.summary summary]
       (when skills
-        (for [c skills]
+        (for [skill skills]
           ^{:key (gensym "skill-")}
-          [:div.tag {:on-click #(rf/dispatch [:filter-activities-by-search-term c])}
-            [:span c]]))]]))
+          [:div.tag {:on-click #(rf/dispatch [:filter-activities-by-search-term skill])}
+            [:span skill]]))]]))

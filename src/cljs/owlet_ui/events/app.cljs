@@ -133,8 +133,10 @@
                 (let [filtered-set (filterv #(let [platform (get-in % [:fields :platform])]
                                                (when (= platform term) %)) activities)]
                   (if (seq filtered-set)
-                    (do
+                    (let [description (some #(when (= term (:name %)) (:description %))
+                                        (:activity-platforms db))]
                       (set-path (str "search/" (->kebab-case term)))
                       (assoc db :activities-by-branch-in-view (hash-map :activities filtered-set
-                                                                        :display-name term)))
+                                                                        :display-name term
+                                                                        :description description)))
                     (assoc db :activities-by-branch-in-view "none")))))))))))
