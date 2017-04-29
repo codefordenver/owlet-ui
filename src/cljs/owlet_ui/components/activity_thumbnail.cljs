@@ -5,7 +5,9 @@
 (defn activity-thumbnail [fields entry-id]
   (let [preview-image-url (get-in fields [:preview :sys :url])
         image (or preview-image-url "img/default-thumbnail.png")
-        {:keys [title summary unplugged platform  skills]} fields
+        {:keys [title summary unplugged platform skills]} fields
+        platform-name (:name platform)
+        platform-color (:color platform)
         set-as-showdown (fn [field & [class]]
                           [:div {:class class
                                  "dangerouslySetInnerHTML"
@@ -19,8 +21,9 @@
       (if platform
        [:div.platform-wrap
         [:b "Platform: "]
-        [:div.platform.btn {:on-click #(rf/dispatch [:filter-activities-by-search-term platform])}
-          [set-as-showdown platform]]]
+        [:div.platform.btn {:on-click #(rf/dispatch [:filter-activities-by-search-term platform-name])
+                            :style {:background-color platform-color}}
+         [set-as-showdown platform-name]]]
        [:div.platform-wrap
         [:div.unplugged.btn
          "UNPLUGGED"]])

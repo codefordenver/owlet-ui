@@ -3,6 +3,7 @@
 @font-stack: "Rubik", sans-serif;
 @primary-color: #0c171b;
 @purple: #6A2569;
+@dark-gray: rgb(12, 23, 27);
 
 body {
   font: 100% @font-stack;
@@ -468,6 +469,7 @@ mark.white {
     padding: 25px 15px;
   }
   .branchwrap {
+    border-radius: 7px;
     margin: 15px 0;
     height: 117px;
     background-size: 100%;
@@ -481,6 +483,7 @@ mark.white {
       background-size: 125% !important;
     }
     .branch-bg {
+      border-radius: 7px;
       height: 100%;
       background-size: 225% 100%;
       background-repeat: no-repeat;
@@ -536,6 +539,19 @@ mark.white {
   align-items: flex-start;
 }
 
+.platform-description {
+  padding: 1em;
+  background-color: @dark-gray;
+  color: white;
+  margin: 0 15px 30px 15px;
+  a:hover {
+    color: cornflowerblue;
+  }
+  p {
+    margin-bottom: 0;
+  }
+}
+
 .branch-activities-wrap {
   margin: 15px 20px 0 25px;
   h2 {
@@ -581,9 +597,9 @@ img.back {
 .platform {
   color: white;
   margin-bottom: 15px;
-  background-color: #00A79D;
+  background-color: #AAAAAA;
   &:hover {
-    background-color: #65D2C0;
+    opacity: 0.75;
   }
 }
 
@@ -600,6 +616,7 @@ img.back {
 }
 
 .activity-thumbnail-wrap {
+  border-radius: 7px;
   font-size: 0.9em;
   @media (max-width: 1187px) {
     font-size: 0.8em;
@@ -724,7 +741,7 @@ img.back {
 
 .activity-skills-wrap {
   padding: 5px;
-  background-color: rgb(12, 23, 27);
+  background-color: @dark-gray;
   color: white;
   display: -webkit-flex;
   display: flex;
@@ -844,7 +861,7 @@ input[type="radio"]:checked + label{
 
 .search {
   input {
-    border-radius: 2px;
+    border-radius: 0 .25rem !important;
     font-size: 0.9rem;
     border: 1px solid #2a2b31;
     background-color: white;

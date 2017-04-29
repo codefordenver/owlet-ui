@@ -80,11 +80,11 @@
             (for [activity activities]
               (-> activity
                 (assoc-in [:fields :platform]
-                          (-> (filter #(= (get-in activity [:fields :platformRef :sys :id])
-                                          (get-in % [:sys :id])) platforms)
-                              first
-                              :fields
-                              :name))
+                          (some #(when (= (get-in activity [:fields :platformRef :sys :id])
+                                          (get-in % [:sys :id]))
+                                       (hash-map :name (get-in % [:fields :name])
+                                                 :color (get-in % [:fields :color])))
+                            platforms))
                 (update-in [:fields :preview :sys]   ; Add img. URL at
                            (fn [{id :id :as sys}]    ;  [.. :sys :url]
                              (assoc sys
