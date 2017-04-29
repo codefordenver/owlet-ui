@@ -38,49 +38,78 @@
     {}))
 
 
+(defn- id-details
+  [fb-id]
+  (let [private-ref  (fb/path-str->db-ref (str "users/" (name fb-id)))
+        presence-ref (fb/path-str->db-ref (str "presence/" (name fb-id)))]
+    {:firebase-id      fb-id
+     :private-ref      private-ref
+     :presence-ref     presence-ref}))
+
+
 (rf/reg-event-fx
   :firebase-auth-change
   (fn [cofx [_ fb-user]]
-    ; If user is logged into firebase, fb-user is a JS object containing
-    ; a string in its uid property. Otherwise, fb-user is nil. Thus we will
-    ; know whether we're logged-in simply from (:my-user-id db). Also, if
-    ; non-nil user-id changed (from nil), then turn on the presence watcher.
-    (let [new-id-kw (some-> fb-user .-uid keyword)
-          old-identity (-> cofx :db :my-identity)]
-      ; Compare user-id with FORMER value at :my-user-id in app-db.
-      (if (= new-id-kw (:firebase-id old-identity))
-        {}
-        {:change-user [new-id-kw old-identity]}))))
+    ; If I'm logged into firebase, fb-user is a JS object containing a string
+    ; in its uid property. Otherwise, fb-user is nil. We now record this ID in
+    ; subtree :my-identity. Thus, we know I am logged-in simply if and only if
+    ; (get-in db [:my-identity :firebase-id]) is not nil. If this value changed
+    ; then we also need to turn on/off listening for events about me or of
+    ; interest to me, which are dispatched by owlet-ui.firebase/on-change.
+
+    (let [new-fb-id    (some-> fb-user .-uid keyword)
+          old-identity (get-in cofx [:db :my-identity])]
+
+      ; Compare my new id with FORMER :firebase-id.
+      (if (= new-fb-id (:firebase-id old-identity))
+        {}                       ; No change in id. Do nothing.
+        (if new-fb-id            ; Id changed. I logged in or out.
+
+          ; I just now logged in.
+          (let [new-identity (id-details new-fb-id)]
+            {:db (assoc (:db cofx) :my-identity new-identity)
+             ; Note that this :my-identity subtree REPLACES the existing one,
+             ; if any. So it is important that this takes place BEFORE any
+             ; events that modify the subtree, such as produced by the :private
+             ; listener registration in :start-authorized-listening, below.
+             ; This is ensured here because both the change to app-db and the
+             ; registration are effects scheduled for the next tick. So any
+             ; event dispatched as the result of the latter cannot preceed the
+             ; former.
+             :start-authorized-listening new-identity})
+
+          ; I just now logged out.
+          {:db (assoc (:db cofx) :my-identity nil)
+           :stop-authorized-listening old-identity})))))
 
 
 (rf/reg-fx
-  :change-user
-  (fn [[new-id-kw {:keys [firebase-db-ref presence-off-cb]}]]
-    (if new-id-kw
-
-      ; User just logged in, so track presence and save the user's firebase id,
-      ; the location (ref) in the firebase database where his/her persisted
-      ; data is stored, and the callback we'll need to turn off presence when
-      ; logging out.
-      (let [new-ref (fb/path-str->db-ref (str "users/" (name new-id-kw)))]
-        (rf/dispatch
-          [:my-identity {:firebase-id     new-id-kw
-                         :firebase-db-ref new-ref
-                         :presence-off-cb (fb/note-presence-changes new-ref)}]))
-
-      ; Else just logged out. Turn off presence tracking and set :online false.
-      ; Also flag that we're logged out with nil for :my-user-id.
-      (do (.off firebase-db-ref "value" presence-off-cb)
-          ; TODO: Does .off really work? Try logging out, :online is false -- OK.
-          ;       Disconnect from network, then reconnect. :online becomes true. How?
-          ;       We're still logged out, so shouldn't know which user's :online to set.
-          (fb/reset-into-ref
-            firebase-db-ref
-            {:online             false
-             :online-change-time fb/timestamp-placeholder})
-          (rf/dispatch [:my-identity nil])))))
+  :start-authorized-listening
+  (fn [{:keys [private-ref presence-ref]}]
+    (fb/on-change "value" private-ref :private)
+    (fb/note-presence-changes presence-ref)))
 
 
+(rf/reg-fx
+  :stop-authorized-listening
+  (fn [{:keys [private-ref presence-ref]}]
+    (.off private-ref)
+    (.off presence-ref)
+    ; TODO: Does .off really work? Try logging out, :online is false -- OK.
+    ;       Disconnect from network, then reconnect. :online becomes true. How?
+    ;       We're still logged out, so shouldn't know which user's :online to set.
+    (fb/reset-into-ref
+      presence-ref
+      {:online             false
+       :online-change-time fb/timestamp-placeholder})))
 
 
+(rf/reg-event-fx
+  :log-out
+  (fn [cofx _]
+    {:db                (app/note-pending cofx :log-out)
+     :firebase-sign-out fb/firebase-auth-object}))
+
+
+(reg-setter :private [:my-identity :private])
 

@@ -10,7 +10,7 @@
   []
   (let [upload-error (r/atom nil)
         progress-pct (r/atom 0)
-        me           (rf/subscribe [:my-identity])]
+        me           (rf/subscribe [:my-id])]
     (fn []
       (if @me        ; Uploading a file is only permitted with a :firebase-id.
         [:form
@@ -25,7 +25,7 @@
            :type     "button"
            :on-click #(fb/ez-upload-file "upload-input-id" ; Input DOM id.
                                          (str "users/"     ; Firebase Strg dir.
-                                              (name (:firebase-id @me))
+                                              (name @me)
                                               "/background-image")
                                          progress-pct      ; Tracking pct done.
                                          upload-error      ; Tracking any error.

@@ -66,7 +66,7 @@
 
 (rf/reg-event-fx
   :update-user-background!
-  (fn [{{{my-db-ref :firebase-db-ref} :my-identity} :db} [_ url]]
+  (fn [{{{my-db-ref :private-ref} :my-identity} :db} [_ url]]
     {:firebase-reset-into-ref [my-db-ref {:background-image-url url}]
      :dispatch                [:show-bg-img-upload false]}))
 

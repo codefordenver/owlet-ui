@@ -39,13 +39,10 @@
                           :auth0-error)
   (fb/on-auth-change fb/firebase-auth-object :firebase-auth-change)
 
-  (let [users-db-path (fb/path-str->db-ref "users")]
-    (fb/on-change users-db-path :firebase-users-change))
-
   (let [active-view (rf/subscribe [:active-view])
         loading? (rf/subscribe [:set-loading-state?])
         src (rf/subscribe [:my-background-image-url])
-        is-user-logged-in? (rf/subscribe [:my-identity])]
+        is-user-logged-in? (rf/subscribe [:my-id])]
     (fn []
       (set! (-> js/document .-title) @(rf/subscribe [:app-title]))
       (if (= @active-view :welcome-view)
