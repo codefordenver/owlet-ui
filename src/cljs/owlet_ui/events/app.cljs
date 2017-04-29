@@ -109,7 +109,7 @@
         ;; by skill
         ;; --------
 
-        (let [filtered-set (filterv #(when (contains? (:skill-set %) search-term) %) activities)]
+        (let [filtered-set (filter #(when (contains? (:skill-set %) search-term) %) activities)]
           (if (seq filtered-set)
             (do
               (set-path (str "search/" (->kebab-case term)))
@@ -120,7 +120,7 @@
             ;; by activity name (title)
             ;; ------------------------
 
-            (let [filtered-set (filterv #(when (= (get-in % [:fields :title]) term) %) activities)]
+            (let [filtered-set (filter #(when (= (get-in % [:fields :title]) term) %) activities)]
               (if (seq filtered-set)
                 (let [activity (first filtered-set)
                       activity-id (get-in activity [:sys :id])]
@@ -130,7 +130,7 @@
                 ;; by platform
                 ;; -----------
 
-                (let [filtered-set (filterv #(let [platform (get-in % [:fields :platform :name])]
+                (let [filtered-set (filter #(let [platform (get-in % [:fields :platform :name])]
                                                (when (= platform term) %)) activities)]
                   (if (seq filtered-set)
                     (let [description (some #(when (= term (:name %)) (:description %))
