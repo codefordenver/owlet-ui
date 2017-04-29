@@ -19,7 +19,7 @@
        [:div.activity-skills-wrap
         [:div.skills
           "SKILLS: "]
-        (for [c skills]
+        (for [skill skills]
          ^{:key (gensym "skill-")}
-          [:div.tag {:on-click #(rf/dispatch [:filter-activities-by-search-term c])}
-            [:span c]])])]))
+          [:div.tag {:on-click #(rf/dispatch [:filter-activities-by-search-term skill])}
+            [:span skill]])])]))

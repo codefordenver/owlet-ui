@@ -4,6 +4,7 @@
             [cljsjs.bootstrap]
             [cljsjs.jquery]
             [reagent.core :as reagent]
+            [re-frame.core :as rf]
             [owlet-ui.helpers :refer [showdown]]))
 
 (defn activity-info [unplugged platform  summary
@@ -29,7 +30,8 @@
                   :body "UNPLUGGED activities do not require a computer or device"]]
        [:div
          [:b "Platform"] [:br]
-         [:button.btn.platform platform]])
+         [:button.btn.platform {:on-click #(rf/dispatch [:filter-activities-by-search-term platform])}
+            platform]])
      [set-as-showdown "<b>Summary</b><br>" summary]
      (when why
       [set-as-showdown "<b>Why?</b><br>" why])
