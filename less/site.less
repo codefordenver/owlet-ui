@@ -3,6 +3,7 @@
 @font-stack: "Rubik", sans-serif;
 @primary-color: #0c171b;
 @purple: #6A2569;
+@dark-gray: rgb(12, 23, 27);
 
 body {
   font: 100% @font-stack;
@@ -536,6 +537,19 @@ mark.white {
   align-items: flex-start;
 }
 
+.platform-description {
+  padding: 1em;
+  background-color: @dark-gray;
+  color: white;
+  margin: 0 15px 30px 15px;
+  a:hover {
+    color: cornflowerblue;
+  }
+  p {
+    margin-bottom: 0;
+  }
+}
+
 .branch-activities-wrap {
   margin: 15px 20px 0 25px;
   h2 {
@@ -724,7 +738,7 @@ img.back {
 
 .activity-skills-wrap {
   padding: 5px;
-  background-color: rgb(12, 23, 27);
+  background-color: @dark-gray;
   color: white;
   display: -webkit-flex;
   display: flex;
