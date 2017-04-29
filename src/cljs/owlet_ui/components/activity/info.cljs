@@ -10,6 +10,7 @@
 (defn activity-info [unplugged platform  summary
                      why preRequisites materials]
   (let [showing? (reagent/atom false)
+        platform-name (:name platform)
         set-as-showdown (fn [title field & [class]]
                           [:div {:class class
                                  "dangerouslySetInnerHTML"
@@ -30,8 +31,8 @@
                   :body "UNPLUGGED activities do not require a computer or device"]]
        [:div
          [:b "Platform"] [:br]
-         [:button.btn.platform {:on-click #(rf/dispatch [:filter-activities-by-search-term platform])}
-            platform]])
+         [:button.btn.platform {:on-click #(rf/dispatch [:filter-activities-by-search-term platform-name])}
+            platform-name]])
      [set-as-showdown "<b>Summary</b><br>" summary]
      (when why
       [set-as-showdown "<b>Why?</b><br>" why])

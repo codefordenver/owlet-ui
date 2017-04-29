@@ -130,7 +130,7 @@
                 ;; by platform
                 ;; -----------
 
-                (let [filtered-set (filterv #(let [platform (get-in % [:fields :platform])]
+                (let [filtered-set (filterv #(let [platform (get-in % [:fields :platform :name])]
                                                (when (= platform term) %)) activities)]
                   (if (seq filtered-set)
                     (let [description (some #(when (= term (:name %)) (:description %))
