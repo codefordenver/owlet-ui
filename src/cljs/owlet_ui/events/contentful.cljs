@@ -20,13 +20,16 @@
   :get-library-content-from-contentful
   (fn [{db :db} [_ route-params]]
     ;; short-circuit xhr request when we have activity data
-    (when-not (seq (:activities db))
+    (if-not (seq (:activities db))
       {:db         (merge (assoc-in db [:app :loading?] true)
                           (assoc-in db [:app :route-params] route-params))
        :http-xhrio {:method          :get
                     :uri             space-endpoint
                     :response-format (ajax/json-response-format {:keywords? true})
-                    :on-success      [:get-library-content-from-contentful-successful]}})))
+                    :on-success      [:get-library-content-from-contentful-successful]}}
+      ;; always assoc route-params for navigation
+      {:db         (merge (assoc-in db [:app :loading?] true)
+                          (assoc-in db [:app :route-params] route-params))})))
 
 
 (rf/reg-event-db
