@@ -8,14 +8,14 @@
     [:div.branch-activities-wrap
      (if-not branch-activities
        [:div
-         [:h2 [:mark.white.box.box-shadow [:b "Loading..."]]]]
+         [:h2 [:mark.white.box [:b "Loading..."]]]]
        (if (= branch-activities "error")
          [:div
-           [:h2 [back] [:mark.white.box.box-shadow [:b "This branch does not exist"]]]]
+           [:h2 [back] [:mark.white.box [:b "This branch does not exist"]]]]
          (let [{:keys [display-name activities]} branch-activities]
            [:div
             [:h2 [back]
-             [:mark.white.box-shadow [:b display-name]]]
+             [:mark.white [:b display-name]]]
             [:div {:style {:text-align "right"}}
              [:mark.white {:style {:background-color "rgba(255,255,255,0.65)"
                                    :margin-right "15px"
