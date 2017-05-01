@@ -11,6 +11,7 @@
                      why preRequisites materials]
   (let [showing? (reagent/atom false)
         platform-name (:name platform)
+        platform-color (:color platform)
         set-as-showdown (fn [title field & [class]]
                           [:div {:class class
                                  "dangerouslySetInnerHTML"
@@ -31,7 +32,8 @@
                   :body "UNPLUGGED activities do not require a computer or device"]]
        [:div
          [:b "Platform"] [:br]
-         [:button.btn.platform {:on-click #(rf/dispatch [:filter-activities-by-search-term platform-name])}
+         [:button.btn.platform {:style {:background-color platform-color}
+                                :on-click #(rf/dispatch [:filter-activities-by-search-term platform-name])}
             platform-name]])
      [set-as-showdown "<b>Summary</b><br>" summary]
      (when why
