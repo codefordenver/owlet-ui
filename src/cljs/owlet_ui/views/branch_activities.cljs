@@ -27,7 +27,6 @@
              (if (seq activities)
                (for [activity activities
                      :let [fields (:fields activity)
-                           id (get-in fields [:preview :sys :id] (gensym "key-"))
                            entry-id (get-in activity [:sys :id])]]
-                 ^{:key id} [activity-thumbnail fields entry-id])
+                 ^{:key [entry-id (gensym "key-")]} [activity-thumbnail fields entry-id])
                [:p.no-activities [:mark "No activities in this branch yet. Check back soon."]])]])))]))
