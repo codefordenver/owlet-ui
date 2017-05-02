@@ -8,13 +8,13 @@
   (let [search-results @(rf/subscribe [:activities-by-branch-in-view])]
     [:div.branch-activities-wrap
       (if-not search-results
-        [:h2 [:mark.white.box.box-shadow [:b "Loading..."]]]
+        [:h2 [:mark.white.box [:b "Loading..."]]]
         (if (= search-results "none")
-          [:h2 [back] [:mark.white.box.box-shadow [:b "Nothing yet, but we're working on it."]]]
+          [:h2 [back] [:mark.white.box [:b "Nothing yet, but we're working on it."]]]
           (let [{:keys [display-name activities & description]} search-results]
             [:div
               [:h2 [back]
-               [:mark.white.box-shadow [:b display-name]]]
+               [:mark.white [:b display-name]]]
               (when-not description
                 [:div {:style {:text-align "right"}}
                  [:mark.white {:style {:background-color "rgba(255,255,255,0.65)"
@@ -24,9 +24,12 @@
                                        :font-size "1.02em"}}
                   "* = software required"]])
               (when description
-                [:div {:class "platform-description"
-                       "dangerouslySetInnerHTML"
-                              #js{:__html (.makeHtml showdown description)}}])
+                [:div
+                  [:div {:class "platform-description"
+                         "dangerouslySetInnerHTML"
+                                #js{:__html (.makeHtml showdown description)}}]
+                  [:div {:style {:margin-left "15px"}}
+                   [:h3 [:mark.white [:b "Projects"]]]]])
               [:div.flexcontainer-wrap
                (if (seq activities)
                  (for [activity activities

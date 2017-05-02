@@ -4,6 +4,7 @@
 @primary-color: #0c171b;
 @purple: #6A2569;
 @dark-gray: rgb(12, 23, 27);
+@light-gray: #C8C8C8;
 
 body {
   font: 100% @font-stack;
@@ -53,6 +54,7 @@ a:hover {
   z-index: 1;
   .search {
     border-color: black;
+    border-radius: 0 3.5px;
     background-color: black;
     height: 50px;
     font-size: 1.2em;
@@ -544,10 +546,11 @@ mark.white {
 }
 
 .platform-description {
-  padding: 1em;
+  padding: 0.5em;
   background-color: @dark-gray;
-  color: white;
-  margin: 0 15px 30px 15px;
+  color: @light-gray;
+  margin: 2px 15px 30px 15px;
+  font-size: 1.1em;
   a:hover {
     color: cornflowerblue;
   }
@@ -561,6 +564,10 @@ mark.white {
   h2 {
     font-size: 2.4rem;
     margin: 1.2em 0 0 0;
+  }
+  h3 {
+    font-size: 1.9rem;
+    margin-bottom: 1em;
   }
   @media (max-width: 500px) {
     .col-xs-12.col-md-6.col-lg-4 {
@@ -600,7 +607,6 @@ img.back {
 
 .platform {
   color: white;
-  margin-bottom: 15px;
   background-color: #AAAAAA;
   &:hover {
     opacity: 0.75;
@@ -861,15 +867,6 @@ label {
 input[type="radio"]:checked + label{
   background-color: #00A79D;
   color: white;
-}
-
-.search {
-  input {
-    border-radius: 0 .25rem !important;
-    font-size: 0.9rem;
-    border: 1px solid #2a2b31;
-    background-color: white;
-  }
 }
 
 /* no gutters! */
