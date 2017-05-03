@@ -103,7 +103,7 @@
 
       (if-let [filtered-set (search-term (:activities-by-branch db))]
         (do
-          (set-path (->kebab-case term))
+          (set-path (str "branch/" (->kebab-case term)))
           (assoc db :activities-by-branch-in-view filtered-set))
 
         ;; by skill
@@ -112,7 +112,7 @@
         (let [filtered-set (filter #(when (contains? (:skill-set %) search-term) %) activities)]
           (if (seq filtered-set)
             (do
-              (set-path (str "search/" (->kebab-case term)))
+              (set-path (str "skill/" (->kebab-case term)))
               (rf/dispatch [:set-active-document-title! term])
               (assoc db :activities-by-branch-in-view (hash-map :activities filtered-set
                                                                 :display-name term)))
@@ -135,7 +135,7 @@
                   (if (seq filtered-set)
                     (let [description (some #(when (= term (:name %)) (:description %))
                                         (:activity-platforms db))]
-                      (set-path (str "search/" (->kebab-case term)))
+                      (set-path (str "platform/" (->kebab-case term)))
                       (assoc db :activities-by-branch-in-view (hash-map :activities filtered-set
                                                                         :display-name term
                                                                         :description description)))

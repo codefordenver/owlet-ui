@@ -28,13 +28,17 @@
             (rf/dispatch [:set-active-view :branches-view])
             (rf/dispatch [:set-active-document-title! "Branches"]))
 
-  (defroute "/search/:search" {:as params}
-            (rf/dispatch [:set-active-view :search-results-view])
+  (defroute "/skill/:skill" {:as params}
+            (rf/dispatch [:set-active-view :filtered-activities-view])
             (rf/dispatch [:get-library-content-from-contentful params]))
 
-  (defroute "/:branch" {:as params}
+  (defroute "/platform/:platform" {:as params}
+            (rf/dispatch [:set-active-view :filtered-activities-view])
+            (rf/dispatch [:get-library-content-from-contentful params]))
+
+  (defroute "/branch/:branch" {:as params}
             (rf/dispatch [:get-library-content-from-contentful params])
-            (rf/dispatch [:set-active-view :branch-activities-view])
+            (rf/dispatch [:set-active-view :filtered-activities-view])
             (rf/dispatch [:set-active-document-title! (:branch params)]))
 
   (defroute "/activity/#!:activity" {:as params}

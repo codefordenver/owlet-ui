@@ -59,3 +59,5 @@
 (reg-getter :activity-titles [:activity-titles])
 
 (reg-getter :activity-platforms [:activity-platforms])
+
+(reg-getter :route-params [:app :route-params])
