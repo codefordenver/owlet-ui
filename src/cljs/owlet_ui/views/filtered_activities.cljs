@@ -5,7 +5,7 @@
             [owlet-ui.helpers :refer [showdown]]))
 
 (defn filtered-activities-component [filter]
-  (let [filtered-activities @(rf/subscribe [:activities-by-branch-in-view])]
+  (let [filtered-activities @(rf/subscribe [:activities-by-filter])]
     [:div.branch-activities-wrap
      (if-not filtered-activities
        [:h2 [:mark.white.box [:b "Loading..."]]]

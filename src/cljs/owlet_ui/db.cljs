@@ -11,11 +11,10 @@
                                   :title        (str config/project-name " " "^OvO^")}
    :activities                   []
    :activity-branches            nil
-   :activities-by-branch-in-view nil
+   :activities-by-filter nil
    :activities-by-branch         {}
    :active-branch-activities     nil
    :my-identity                  nil
    :activity-in-view             nil
    :activity-titles              nil
    :activity-platforms           nil})
-

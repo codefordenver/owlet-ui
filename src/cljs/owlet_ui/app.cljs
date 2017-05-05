@@ -15,14 +15,12 @@
             [owlet-ui.async :as async]
             [owlet-ui.auth0 :as auth0]
             [owlet-ui.config :as config]
-            [owlet-ui.firebase :as fb]
-            [owlet-ui.views.search-results :refer [search-results-view]]
-            [owlet-ui.views.branch-activities :refer [branch-activities-view]]))
+            [owlet-ui.firebase :as fb]))
 
 (defmulti views identity)
 (defmethod views :welcome-view [] [welcome-view])
-;; TODO: descructure the :param from route-params
-(defmethod views :filtered-activities-view [] [filtered-activities-view (first (keys @(rf/subscribe [:route-params])))])
+(defmethod views :filtered-activities-view []
+  [filtered-activities-view (first (keys @(rf/subscribe [:route-params])))])
 (defmethod views :not-found-view [] [not-found-view])
 (defmethod views :activity-view [] [activity-view])
 (defmethod views :branches-view [] [branches-view])
