@@ -144,20 +144,15 @@
                                  (into {}))]
       (when-let [route-params (get-in db [:app :route-params])]
         (let [{:keys [activity branch skill platform]} route-params]
-          (when activity
-            (rf/dispatch [:set-activity-in-view activity all-activities]))
-          (when branch
-            (let [activities-by-branch-in-view ((keyword branch) activities-by-branch)]
-              (rf/dispatch [:set-activities-by-branch-in-view branch activities-by-branch-in-view])
-              (assoc db :activity-branches branches
-                        :skills skills
-                        :activities-by-branch activities-by-branch
-                        :activity-titles activity-titles)))
-          ;; TODO: maybe cond
-          (when platform
-            (rf/dispatch [:filter-activities-by-search-term platform]))
-          (when skill
-            (rf/dispatch [:filter-activities-by-search-term skill]))))
+          (cond platform (rf/dispatch [:filter-activities-by-search-term platform])
+                skill    (rf/dispatch [:filter-activities-by-search-term skill])
+                activity (rf/dispatch [:set-activity-in-view activity all-activities])
+                branch   (let [activities-by-branch-in-view ((keyword branch) activities-by-branch)]
+                          (rf/dispatch [:set-activities-by-branch-in-view branch activities-by-branch-in-view])
+                          (assoc db :activity-branches branches
+                                    :skills skills
+                                    :activities-by-branch activities-by-branch
+                                    :activity-titles activity-titles)))))
       (assoc db :activity-branches branches
                 :skills skills
                 :activities-by-branch activities-by-branch
