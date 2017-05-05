@@ -152,7 +152,8 @@
                           (assoc db :activity-branches branches
                                     :skills skills
                                     :activities-by-branch activities-by-branch
-                                    :activity-titles activity-titles)))))
+                                    :activity-titles activity-titles))
+                :else db)))
       (assoc db :activity-branches branches
                 :skills skills
                 :activities-by-branch activities-by-branch

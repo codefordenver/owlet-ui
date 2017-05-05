@@ -139,4 +139,4 @@
                       (assoc db :activities-by-branch-in-view (hash-map :activities filtered-set
                                                                         :display-name term
                                                                         :description description)))
-                    (assoc db :activities-by-branch-in-view "none")))))))))))
+                    (assoc db :activities-by-branch-in-view "error")))))))))))
