@@ -11,6 +11,7 @@
         {:keys [title summary unplugged platform skills]} fields
         platform-name (:name platform)
         platform-color (:color platform)
+        route-param (first (keys @(rf/subscribe [:route-params])))
         showing? (reagent/atom false)]
     [:div.col-xs-12.col-md-6.col-lg-4
      [:div.activity-thumbnail-wrap.box-shadow
@@ -27,8 +28,10 @@
          :anchor [:div.platform.btn
                   {:on-click #(rf/dispatch [:filter-activities-by-search-term platform-name])
                    :style {:background-color platform-color}
-                   :on-mouse-over (handler-fn (reset! showing? true))
-                   :on-mouse-out  (handler-fn (reset! showing? false))}
+                   :on-mouse-over (when (not= route-param :platform)
+                                    (handler-fn (reset! showing? true)))
+                   :on-mouse-out  (when (not= route-param :platform)
+                                    (handler-fn (reset! showing? false)))}
                   platform-name]
          :popover [re-com/popover-content-wrapper
                    :close-button? false
