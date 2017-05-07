@@ -11,20 +11,19 @@
             [owlet-ui.views.activity :refer [activity-view]]
             [owlet-ui.views.branches :refer [branches-view]]
             [owlet-ui.views.settings :refer [settings-view]]
+            [owlet-ui.views.filtered-activities :refer [filtered-activities-view]]
             [owlet-ui.async :as async]
             [owlet-ui.auth0 :as auth0]
             [owlet-ui.config :as config]
-            [owlet-ui.firebase :as fb]
-            [owlet-ui.views.search-results :refer [search-results-view]]
-            [owlet-ui.views.branch-activities :refer [branch-activities-view]]))
+            [owlet-ui.firebase :as fb]))
 
 (defmulti views identity)
 (defmethod views :welcome-view [] [welcome-view])
+(defmethod views :filtered-activities-view []
+  [filtered-activities-view (first (keys @(rf/subscribe [:route-params])))])
 (defmethod views :not-found-view [] [not-found-view])
-(defmethod views :search-results-view [] [search-results-view])
 (defmethod views :activity-view [] [activity-view])
 (defmethod views :branches-view [] [branches-view])
-(defmethod views :branch-activities-view [] [branch-activities-view])
 (defmethod views :settings-view [] [settings-view])
 (defmethod views :default [] [:div])
 

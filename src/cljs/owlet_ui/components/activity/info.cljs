@@ -28,13 +28,21 @@
                  "UNPLUGGED"]
         :popover [re-com/popover-content-wrapper
                   :close-button? false
-                  :title "What does this mean?"
-                  :body "UNPLUGGED activities do not require a computer or device"]]
+                  :body "Does not require a computer or device"]]
        [:div
          [:b "Platform"] [:br]
-         [:button.btn.platform {:style {:background-color platform-color}
-                                :on-click #(rf/dispatch [:filter-activities-by-search-term platform-name])}
-            platform-name]])
+         [re-com/popover-anchor-wrapper
+          :showing? showing?
+          :position :below-left
+          :anchor [:button.platform.btn
+                   {:on-click #(rf/dispatch [:filter-activities-by-search-term platform-name])
+                    :style {:background-color platform-color}
+                    :on-mouse-over (handler-fn (reset! showing? true))
+                    :on-mouse-out  (handler-fn (reset! showing? false))}
+                   platform-name]
+          :popover [re-com/popover-content-wrapper
+                    :close-button? false
+                    :body "Click for more info"]]])
      [set-as-showdown "<b>Summary</b><br>" summary]
      (when why
       [set-as-showdown "<b>Why?</b><br>" why])
