@@ -51,12 +51,9 @@
                                               :activity-in-view
                                               :fields
                                               :title)
-                  :branch-activities-view (-> db
-                                              :activities-by-branch-in-view
-                                              :display-name)
-                  :search-results-view    (-> db
-                                              :activities-by-branch-in-view
-                                              :display-name)}
+                  :filtered-activities-view (-> db
+                                                :activities-by-filter
+                                                :display-name)}
           default-title (:welcome-view titles)
           document-title (or (titles active-view) (clj-str/capitalize (or val "")))
           title-template (str document-title " | " config/project-name)
@@ -75,8 +72,8 @@
   :set-activities-by-branch-in-view
   (fn [db [_ branch-name activities-by-branch]]
     (if-let [activities-by-branch ((keyword branch-name) (or (:activities-by-branch db) activities-by-branch))]
-      (assoc db :activities-by-branch-in-view activities-by-branch)
-      (assoc db :activities-by-branch-in-view "error"))))
+      (assoc db :activities-by-filter activities-by-branch)
+      (assoc db :activities-by-filter "error"))))
 
 
 (rf/reg-event-db
@@ -103,8 +100,8 @@
 
       (if-let [filtered-set (search-term (:activities-by-branch db))]
         (do
-          (set-path (->kebab-case term))
-          (assoc db :activities-by-branch-in-view filtered-set))
+          (set-path (str "branch/" (->kebab-case term)))
+          (assoc db :activities-by-filter filtered-set))
 
         ;; by skill
         ;; --------
@@ -112,9 +109,9 @@
         (let [filtered-set (filter #(when (contains? (:skill-set %) search-term) %) activities)]
           (if (seq filtered-set)
             (do
-              (set-path (str "search/" (->kebab-case term)))
+              (set-path (str "skill/" (->kebab-case term)))
               (rf/dispatch [:set-active-document-title! term])
-              (assoc db :activities-by-branch-in-view (hash-map :activities filtered-set
+              (assoc db :activities-by-filter (hash-map :activities filtered-set
                                                                 :display-name term)))
 
             ;; by activity name (title)
@@ -135,8 +132,8 @@
                   (if (seq filtered-set)
                     (let [description (some #(when (= term (:name %)) (:description %))
                                         (:activity-platforms db))]
-                      (set-path (str "search/" (->kebab-case term)))
-                      (assoc db :activities-by-branch-in-view (hash-map :activities filtered-set
+                      (set-path (str "platform/" (->kebab-case term)))
+                      (assoc db :activities-by-filter (hash-map :activities filtered-set
                                                                         :display-name term
                                                                         :description description)))
-                    (assoc db :activities-by-branch-in-view "none")))))))))))
+                    (assoc db :activities-by-filter "error")))))))))))

@@ -36,9 +36,9 @@
     (get-in db [:activities-by-branch])))
 
 (rf/reg-sub
-  :activities-by-branch-in-view
+  :activities-by-filter
   (fn [db]
-    (get-in db [:activities-by-branch-in-view])))
+    (get-in db [:activities-by-filter])))
 
 (rf/reg-sub
   :activity-in-view
@@ -59,3 +59,5 @@
 (reg-getter :activity-titles [:activity-titles])
 
 (reg-getter :activity-platforms [:activity-platforms])
+
+(reg-getter :route-params [:app :route-params])
