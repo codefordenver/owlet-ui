@@ -47,10 +47,6 @@ for opt in $@; do
     esac
 done
 
-echo "$maybe_rlwrap lein do $maybe_clean cljsbuild once, with-profile $profile repl"
-$maybe_rlwrap lein do $maybe_clean cljsbuild once, with-profile $profile repl
-#
-# Here we explicitly invoked cljsbuild, so you'll see it in STDOUT running
-# twice. This seems to be needed to avoid an error, "REPL server launch timed
-# out."
+echo "$maybe_rlwrap lein do $maybe_clean with-profile $profile repl"
+$maybe_rlwrap lein do $maybe_clean with-profile $profile repl
 
