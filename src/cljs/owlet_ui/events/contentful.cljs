@@ -86,6 +86,7 @@
                           (some #(when (= (get-in activity [:fields :platformRef :sys :id])
                                           (get-in % [:sys :id]))
                                        (hash-map :name (get-in % [:fields :name])
+                                                 :search-name (str (->kebab-case (get-in % [:fields :name])))
                                                  :color (get-in % [:fields :color])))
                             platforms))
                 (update-in [:fields :preview :sys]   ; Add img. URL at

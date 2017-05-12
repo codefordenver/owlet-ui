@@ -127,13 +127,14 @@
                 ;; by platform
                 ;; -----------
 
-                (let [filtered-set (filter #(let [platform (get-in % [:fields :platform :name])]
-                                               (when (= platform term) %)) activities)]
+                (let [filtered-set (filter #(let [platform (get-in % [:fields :platform :search-name])]
+                                               (when (= platform term) %)) activities)
+                      platform-name (get-in (first filtered-set) [:fields :platform :name])]
                   (if (seq filtered-set)
-                    (let [description (some #(when (= term (:name %)) (:description %))
+                    (let [description (some #(when (= platform-name (:name %)) (:description %))
                                         (:activity-platforms db))]
-                      (set-path (str "platform/" (->kebab-case term)))
+                      (set-path (str "platform/" term))
                       (assoc db :activities-by-filter (hash-map :activities filtered-set
-                                                                        :display-name term
+                                                                        :display-name platform-name
                                                                         :description description)))
                     (assoc db :activities-by-filter "error")))))))))))
