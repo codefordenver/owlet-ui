@@ -3,7 +3,8 @@
             [re-com.core :refer [typeahead]]
             [re-frame.core :as rf]
             [reagent.core :as reagent]
-            [owlet-ui.helpers :refer [class-names]]))
+            [owlet-ui.helpers :refer [class-names]]
+            [camel-snake-kebab.core :refer [->kebab-case]]))
 
 (defonce search-model (reagent/atom {}))
 
@@ -56,8 +57,9 @@
               skills (rf/subscribe [:skills])
               activity-titles (rf/subscribe [:activity-titles])
               activity-platforms (rf/subscribe [:activity-platforms])
+              platform-search-names (map #(->kebab-case (:name %)) @activity-platforms)
               platform-names (map #(:name %) @activity-platforms)
-              search-collections (concat @skills @branches @activity-titles platform-names)
+              search-collections (concat @skills @branches @activity-titles platform-search-names)
               result-formatter #(-> {:term %})
               suggestions-for-search
               (fn [s]
@@ -84,4 +86,8 @@
             :data-source suggestions-for-search
             :model search-model
             :placeholder "Search..."
-            :render-suggestion #(:term %)]]))}))
+            :render-suggestion (fn [t]
+                                 (let [platform-index (.indexOf platform-search-names (:term t))]
+                                   (if (>= platform-index 0)
+                                     (nth platform-names platform-index)
+                                     (:term t))))]]))}))

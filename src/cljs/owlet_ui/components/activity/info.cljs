@@ -11,6 +11,7 @@
                      why preRequisites materials]
   (let [showing? (reagent/atom false)
         platform-name (:name platform)
+        platform-search-name (:search-name platform)
         platform-color (:color platform)
         set-as-showdown (fn [title field & [class]]
                           [:div {:class class
@@ -35,7 +36,7 @@
           :showing? showing?
           :position :below-left
           :anchor [:button.platform.btn
-                   {:on-click #(rf/dispatch [:filter-activities-by-search-term platform-name])
+                   {:on-click #(rf/dispatch [:filter-activities-by-search-term platform-search-name])
                     :style {:background-color platform-color}
                     :on-mouse-over (handler-fn (reset! showing? true))
                     :on-mouse-out  (handler-fn (reset! showing? false))}
