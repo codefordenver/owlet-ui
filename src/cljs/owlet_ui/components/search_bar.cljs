@@ -86,8 +86,7 @@
             :data-source suggestions-for-search
             :model search-model
             :placeholder "Search..."
-            :render-suggestion (fn [t]
-                                 (let [platform-index (.indexOf platform-search-names (:term t))]
+            :render-suggestion #(let [platform-index (.indexOf platform-search-names (:term %))]
                                    (if (>= platform-index 0)
                                      (nth platform-names platform-index)
-                                     (:term t))))]]))}))
+                                     (:term %)))]]))}))
