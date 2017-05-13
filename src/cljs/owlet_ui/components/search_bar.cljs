@@ -61,6 +61,11 @@
               platform-names (map #(:name %) @activity-platforms)
               search-collections (concat @skills @branches @activity-titles platform-search-names)
               result-formatter #(-> {:term %})
+              suggestion-renderer
+              #(let [platform-index (.indexOf platform-search-names (:term %))]
+                (if (>= platform-index 0)
+                  (nth platform-names platform-index)
+                  (:term %)))
               suggestions-for-search
               (fn [s]
                 (if (< 1 (count s))
@@ -79,14 +84,11 @@
             :class (class-names @search-classes)
             :width "100%"
             :on-change change-handler
-            :suggestion-to-string #(:term %)
+            :suggestion-to-string suggestion-renderer
             :debounce-delay 100
             :change-on-blur? true
             :rigid? true
             :data-source suggestions-for-search
             :model search-model
             :placeholder "Search..."
-            :render-suggestion #(let [platform-index (.indexOf platform-search-names (:term %))]
-                                   (if (>= platform-index 0)
-                                     (nth platform-names platform-index)
-                                     (:term %)))]]))}))
+            :render-suggestion suggestion-renderer]]))}))
