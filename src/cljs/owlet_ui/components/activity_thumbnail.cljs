@@ -10,6 +10,7 @@
         image (or preview-image-url "img/default-thumbnail.png")
         {:keys [title summary unplugged platform skills]} fields
         platform-name (:name platform)
+        platform-search-name (:search-name platform)
         platform-color (:color platform)
         route-param (first (keys @(rf/subscribe [:route-params])))
         showing? (reagent/atom false)]
@@ -26,7 +27,7 @@
          :showing? showing?
          :position :below-left
          :anchor [:div.platform.btn
-                  {:on-click #(rf/dispatch [:filter-activities-by-search-term platform-name])
+                  {:on-click #(rf/dispatch [:filter-activities-by-search-term platform-search-name])
                    :style {:background-color platform-color}
                    :on-mouse-over (when (not= route-param :platform)
                                     (handler-fn (reset! showing? true)))
