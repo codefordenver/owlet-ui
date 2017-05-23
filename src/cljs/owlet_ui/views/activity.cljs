@@ -27,7 +27,6 @@
                         preview
                         challenge
                         materials
-                        unplugged
                         inspiration
                         preRequisites
                         platform
@@ -42,7 +41,7 @@
                (when (seq image-gallery-items)
                 [activity-image-gallery image-gallery-items])]
               [:div.activity-content.col-xs-12.col-lg-4
-               [activity-info unplugged platform  summary why preRequisites materials]
+               [activity-info platform  summary why preRequisites materials]
                (when challenge
                 [activity-challenge challenge])
                (when inspiration
