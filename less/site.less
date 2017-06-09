@@ -862,6 +862,36 @@ input[type="radio"]:checked + label{
   color: white;
 }
 
+#email-wrap {
+  padding: 5px;
+  background: rgb(201, 201, 201);
+  font-size: 0.8em;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  z-index: 3;
+}
+#email-text {
+  margin-bottom: 5px;
+}
+#email-input {
+  height: 23px;
+  border: none;
+}
+#email-button {
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  padding: 3px;
+  color: white;
+  background: red;
+  outline: 0;
+  border: none;
+  &:active {
+    outline: 0;
+  }
+}
+
 /* no gutters! */
 
 .no-gutter {
