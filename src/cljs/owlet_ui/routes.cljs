@@ -6,7 +6,6 @@
             [goog.history.EventType :as EventType]
             [re-frame.core :as rf]))
 
-
 (defn app-routes []
   (secretary/set-config! :prefix "#")
   ;; --------------------

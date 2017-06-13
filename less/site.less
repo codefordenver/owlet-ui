@@ -137,9 +137,20 @@ a:hover {
       color: #cffffd;
       text-decoration: none;
     }
-    img {
+    .branch-icon {
       margin-top: 10px;
       width: 80px;
+      height: 80px;
+      background:url('../img/icon1.png');
+      background-size:100%;
+      &:hover{
+        background:url('../img/icon1-nudge.gif');
+        background-size:100%;
+        -webkit-transition: background 1s;
+        -moz-transition: background 1s;
+        -o-transition: background 1s;
+        transition: background 1s;
+      }
     }
   }
 }
