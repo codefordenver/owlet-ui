@@ -1,10 +1,10 @@
 @import url('https://fonts.googleapis.com/css?family=Rubik:300,400,700');
 
 @font-stack: "Rubik", sans-serif;
-@primary-color: #0c171b;
 @purple: #6A2569;
 @dark-gray: rgb(12, 23, 27);
 @light-gray: #C8C8C8;
+@aqua: #65D2C0;
 
 body {
   font: 100% @font-stack;
@@ -829,8 +829,8 @@ button {
 
 .btn-login {
   color: #fff;
-  background-color: #65D2C0;
-  border-color: #65D2C0;
+  background-color: @aqua;
+  border-color: @aqua;
   &:hover {
     color: #5EFFE4;
     background-color: transparent;
@@ -840,10 +840,10 @@ button {
 .btn-logout {
   color: #5EFFE4;
   background-color: transparent;
-  border-color: #65D2C0;
+  border-color: @aqua;
   &:hover {
     color: #fff;
-    background-color: #65D2C0;
+    background-color: @aqua;
   }
 }
 
@@ -863,8 +863,10 @@ input[type="radio"]:checked + label{
 }
 
 #email-wrap {
-  padding: 5px;
-  background: rgb(201, 201, 201);
+  padding: 10px;
+  color: @light-gray;
+  border-radius: 7px 0;
+  background: @dark-gray;
   font-size: 0.8em;
   position: fixed;
   bottom: 0;
@@ -872,19 +874,25 @@ input[type="radio"]:checked + label{
   z-index: 3;
 }
 #email-text {
-  margin-bottom: 5px;
+  margin-bottom: 10px;
 }
 #email-input {
   height: 23px;
   border: none;
+  padding-left: 5px;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: @light-gray;
+  border-radius: 3px;
 }
 #email-button {
   position: absolute;
-  right: 5px;
-  bottom: 5px;
-  padding: 3px;
-  color: white;
-  background: red;
+  border-radius: 3px;
+  right: 10px;
+  bottom: 10px;
+  padding: 5px;
+  color: @light-gray;
+  font-size: 0.9em;
+  background-color: @purple;
   outline: 0;
   border: none;
   &:active {
