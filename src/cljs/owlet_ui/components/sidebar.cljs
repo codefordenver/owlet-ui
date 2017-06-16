@@ -18,10 +18,11 @@
                       :on-click #(rf/dispatch [:set-active-view :branches-view])}
        [re-com/popover-anchor-wrapper
          :showing? showing?
-         :position :right-center
+         :position :below-right
          :anchor [:div.branch-icon
                   {:on-mouse-over (handler-fn (reset! showing? true))
-                   :on-mouse-out  (handler-fn (reset! showing? true))}]
+                   :on-mouse-out  (handler-fn (reset! showing? false))}]
          :popover [re-com/popover-content-wrapper
                    :close-button? false
+                   :popover-color "black"
                    :body "Go to activities"]]]]]))

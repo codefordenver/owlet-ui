@@ -134,7 +134,7 @@ a:hover {
     overflow: hidden;
     background-color: @purple;
     a {
-      color: #cffffd;
+      color: white;
       text-decoration: none;
     }
     .branch-icon {
@@ -146,11 +146,14 @@ a:hover {
       &:hover{
         background:url('../img/icon1-nudge.gif');
         background-size:100%;
-        -webkit-transition: background 1s;
-        -moz-transition: background 1s;
-        -o-transition: background 1s;
-        transition: background 1s;
       }
+    }
+    .rc-popover-anchor-wrapper {
+      position: absolute;
+      left: 0;
+    }
+    .rc-popover-point {
+      opacity: 0.75;
     }
   }
 }
@@ -395,6 +398,9 @@ mark.white {
   background-color: #00A79D;
   color: white;
   margin-bottom: 1em;
+  &:hover {
+    opacity: 0.75;
+  }
 }
 
 // landing page media queries
@@ -595,6 +601,9 @@ img.back {
   width: 35px;
   padding-bottom: .1em;
   margin-right: 12px;
+  &:hover {
+    opacity: 0.75;
+  }
 }
 
 .tag {
