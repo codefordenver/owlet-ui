@@ -19,17 +19,12 @@
 (rf/reg-event-fx
   :get-library-content-from-contentful
   (fn [{db :db} [_ route-params]]
-    ;; short-circuit xhr request when we have activity data
-    (if-not (seq (:activities db))
-      {:db         (merge (assoc-in db [:app :loading?] true)
-                          (assoc-in db [:app :route-params] route-params))
-       :http-xhrio {:method          :get
-                    :uri             space-endpoint
-                    :response-format (ajax/json-response-format {:keywords? true})
-                    :on-success      [:get-library-content-from-contentful-successful]}}
-      ;; always assoc route-params for navigation
-      {:db         (merge (assoc-in db [:app :loading?] true)
-                          (assoc-in db [:app :route-params] route-params))})))
+    {:db         (merge (assoc-in db [:app :loading?] true)
+                        (assoc-in db [:app :route-params] route-params))
+     :http-xhrio {:method          :get
+                  :uri             space-endpoint
+                  :response-format (ajax/json-response-format {:keywords? true})
+                  :on-success      [:get-library-content-from-contentful-successful]}}))
 
 
 (rf/reg-event-db
@@ -149,12 +144,7 @@
                 skill    (rf/dispatch [:filter-activities-by-search-term skill])
                 activity (rf/dispatch [:set-activity-in-view activity all-activities])
                 branch   (let [activities-by-branch-in-view ((keyword branch) activities-by-branch)]
-                          (rf/dispatch [:set-activities-by-branch-in-view branch activities-by-branch-in-view])
-                          (assoc db :activity-branches branches
-                                    :skills skills
-                                    :activities-by-branch activities-by-branch
-                                    :activity-titles activity-titles))
-                :else db)))
+                          (rf/dispatch [:set-activities-by-branch-in-view branch activities-by-branch-in-view])))))
       (assoc db :activity-branches branches
                 :skills skills
                 :activities-by-branch activities-by-branch
