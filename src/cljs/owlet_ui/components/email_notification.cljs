@@ -19,18 +19,14 @@
 (defn email-notification []
   (let [email (reagent/atom nil)]
     (fn []
-      [:div#email-wrap {:style {:background-color (cond
-                                                    (= @res true) "green"
-                                                    (= @res false) "red")}}
+      [:div#email-wrap
+       [:p#email-text "Notify me when new activities are added"]
        (cond
-         (= @res true) "Success"
-         (= @res false) "Failed"
-         :else
-           [:div
-            [:p#email-text "Notify me when new activities are added"]
-            [:input#email-input {:type "text"
-                                 :placeholder "Email address"
-                                 :on-change #(reset! email (-> % .-target .-value))
-                                 :value @email}]
-            [:button#email-button {:on-click #(subscribe @email)}
-              "Subscribe"]])])))
+         (= @res true) [:p {:style {:color "green"}} "Success! You are now subscribed."]
+         (= @res false) [:p {:style {:color "red"}} "Unsuccessful. Please try again."])
+       [:input#email-input {:type "text"
+                            :placeholder "Email address"
+                            :on-change #(reset! email (-> % .-target .-value))
+                            :value @email}]
+       [:button#email-button {:on-click #(subscribe @email)}
+         "Subscribe"]])))
