@@ -10,6 +10,12 @@
 
 (def res (reagent/atom nil))
 
+(def msg (reagent/atom false))
+
+(add-watch res :watcher (fn [key atom old-state new-state]
+                          (reset! msg false)
+                          (js/setTimeout #(reset! msg true) 100)))
+
 (defn subscribe [email]
   (PUT email-endpoint {:params {:email email}
                        :format :json
@@ -21,9 +27,10 @@
     (fn []
       [:div#email-wrap
        [:p#email-text "Notify me when new activities are added"]
-       (cond
-         (= @res true) [:p {:style {:color "green"}} "Success! You are now subscribed."]
-         (= @res false) [:p {:style {:color "red"}} "Unsuccessful. Please try again."])
+       (when @msg
+         (cond
+           (= @res true) [:p.refresh {:style {:color "green"}} "Success! You are now subscribed."]
+           (= @res false) [:p.refresh {:style {:color "red"}} "Unsuccessful. Please try again."]))
        [:input#email-input {:type "text"
                             :placeholder "Email address"
                             :on-change #(reset! email (-> % .-target .-value))
