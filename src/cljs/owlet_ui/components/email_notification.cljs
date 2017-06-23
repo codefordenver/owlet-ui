@@ -16,11 +16,17 @@
                           (reset! msg false)
                           (js/setTimeout #(reset! msg true) 100)))
 
+(defn subscription-response [response]
+  (when (= "Subscribed." response)
+    (reset! res 2))
+  (when (= "Already Subscribed." response)
+    (reset! res 1)))
+
 (defn subscribe [email]
   (PUT email-endpoint {:params {:email email}
                        :format :json
-                       :handler #(reset! res true)
-                       :error-handler #(reset! res false)}))
+                       :handler subscription-response
+                       :error-handler #(reset! res 0)}))
 
 (defn email-notification []
   (let [email (reagent/atom nil)]
@@ -29,8 +35,9 @@
        [:p#email-text "Notify me when new activities are added"]
        (when @msg
          (cond
-           (= @res true) [:p.refresh {:style {:color "green"}} "Success! You are now subscribed."]
-           (= @res false) [:p.refresh {:style {:color "red"}} "Unsuccessful. Please try again."]))
+           (= @res 2) [:p.refresh {:style {:color "green"}} "Success! You are now subscribed."]
+           (= @res 1) [:p.refresh {:style {:color "yellow"}} "You are already subscribed."]
+           (= @res 0) [:p.refresh {:style {:color "red"}} "Unsuccessful. Please try again."]))
        [:input#email-input {:type "text"
                             :placeholder "Email address"
                             :on-change #(reset! email (-> % .-target .-value))
