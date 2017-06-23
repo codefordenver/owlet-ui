@@ -26,6 +26,7 @@
                   :response-format (ajax/json-response-format {:keywords? true})
                   :on-success      [:get-library-content-from-contentful-successful]}}))
 
+
 (rf/reg-event-db
   :get-library-content-from-contentful-successful
   (fn [db [_ {activities :activities metadata :metadata platforms :platforms}]]
@@ -74,12 +75,7 @@
                 skill    (rf/dispatch [:filter-activities-by-search-term skill])
                 activity (rf/dispatch [:set-activity-in-view activity all-activities])
                 branch   (let [activities-by-branch-in-view ((keyword branch) activities-by-branch)]
-                          (rf/dispatch [:set-activities-by-branch-in-view branch activities-by-branch-in-view])
-                          (assoc db :activity-branches branches
-                                    :skills skills
-                                    :activities-by-branch activities-by-branch
-                                    :activity-titles activity-titles))
-                :else db)))
+                          (rf/dispatch [:set-activities-by-branch-in-view branch activities-by-branch-in-view])))))
       (assoc db :activity-branches branches
                 :skills skills
                 :activities-by-branch activities-by-branch

@@ -62,10 +62,13 @@
               search-collections (concat @skills @branches @activity-titles platform-search-names)
               result-formatter #(-> {:term %})
               suggestion-renderer
-              #(let [platform-index (.indexOf platform-search-names (:term %))]
-                (if (>= platform-index 0)
-                  (nth platform-names platform-index)
-                  (:term %)))
+              (fn [t]
+                (let [platform-search-names (map #(->kebab-case (:name %)) @activity-platforms)
+                      platform-names (map #(:name %) @activity-platforms)
+                      platform-index (.indexOf platform-search-names (:term t))]
+                  (if (>= platform-index 0)
+                    (nth platform-names platform-index)
+                    (:term t))))
               suggestions-for-search
               (fn [s]
                 (if (< 1 (count s))
