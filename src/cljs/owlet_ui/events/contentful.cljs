@@ -29,82 +29,13 @@
 
 (rf/reg-event-db
   :get-library-content-from-contentful-successful
-  (fn [db [_ {entries :entries metadata :metadata}]]
+  (fn [db [_ {activities :activities metadata :metadata platforms :platforms}]]
 
     (rf/dispatch [:process-activity-metadata metadata])
-
-    (let [filter-entries
-          (fn [type entries]
-            (filter #(= type
-                        (-> % (get-in [:sys :contentType :sys :id])))
-              (:items entries)))
-
-          platforms
-          (filter-entries "platform" entries)
-
-          activities
-          (filter-entries "activity" entries)
-
-          ; Obtains the URL, width, and height for each image (asset), and
-          ;  - for each *preview* image, adds a :url field next to its :id field in
-          ;    [:activities :fields :preview :sys] map.
-          ;  - for each *gallery* image, adds a map to :image-gallery-items field in
-          ;    [:activities :fields] map.
-
-          assets
-          (get-in entries [:includes :Asset])
-
-          image-by-id     ; Maps image IDs to associated URL, width, and height.
-          (->> assets
-            (map
-              (juxt
-                (comp :id :sys)
-                #(hash-map
-                   :url (get-in % [:fields :file :url])
-                   :w   (get-in % [:fields :file :details :image :width])
-                   :h   (get-in % [:fields :file :details :image :height]))))
-            (into {}))
-
-          image-gallery-vec-for-item
-          #(->> (get-in % [:fields :imageGallery])
-             (map (comp :id :sys))                   ; Gallery image ids.
-             (mapv image-by-id))]                    ; Their images.
-
-      (-> db
-        (assoc
-          :activity-platforms (map #(:fields %) platforms)
-          :activities
-          (into []
-            (for [activity activities]
-              (-> activity
-                (assoc-in [:fields :platform]
-                          (some #(when (= (get-in activity [:fields :platformRef :sys :id])
-                                          (get-in % [:sys :id]))
-                                       (hash-map :name (get-in % [:fields :name])
-                                                 :search-name (str (->kebab-case (get-in % [:fields :name])))
-                                                 :color (get-in % [:fields :color])))
-                            platforms))
-                (update-in [:fields :preview :sys]   ; Add img. URL at
-                           (fn [{id :id :as sys}]    ;  [.. :sys :url]
-                             (assoc sys
-                               :url
-                               (get-in image-by-id [id :url]))))
-                (assoc-in [:fields :image-gallery-items] ; Add gallery imgs.
-                          (image-gallery-vec-for-item activity))))))
-
-        (update
-          :activities                                ; Add :skills-set
-          (partial mapv (fn [activity]
-                          (or (some->> activity
-                                :fields
-                                :skills
-                                remove-nil
-                                seq                 ; some->> gives nil if empty
-                                (map keywordize-name)
-                                set
-                                (assoc activity :skill-set))
-                              activity))))))))
-
+    (-> db
+      (assoc
+        :activity-platforms (map #(:fields %) platforms)
+        :activities activities))))
 
 (rf/reg-event-db
   :process-activity-metadata
