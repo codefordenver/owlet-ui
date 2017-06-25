@@ -61,3 +61,5 @@
 (reg-getter :activity-platforms [:activity-platforms])
 
 (reg-getter :route-params [:app :route-params])
+
+(reg-getter :subscriber-email [:app :route-opts])

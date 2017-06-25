@@ -10,6 +10,7 @@
             [owlet-ui.views.not-found :refer [not-found-view]]
             [owlet-ui.views.activity :refer [activity-view]]
             [owlet-ui.views.branches :refer [branches-view]]
+            [owlet-ui.views.subscribed :refer [subscribed-view]]
             [owlet-ui.views.settings :refer [settings-view]]
             [owlet-ui.views.filtered-activities :refer [filtered-activities-view]]
             [owlet-ui.async :as async]
@@ -24,6 +25,7 @@
 (defmethod views :not-found-view [] [not-found-view])
 (defmethod views :activity-view [] [activity-view])
 (defmethod views :branches-view [] [branches-view])
+(defmethod views :subscribed-view [] [subscribed-view])
 (defmethod views :settings-view [] [settings-view])
 (defmethod views :default [] [:div])
 
