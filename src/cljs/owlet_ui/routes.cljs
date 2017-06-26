@@ -25,6 +25,9 @@
   (defroute "/subscribed/:email" {:as params}
             (rf/dispatch [:set-active-view :subscribed-view params]))
 
+  (defroute "/unsubscribe" []
+            (rf/dispatch [:set-active-view :unsubscribe-view]))
+
   (defroute "/branches" []
             (rf/dispatch [:get-library-content-from-contentful])
             (rf/dispatch [:set-active-view :branches-view])
