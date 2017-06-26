@@ -2,11 +2,13 @@
   (:require [re-frame.core :as rf]
             [owlet-ui.components.activity-thumbnail :refer [activity-thumbnail]]
             [owlet-ui.components.back :refer [back]]
-            [owlet-ui.helpers :refer [showdown]]))
+            [owlet-ui.helpers :refer [showdown]]
+            [owlet-ui.components.email-notification :refer [email-notification]]))
 
 (defn filtered-activities-component [filter]
   (let [filtered-activities @(rf/subscribe [:activities-by-filter])]
     [:div.branch-activities-wrap
+     [email-notification]
      (if-not filtered-activities
        [:h2 [:mark.white.box [:b "Loading..."]]]
        (if (= filtered-activities "error")

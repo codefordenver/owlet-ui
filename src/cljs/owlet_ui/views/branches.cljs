@@ -1,7 +1,8 @@
 (ns owlet-ui.views.branches
   (:require [re-frame.core :as rf]
             [camel-snake-kebab.core :refer [->kebab-case]]
-            [owlet-ui.components.branch :refer [branch]]))
+            [owlet-ui.components.branch :refer [branch]]
+            [owlet-ui.components.email-notification :refer [email-notification]]))
 
 ;; TODO: (hayden, david) remove branch coloring logic from component
 ;; move into data model
@@ -13,6 +14,7 @@
 (defn branches-view []
   (let [activity-branches (rf/subscribe [:activity-branches])]
     [:div.branches
+     [email-notification]
      [:section
       [:h1#title [:mark "Get started by choosing a branch below"]]
       [:br]
