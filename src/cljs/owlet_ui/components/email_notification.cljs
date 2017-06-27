@@ -20,7 +20,7 @@
   (cond
 
     (or (= "Re-sent confirmation email." response)
-        (= "Added - awaiting confirmation." response)) (reset! res 2)
+        (= "Sent confirmation email." response)) (reset! res 2)
 
     (= "Already Subscribed." response) (reset! res 1)
 

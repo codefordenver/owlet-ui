@@ -9,7 +9,7 @@
 (def project-name "OWLET")
 
 ;TODO: change this back to mmmanyfold
-(def server-url "http://localhost:3000")
+(def server-url "http://74d671d9.ngrok.io")
 
 
 (def auth0-init

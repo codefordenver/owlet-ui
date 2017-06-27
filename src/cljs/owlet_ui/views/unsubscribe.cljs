@@ -19,12 +19,8 @@
 
 (defn unsubscribe-response [response]
   (cond
-
-    (or (= "Re-sent confirmation email." response)
-        (= "Added - awaiting confirmation." response)) (reset! res 2)
-
-    (= "Already Subscribed." response) (reset! res 1)
-
+    (= "Sent confirmation email." response) (reset! res 2)
+    (= "Not Subscribed." response) (reset! res 1)
     :else (reset! res 0)))
 
 (defn unsubscribe [email]
@@ -39,12 +35,18 @@
      [:h2 [back]
           [:mark.white.box-shadow "Sorry to see you go"]]
      [:h3 [:mark.white "Enter your email address to unsubscribe"]]
-     [:input#email-input {:type        "text"
-                          :placeholder "Email address"
-                          :on-change   #(reset! email (-> % .-target .-value))
-                          :value       @email}]
-     [:button#email-button {:on-click #(unsubscribe @email)}
-      "Unsubscribe"]]))
+     [:div.email-unsubscribe
+       [:input#email-input {:type        "text"
+                            :placeholder "Email address"
+                            :on-change   #(reset! email (-> % .-target .-value))
+                            :value       @email}]
+       [:button#email-button {:on-click #(unsubscribe @email)}
+        "Unsubscribe"]]
+       (when @msg
+         (cond
+           (= @res 2) [:p.refresh {:style {:color "green"}} "Almost there!  Check your email to confirm."]
+           (= @res 1) [:p.refresh {:style {:color "yellow"}} "You are not  subscribed."]
+           (= @res 0) [:p.refresh {:style {:color "red"}} "Unsuccessful. Please try again."]))]))
 
 ;TODO: add email address input form &
      ; a PUT request to update user's :confirmed key to false]])
