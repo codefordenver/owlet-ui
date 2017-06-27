@@ -31,22 +31,23 @@
 
 (defn unsubscribe-view []
   (let [email (reagent/atom nil)]
-    [:div.not-found
-     [:h2 [back]
-          [:mark.white.box-shadow "Sorry to see you go"]]
-     [:h3 [:mark.white "Enter your email address to unsubscribe"]]
-     [:div.email-unsubscribe
-       [:input#email-input {:type        "text"
-                            :placeholder "Email address"
-                            :on-change   #(reset! email (-> % .-target .-value))
-                            :value       @email}]
-       [:button#email-button {:on-click #(unsubscribe @email)}
-        "Unsubscribe"]]
-       (when @msg
-         (cond
-           (= @res 2) [:p.refresh {:style {:color "green"}} "Almost there!  Check your email to confirm."]
-           (= @res 1) [:p.refresh {:style {:color "yellow"}} "You are not  subscribed."]
-           (= @res 0) [:p.refresh {:style {:color "red"}} "Unsuccessful. Please try again."]))]))
+    (fn []
+      [:div.not-found
+       [:h2 [back]
+            [:mark.white.box-shadow "Sorry to see you go"]]
+       [:h3 [:mark.white "Enter your email address to unsubscribe"]]
+       [:div.email-unsubscribe
+         [:input#email-input {:type        "text"
+                              :placeholder "Email address"
+                              :on-change   #(reset! email (-> % .-target .-value))
+                              :value       @email}]
+         [:button#email-button {:on-click #(unsubscribe @email)}
+          "Unsubscribe"]
+         (when @msg
+           (cond
+             (= @res 2) [:p.refresh {:style {:color "green"}} "Almost there!  Check your email to confirm."]
+             (= @res 1) [:p.refresh {:style {:color "yellow"}} "You are not  subscribed."]
+             (= @res 0) [:p.refresh {:style {:color "red"}} "Unsuccessful. Please try again."]))]])))
 
 ;TODO: add email address input form &
      ; a PUT request to update user's :confirmed key to false]])
