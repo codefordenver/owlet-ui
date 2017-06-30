@@ -22,7 +22,7 @@
     (or (= "Re-sent confirmation email." response)
         (= "Sent confirmation email." response)) (reset! res 2)
 
-    (= "Already Subscribed." response) (reset! res 1)
+    (= "Already subscribed." response) (reset! res 1)
 
     :else (reset! res 0)))
 
