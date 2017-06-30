@@ -31,13 +31,15 @@
 
 (rf/reg-event-db
   :set-active-view
-  (fn [db [_ active-view]]
-    (let [search (aget (js->clj (js/document.getElementsByClassName "form-control")) 0)]
+  (fn [db [_ active-view opts]]
+    (let [email (:email opts)
+          search (aget (js->clj (js/document.getElementsByClassName "form-control")) 0)]
       (when-not (nil? search)
         (set! (.-value search) "")
         (.blur search))
       (-> db
           (assoc :active-view active-view)
+          (assoc-in [:app :route-opts] email)
           (assoc-in [:app :open-sidebar] false)))))
 
 

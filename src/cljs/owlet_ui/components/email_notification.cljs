@@ -17,15 +17,19 @@
                           (js/setTimeout #(reset! msg true) 100)))
 
 (defn subscription-response [response]
-  (when (= "Subscribed." response)
-    (reset! res 2))
-  (when (= "Already Subscribed." response)
-    (reset! res 1)))
+  (cond
+
+    (or (= "Re-sent confirmation email." response)
+        (= "Sent confirmation email." response)) (reset! res 2)
+
+    (= "Already Subscribed." response) (reset! res 1)
+
+    :else (reset! res 0)))
 
 (defn subscribe [email]
-  (PUT email-endpoint {:params {:email email}
-                       :format :json
-                       :handler subscription-response
+  (PUT email-endpoint {:params        {:email email}
+                       :format        :json
+                       :handler       subscription-response
                        :error-handler #(reset! res 0)}))
 
 (defn email-notification []
@@ -35,12 +39,12 @@
        [:p#email-text "Notify me when new activities are added"]
        (when @msg
          (cond
-           (= @res 2) [:p.refresh {:style {:color "green"}} "Success! You are now subscribed."]
+           (= @res 2) [:p.refresh {:style {:color "green"}} "Almost there! Check your email to confirm."]
            (= @res 1) [:p.refresh {:style {:color "yellow"}} "You are already subscribed."]
            (= @res 0) [:p.refresh {:style {:color "red"}} "Unsuccessful. Please try again."]))
-       [:input#email-input {:type "text"
+       [:input#email-input {:type        "text"
                             :placeholder "Email address"
-                            :on-change #(reset! email (-> % .-target .-value))
-                            :value @email}]
+                            :on-change   #(reset! email (-> % .-target .-value))
+                            :value       @email}]
        [:button#email-button {:on-click #(subscribe @email)}
-         "Subscribe"]])))
+        "Subscribe"]])))
