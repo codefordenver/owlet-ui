@@ -48,6 +48,3 @@
              (= @res 2) [:p.refresh {:style {:color "green"}} "Almost there!  Check your email to confirm."]
              (= @res 1) [:p.refresh {:style {:color "yellow"}} "You are not  subscribed."]
              (= @res 0) [:p.refresh {:style {:color "red"}} "Unsuccessful. Please try again."]))]])))
-
-;TODO: add email address input form &
-     ; a PUT request to update user's :confirmed key to false]])
