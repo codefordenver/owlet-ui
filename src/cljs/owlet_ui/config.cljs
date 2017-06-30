@@ -8,8 +8,8 @@
 
 (def project-name "OWLET")
 
-;TODO: change this back to mmmanyfold
-(def server-url "http://74d671d9.ngrok.io")
+
+(def server-url "https://mmmanyfold-api.herokuapp.com")
 
 
 (def auth0-init
