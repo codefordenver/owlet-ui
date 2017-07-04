@@ -29,29 +29,25 @@
             (rf/dispatch [:set-active-view :unsubscribe-view]))
 
   (defroute "/branches" []
-            (rf/dispatch [:get-library-content-from-contentful params])
+            (rf/dispatch [:get-library-content-from-contentful])
             (rf/dispatch [:set-active-view :branches-view])
             (rf/dispatch [:set-active-document-title! "Branches"]))
 
   (defroute "/skill/:skill" {:as params}
-            (rf/dispatch [:get-library-content-from-contentful params])
             (rf/dispatch [:set-active-view :filtered-activities-view])
-            (rf/dispatch [:filter-activities-by-search-term (:skill params)]))
+            (rf/dispatch [:get-library-content-from-contentful params]))
 
   (defroute "/platform/:platform" {:as params}
-            (rf/dispatch [:get-library-content-from-contentful params])
             (rf/dispatch [:set-active-view :filtered-activities-view])
-            (rf/dispatch [:filter-activities-by-search-term (:platform params)]))
+            (rf/dispatch [:get-library-content-from-contentful params]))
 
   (defroute "/branch/:branch" {:as params}
             (rf/dispatch [:get-library-content-from-contentful params])
-            (rf/dispatch [:filter-activities-by-search-term (:branch params)])
             (rf/dispatch [:set-active-view :filtered-activities-view])
             (rf/dispatch [:set-active-document-title! (:branch params)]))
 
   (defroute "/activity/#!:activity" {:as params}
             (rf/dispatch [:get-library-content-from-contentful params])
-            (rf/dispatch [:filter-activities-by-search-term (:activity params)])
             (rf/dispatch [:set-active-view :activity-view]))
 
   (defroute "*" []
