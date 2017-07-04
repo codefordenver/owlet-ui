@@ -114,7 +114,7 @@
               (set-path (str "skill/" (->kebab-case term)))
               (rf/dispatch [:set-active-document-title! term])
               (assoc db :activities-by-filter (hash-map :activities filtered-set
-                                                                :display-name term)))
+                                                        :display-name term)))
 
             ;; by activity name (title)
             ;; ------------------------
@@ -137,6 +137,6 @@
                                         (:activity-platforms db))]
                       (set-path (str "platform/" term))
                       (assoc db :activities-by-filter (hash-map :activities filtered-set
-                                                                        :display-name platform-name
-                                                                        :description description)))
+                                                                :display-name platform-name
+                                                                :description description)))
                     (assoc db :activities-by-filter "error")))))))))))
