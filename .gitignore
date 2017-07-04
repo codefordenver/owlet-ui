@@ -12,5 +12,14 @@ out
 .nrepl-port
 /bin/
 /contentful-exports
-
 .project
+/lib
+/classes
+/checkouts
+pom.xml
+*.jar
+*.class
+/.lein-*
+profiles.clj
+/.env
+/log
