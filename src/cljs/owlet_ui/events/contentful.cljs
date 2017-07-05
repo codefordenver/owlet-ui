@@ -30,9 +30,20 @@
 (rf/reg-event-db
   :get-library-content-from-contentful-successful
   (fn [db [_ {activities :activities metadata :metadata platforms :platforms}]]
+
+    (rf/dispatch [:process-activity-metadata metadata])
+    (-> db
+      (assoc
+        :activity-platforms (map #(:fields %) platforms)
+        :activities activities))))
+
+(rf/reg-event-db
+  :process-activity-metadata
+  (fn [db [_ metadata]]
     (let [branches (:branches metadata)
           skills (:skills metadata)
-          activity-titles (remove-nil (map #(get-in % [:fields :title]) activities))
+          all-activities (:activities db)
+          activity-titles (remove-nil (map #(get-in % [:fields :title]) all-activities))
           branches-template (->> (mapv (fn [branch]
                                          (hash-map (keywordize-name branch)
                                            {:activities   []
@@ -47,7 +58,7 @@
                                                     matches (filterv (fn [activity]
                                                                        (some #(= display-name %)
                                                                          (get-in activity [:fields :branch])))
-                                                              activities)
+                                                              all-activities)
                                                     preview-urls (mapv #(get-in % [:fields :preview :sys :url]) matches)]
                                                 (if (seq matches)
                                                   (hash-map branch-key
@@ -58,11 +69,14 @@
                                                   branch))))
                                       branches-template)
                                  (into {}))]
-      (-> db
-        (assoc
-          :activity-platforms (map #(:fields %) platforms)
-          :activities activities
-          :activity-branches branches
-          :skills skills
-          :activities-by-branch activities-by-branch
-          :activity-titles activity-titles)))))
+      (when-let [route-params (get-in db [:app :route-params])]
+        (let [{:keys [activity branch skill platform]} route-params]
+          (cond platform (rf/dispatch [:filter-activities-by-search-term platform])
+                skill    (rf/dispatch [:filter-activities-by-search-term skill])
+                activity (rf/dispatch [:set-activity-in-view activity all-activities])
+                branch   (let [activities-by-branch-in-view ((keyword branch) activities-by-branch)]
+                          (rf/dispatch [:set-activities-by-branch-in-view branch activities-by-branch-in-view])))))
+      (assoc db :activity-branches branches
+                :skills skills
+                :activities-by-branch activities-by-branch
+                :activity-titles activity-titles))))
