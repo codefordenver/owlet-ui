@@ -37,7 +37,7 @@
 (defn email-notification []
   (let [email (reagent/atom nil)]
     (fn []
-      (if (= @email-input-state true)
+      (if @email-input-state
         [:div#email-wrap
           [:p#email-text-opened {:on-click #(reset! email-input-state false)} "Notify me when new activities are added -"]
           (when @msg
