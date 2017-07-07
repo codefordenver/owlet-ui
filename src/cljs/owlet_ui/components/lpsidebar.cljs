@@ -4,28 +4,38 @@
             [owlet-ui.helpers :refer [class-names]]
             [re-frame.core :as rf]))
 
-(defonce toggle-classes
-         (reagent/atom #{"hidden-md-up" "lpsidebar-overlay" "lpsidebar-close" "closed-sidebar"}))
+(def lpsidebar-state (reagent/atom false))
+
+(defn toggle-lpsidebar []
+  (reset! lpsidebar-state (not @lpsidebar-state)))
 
 (defn lpsidebar-component []
-  (if @(rf/subscribe [:open-sidebar?])
-    (swap! toggle-classes conj "opened-sidebar")
-    (swap! toggle-classes disj "opened-sidebar"))
-  [:div
-   [:div {:class    (class-names @toggle-classes)
-          :on-click #(rf/dispatch [:set-sidebar-state false])}]
-   [:div.lpsidebar-wrap.hidden-md-up
-    [:div.lpsidebar
-     [:div#owlet-logo-div
-      [:a#owlet-image {:href "#/"}
-       [:img#owlet-owl {:src "../img/owlet-owl.png"}]]]
-     [:div.menu
-      [:div.login
-       [login-component]]
-      [:a.navigation {:href     "#/branches"
-                      :on-click #(rf/dispatch [:set-active-view :branches-view])}
-       [:img {:src "img/icon1.png"}]]]]]
-   [:img.lpsidebar-open.hidden-md-up {:src      "img/owlet-tab-closed.png"
-                                      :on-click #(rf/dispatch [:set-sidebar-state true])}]
-   [:img.lpsidebar-close.hidden-md-up {:src      "img/owlet-tab-opened.png"
-                                       :on-click #(rf/dispatch [:set-sidebar-state false])}]])
+    [:div
+     (if @lpsidebar-state
+      [:div.lpsidebar-overlay.hidden-md-up.opened-sidebar {:on-click #(toggle-lpsidebar)}]
+      [:div.lpsidebar-overlay.hidden-md-up])
+     [:div.lpsidebar-wrap.hidden-md-up
+      [:div.lpsidebar {:style {:width (if @lpsidebar-state
+                                        "80px"
+                                        "0")}}
+       [:div#owlet-logo-div
+        [:a#owlet-image {:href "#/"
+                         :on-click #(toggle-lpsidebar)}
+         [:img#owlet-owl {:src "../img/owlet-owl.png"}]]]
+       [:div.menu
+        [:div.login {:on-click #(toggle-lpsidebar)}
+         [login-component]]
+        [:a.navigation {:href     "#/branches"
+                        :on-click #(toggle-lpsidebar)}
+         [:img {:src "img/icon1.png"}]]]
+       (if @lpsidebar-state
+         [:img#lpsidebar-opened.lpsidebar-toggle.hidden-md-up {:style {:left (if @lpsidebar-state
+                                                                               "80px"
+                                                                               "0")}
+                                                               :src      "img/owlet-tab-opened.png"
+                                                               :on-click #(toggle-lpsidebar)}]
+         [:img#lpsidebar-closed.lpsidebar-toggle.hidden-md-up {:style {:left (if @lpsidebar-state
+                                                                               "80px"
+                                                                               "0")}
+                                                               :src      "img/owlet-tab-closed.png"
+                                                               :on-click #(toggle-lpsidebar)}])]]])

@@ -12,7 +12,7 @@
 
 (def msg (reagent/atom false))
 
-(def email-input-state (reagent/atom true))
+(def email-input-state (reagent/atom false))
 
 (add-watch res :watcher (fn [key atom old-state new-state]
                           (reset! msg false)
