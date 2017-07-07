@@ -883,6 +883,8 @@ input[type="radio"]:checked + label{
 }
 
 #email-wrap {
+  transition: height 0.3s;
+  width: 281px;
   padding: 10px;
   color: @light-gray;
   border-radius: 7px 0;
@@ -893,32 +895,47 @@ input[type="radio"]:checked + label{
   right: 0;
   z-index: 3;
 }
-#email-text {
+#email-wrap > * {
+  vertical-align: middle;
+}
+#email-text-closed, #email-text-opened {
+  cursor: pointer;
+}
+#email-text-opened {
   margin-bottom: 10px;
+}
+#email-text-closed {
+  margin-bottom: 0;
 }
 #email-input {
   height: 24px;
+  width: 152px;
+  display: inline-block;
   border: none;
+  border-radius: 3px;
   padding-left: 5px;
   background-color: rgba(255, 255, 255, 0.1);
   color: @light-gray;
-  border-radius: 3px;
+  outline: 0;
+  &:active {
+    outline: 0;
+  }
 }
 #email-button {
-  position: absolute;
+  width: 65px;
+  height: 24px;
+  margin-left: 44px;
+  display: inline-block;
+  border: none;
   border-radius: 3px;
-  right: 10px;
-  bottom: 10px;
   padding: 5px;
   color: @light-gray;
   font-size: 0.9em;
   background-color: @purple;
   outline: 0;
-  border: none;
   &:active {
     outline: 0;
   }
-
 }
 .email-unsubscribe{
   padding: 10px;
