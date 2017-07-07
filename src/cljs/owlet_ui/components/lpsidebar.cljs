@@ -7,7 +7,7 @@
 (def lpsidebar-state (reagent/atom false))
 
 (defn toggle-lpsidebar []
-  (reset! lpsidebar-state (not @lpsidebar-state)))
+  (swap! lpsidebar-state not))
 
 (defn lpsidebar-component []
     [:div
