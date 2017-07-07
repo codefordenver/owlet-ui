@@ -28,11 +28,8 @@
   (defroute "/unsubscribe" []
             (rf/dispatch [:set-active-view :unsubscribe-view]))
 
-  ;TODO: remove :set-active-document-title!
-
   (defroute "/branches" []
-            (rf/dispatch [:get-content-from-contentful :show-branches])
-            (rf/dispatch [:set-active-document-title! "Branches"]))
+            (rf/dispatch [:get-content-from-contentful :show-branches]))
 
   (defroute "/skill/:skill" {:as params}
             (rf/dispatch [:get-content-from-contentful :show-skill (:skill params)]))
@@ -41,8 +38,7 @@
             (rf/dispatch [:get-content-from-contentful :show-platform (:platform params)]))
 
   (defroute "/branch/:branch" {:as params}
-            (rf/dispatch [:get-content-from-contentful :show-branch (:branch params)])
-            (rf/dispatch [:set-active-document-title! (:branch params)]))
+            (rf/dispatch [:get-content-from-contentful :show-branch (:branch params)]))
 
   (defroute "/activity/#!:activity" {:as params}
             (rf/dispatch [:get-content-from-contentful :show-activity (:activity params)]))

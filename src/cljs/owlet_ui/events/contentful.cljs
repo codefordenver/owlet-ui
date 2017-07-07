@@ -27,7 +27,6 @@
                       :on-success      [:get-content-from-contentful-success route-args]}}
         {:dispatch [route-dispatch route-param]}))))
 
-
 (rf/reg-event-fx
   :get-content-from-contentful-success
   (fn [{db :db} [_ route-args {activities :activities metadata :metadata platforms :platforms}]]
@@ -70,24 +69,41 @@
             :activity-titles activity-titles)
        :dispatch [route-dispatch route-param]})))
 
-;TODO: add :show-skill, :show-activity
+
+; route dispatches
 
 (rf/reg-event-fx
   :show-branches
   (fn [_ _]
-    {:dispatch [:set-active-view :branches-view]}))
-
-(rf/reg-event-fx
-  :show-platform
-  (fn [_ route-param]
-    {:dispatch-n (list [:set-active-view :filtered-activities-view "platform"]
-                       [:filter-activities-by-search-term (second route-param)])}))
+    {:dispatch-n (list [:set-active-view :branches-view]
+                       [:set-active-document-title! "Branches"])}))
 
 (rf/reg-event-fx
   :show-branch
-  (fn [_ route-param]
+  (fn [_ [_ route-param]]
     {:dispatch-n (list [:set-active-view :filtered-activities-view "branch"]
-                       [:filter-activities-by-search-term (second route-param)])}))
+                       [:filter-activities-by-search-term route-param]
+                       [:set-active-document-title! route-param])}))
+
+(rf/reg-event-fx
+  :show-platform
+  (fn [_ [_ route-param]]
+    {:dispatch-n (list [:set-active-view :filtered-activities-view "platform"]
+                       [:filter-activities-by-search-term route-param]
+                       [:set-active-document-title! route-param])}))
+
+(rf/reg-event-fx
+  :show-skill
+  (fn [_ [_ route-param]]
+    {:dispatch-n (list [:set-active-view :filtered-activities-view "branch"]
+                       [:filter-activities-by-search-term route-param]
+                       [:set-active-document-title! route-param])}))
+
+(rf/reg-event-fx
+  :show-activity
+  (fn [_ [_ route-param]]
+    {:dispatch-n (list [:set-active-view :activity-view]
+                       [:set-activity-in-view route-param])}))
 
 
 (rf/reg-event-db
@@ -113,7 +129,7 @@
           (if (seq filtered-set)
             (do
               (set-path (str "skill/" (->kebab-case term)))
-              (rf/dispatch [:set-active-document-title! term])
+              ; (rf/dispatch [:set-active-document-title! term])
               (assoc db :activities-by-filter (hash-map :activities filtered-set
                                                         :display-name term)))
 
