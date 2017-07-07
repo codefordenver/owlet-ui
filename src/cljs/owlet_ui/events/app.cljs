@@ -17,9 +17,6 @@
   (assoc-in (:db cofx) [:my-identity :pending] msg))
 
 
-(reg-setter :set-sidebar-state [:app :open-sidebar])
-
-
 (reg-setter :show-bg-img-upload [:showing-bg-img-upload])
 
 
