@@ -28,14 +28,13 @@
         [:a.navigation {:href     "#/branches"
                         :on-click #(toggle-lpsidebar)}
          [:img {:src "img/icon1.png"}]]]
-       (if @lpsidebar-state
-         [:img#lpsidebar-opened.lpsidebar-toggle.hidden-md-up {:style {:left (if @lpsidebar-state
-                                                                               "80px"
-                                                                               "0")}
-                                                               :src      "img/owlet-tab-opened.png"
-                                                               :on-click #(toggle-lpsidebar)}]
-         [:img#lpsidebar-closed.lpsidebar-toggle.hidden-md-up {:style {:left (if @lpsidebar-state
-                                                                               "80px"
-                                                                               "0")}
-                                                               :src      "img/owlet-tab-closed.png"
-                                                               :on-click #(toggle-lpsidebar)}])]]])
+       (let [left? (if @lpsidebar-state
+                      "80px"
+                      "0")]
+         (if @lpsidebar-state
+           [:img#lpsidebar-opened.lpsidebar-toggle.hidden-md-up {:style {:left left?}
+                                                                 :src      "img/owlet-tab-opened.png"
+                                                                 :on-click #(toggle-lpsidebar)}]
+           [:img#lpsidebar-closed.lpsidebar-toggle.hidden-md-up {:style {:left left?}
+                                                                 :src      "img/owlet-tab-closed.png"
+                                                                 :on-click #(toggle-lpsidebar)}]))]]])
