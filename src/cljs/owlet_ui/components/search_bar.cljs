@@ -3,6 +3,7 @@
             [re-com.core :refer [typeahead]]
             [re-frame.core :as rf]
             [reagent.core :as reagent]
+            [clojure.string :refer [replace]]
             [owlet-ui.helpers :refer [class-names]]
             [camel-snake-kebab.core :refer [->kebab-case]]))
 
@@ -62,6 +63,7 @@
               search-collections (concat @skills @branches @activity-titles platform-names)
               result-formatter #(-> {:term %})
               suggestion-renderer #(:term %)
+              special-char-pattern (re-pattern "[^A-Za-z0-9]")
               suggestions-for-search
               (fn [s]
                 (if (< 1 (count s))
@@ -70,7 +72,7 @@
                 (into []
                       (take @suggestion-count
                             (for [n (distinct search-collections)
-                                  :when (re-find (re-pattern (str "(?i)" s)) n)]
+                                  :when (re-find (re-pattern (str "(?i)" (replace s special-char-pattern #(str "\u005C" %)))) n)]
                               (result-formatter n)))))
               change-handler (fn [t]
                                (let [platform-index (.indexOf platform-names (:term t))]
