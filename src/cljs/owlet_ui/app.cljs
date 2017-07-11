@@ -22,7 +22,7 @@
 (defmulti views identity)
 (defmethod views :welcome-view [] [welcome-view])
 (defmethod views :filtered-activities-view []
-  [filtered-activities-view (first (keys @(rf/subscribe [:route-params])))])
+  [filtered-activities-view])
 (defmethod views :not-found-view [] [not-found-view])
 (defmethod views :activity-view [] [activity-view])
 (defmethod views :branches-view [] [branches-view])
