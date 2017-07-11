@@ -5,9 +5,6 @@
             [owlet-ui.helpers :refer [showdown]]
             [owlet-ui.components.email-notification :refer [email-notification]]))
 
-;TODO: update error handling
-
-; (defn filtered-activities-component [filter])
 (defn filtered-activities-view []
   (let [filtered-activities @(rf/subscribe [:activities-by-filter])]
     [:div.branch-activities-wrap
@@ -15,7 +12,7 @@
      (if-not filtered-activities
        [:h2 [:mark.white.box [:b "Loading..."]]]
        (if (= filtered-activities "error")
-         [:h2 [back] [:mark.white.box [:b "Nothing yet, but we're working on it."]]]
+         [:h2 [back] [:mark.white.box [:b "Nothing here. Try a different search above."]]]
          (let [{:keys [display-name activities & description]} filtered-activities]
            [:div
             [:h2 [back]
@@ -42,15 +39,4 @@
                      :let [fields (:fields activity)
                            entry-id (get-in activity [:sys :id])]]
                  ^{:key [entry-id (gensym "key-")]} [activity-thumbnail fields entry-id])
-              [:p.no-activities [:mark (str "No activities for this "  " yet. Check back soon.")]])]])))]))
-
-; (defmulti filtered-activities-view identity)
-;
-; (defmethod filtered-activities-view :skill []
-;   [filtered-activities-component "skill"])
-;
-; (defmethod filtered-activities-view :platform []
-;   [filtered-activities-component "platform"])
-;
-; (defmethod filtered-activities-view :branch []
-;   [filtered-activities-component "branch"])
+              [:p.no-activities [:mark (str "Nothing yet, but we're working on it.")]])]])))]))
