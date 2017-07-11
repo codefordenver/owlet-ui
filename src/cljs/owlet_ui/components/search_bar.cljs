@@ -75,7 +75,9 @@
                                   :when (re-find (re-pattern (str "(?i)" (replace s special-char-pattern #(str "\u005C" %)))) n)]
                               (result-formatter n)))))
               change-handler (fn [t]
-                               (let [platform-index (.indexOf platform-names (:term t))]
+                               (let [platform-search-names (map #(->kebab-case (:name %)) @activity-platforms)
+                                     platform-names (map #(:name %) @activity-platforms)
+                                     platform-index (.indexOf platform-names (:term t))]
                                  (if (>= platform-index 0)
                                    (rf/dispatch [:filter-activities-by-search-term (nth platform-search-names platform-index)])
                                    (rf/dispatch [:filter-activities-by-search-term (:term t)]))))]
