@@ -165,7 +165,6 @@ a:hover {
 .lpsidebar {
   position: fixed;
   z-index: 3;
-  width: 0px;
   transition: all 0.3s;
   text-align: center;
   background-color: @purple;
@@ -217,52 +216,21 @@ a:hover {
   bottom: 0;
   left: 0;
   width: 0;
-  z-index: 2;
+  z-index: 3;
 }
 
-.lpsidebar-open, .lpsidebar-close {
+.lpsidebar-toggle {
+  z-index: 3;
   cursor: pointer;
   border-left: 1px solid #6A2569;
+  transition: all 0.3s;
   position: fixed;
   top: 2px;
   height: 86px;
 }
 
-.lpsidebar-open {
-  z-index: 3;
-}
-
-.lpsidebar-close {
-  z-index: 0;
-}
-
-.closed-sidebar {
-  cursor: pointer;
-  position: fixed;
-  min-width: 100%;
-  min-height: 100%;
-  z-index: -1;
-  background-color: transparent;
-  background-color: rgba(0, 0, 0, 0);
-  transition: background-color 0.3s;
-}
-
-.closed-sidebar + .lpsidebar-wrap {
-  width: 0px;
-  .lpsidebar {
-    z-index: 3;
-    width: 0px;
-  }
-  + .lpsidebar-open {
-    transition: left 0.3s;
-    z-index: 3;
-    left: 0px;
-    + .lpsidebar-close {
-      transition: left 0.3s;
-      z-index: 0;
-      left: 0px;
-    }
-  }
+#lpsidebar-opened {
+  left: 80px;
 }
 
 .opened-sidebar {
@@ -270,28 +238,10 @@ a:hover {
   position: fixed;
   min-width: 100%;
   min-height: 100%;
-  z-index: 2;
+  z-index: 3;
   background-color: transparent;
   background-color: rgba(0, 0, 0, 0.5);
   transition: background-color 0.3s;
-}
-
-.opened-sidebar + .lpsidebar-wrap {
-  width: 80px;
-  .lpsidebar {
-    z-index: 3;
-    width: 80px;
-  }
-  + .lpsidebar-open {
-    transition: left 0.3s;
-    z-index: 0;
-    left: 80px;
-    + .lpsidebar-close {
-      transition: left 0.3s;
-      z-index: 3;
-      left: 80px;
-    }
-  }
 }
 
 mark {
@@ -883,6 +833,8 @@ input[type="radio"]:checked + label{
 }
 
 #email-wrap {
+  transition: height 0.3s;
+  width: 281px;
   padding: 10px;
   color: @light-gray;
   border-radius: 7px 0;
@@ -891,32 +843,58 @@ input[type="radio"]:checked + label{
   position: fixed;
   bottom: 0;
   right: 0;
-  z-index: 3;
+  z-index: 2;
 }
-#email-text {
+#email-wrap > * {
+  vertical-align: middle;
+}
+#email-text-closed, #email-text-opened {
+  cursor: pointer;
+}
+#email-text-opened {
   margin-bottom: 10px;
+}
+#email-text-closed {
+  margin-bottom: 0;
 }
 #email-input {
   height: 24px;
+  width: 152px;
+  display: inline-block;
   border: none;
+  border-radius: 3px;
   padding-left: 5px;
   background-color: rgba(255, 255, 255, 0.1);
   color: @light-gray;
-  border-radius: 3px;
+  outline: 0;
+  &:active {
+    outline: 0;
+  }
 }
 #email-button {
-  position: absolute;
+  width: 65px;
+  height: 24px;
+  margin-left: 44px;
+  display: inline-block;
+  border: none;
   border-radius: 3px;
-  right: 10px;
-  bottom: 10px;
   padding: 5px;
   color: @light-gray;
   font-size: 0.9em;
   background-color: @purple;
   outline: 0;
-  border: none;
   &:active {
     outline: 0;
+  }
+}
+.email-unsubscribe{
+  padding: 10px;
+  margin: 30px 0;
+  background-color: @dark-gray;
+  width: 400px;
+  #email-button{
+    position: inherit;
+    margin-left: 90px;
   }
 }
 .refresh {

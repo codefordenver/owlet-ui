@@ -22,27 +22,26 @@
   (defroute "/settings" []
             (rf/dispatch [:set-active-view :settings-view]))
 
+  (defroute "/subscribed/:email" {:as params}
+            (rf/dispatch [:set-active-view :subscribed-view params]))
+
+  (defroute "/unsubscribe" []
+            (rf/dispatch [:set-active-view :unsubscribe-view]))
+
   (defroute "/branches" []
-            (rf/dispatch [:get-library-content-from-contentful])
-            (rf/dispatch [:set-active-view :branches-view])
-            (rf/dispatch [:set-active-document-title! "Branches"]))
+            (rf/dispatch [:get-content-from-contentful :show-branches]))
 
   (defroute "/skill/:skill" {:as params}
-            (rf/dispatch [:set-active-view :filtered-activities-view])
-            (rf/dispatch [:get-library-content-from-contentful params]))
+            (rf/dispatch [:get-content-from-contentful :show-skill (:skill params)]))
 
   (defroute "/platform/:platform" {:as params}
-            (rf/dispatch [:set-active-view :filtered-activities-view])
-            (rf/dispatch [:get-library-content-from-contentful params]))
+            (rf/dispatch [:get-content-from-contentful :show-platform (:platform params)]))
 
   (defroute "/branch/:branch" {:as params}
-            (rf/dispatch [:get-library-content-from-contentful params])
-            (rf/dispatch [:set-active-view :filtered-activities-view])
-            (rf/dispatch [:set-active-document-title! (:branch params)]))
+            (rf/dispatch [:get-content-from-contentful :show-branch (:branch params)]))
 
   (defroute "/activity/#!:activity" {:as params}
-            (rf/dispatch [:get-library-content-from-contentful params])
-            (rf/dispatch [:set-active-view :activity-view]))
+            (rf/dispatch [:get-content-from-contentful :show-activity (:activity params)]))
 
   (defroute "*" []
             (let [uri (-> js/window .-location .-href)]

@@ -52,8 +52,6 @@
 
 (reg-getter :app-title [:app :title])
 
-(reg-getter :open-sidebar? [:app :open-sidebar])
-
 (reg-getter :skills [:skills])
 
 (reg-getter :activity-titles [:activity-titles])
@@ -61,3 +59,5 @@
 (reg-getter :activity-platforms [:activity-platforms])
 
 (reg-getter :route-params [:app :route-params])
+
+(reg-getter :subscriber-email [:app :route-opts])

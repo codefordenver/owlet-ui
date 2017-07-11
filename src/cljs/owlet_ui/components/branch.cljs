@@ -40,10 +40,7 @@
                     :background-image (str "linear-gradient(to right, "
                                            color
                                            " 25%, rgba(0,0,0,0) 75%")}}
-           [:a.branch {:on-click #(rf/dispatch-sync
-                                   [:set-activities-by-branch-in-view
-                                    (->kebab-case branch-name)])
-                       :href     (str "#/branch/" (->kebab-case branch-name))}
+           [:a.branch {:href (str "#/branch/" (->kebab-case branch-name))}
             [:h2 [:mark name-line1]
              (when (<= 1 (count name-line2))
                [:span

@@ -14,8 +14,7 @@
      [:div.menu
       [:div.login
        [login-component]]
-      [:a.navigation {:href "#/branches"
-                      :on-click #(rf/dispatch [:set-active-view :branches-view])}
+      [:a.navigation {:href "#/branches"}
        [re-com/popover-anchor-wrapper
          :showing? showing?
          :position :below-right

@@ -17,33 +17,24 @@
 
 
 (rf/reg-event-fx
-  :get-library-content-from-contentful
-  (fn [{db :db} [_ route-params]]
-    {:db         (merge (assoc-in db [:app :loading?] true)
-                        (assoc-in db [:app :route-params] route-params))
-     :http-xhrio {:method          :get
-                  :uri             space-endpoint
-                  :response-format (ajax/json-response-format {:keywords? true})
-                  :on-success      [:get-library-content-from-contentful-successful]}}))
+  :get-content-from-contentful
+  (fn [{db :db} route-args]
+    (let [[_ route-dispatch route-param] route-args]
+      (if-not (seq (:activities db))
+        {:http-xhrio {:method          :get
+                      :uri             space-endpoint
+                      :response-format (ajax/json-response-format {:keywords? true})
+                      :on-success      [:get-content-from-contentful-success route-args]}}
+        {:dispatch [route-dispatch route-param]}))))
 
-
-(rf/reg-event-db
-  :get-library-content-from-contentful-successful
-  (fn [db [_ {activities :activities metadata :metadata platforms :platforms}]]
-
-    (rf/dispatch [:process-activity-metadata metadata])
-    (-> db
-      (assoc
-        :activity-platforms (map #(:fields %) platforms)
-        :activities activities))))
-
-(rf/reg-event-db
-  :process-activity-metadata
-  (fn [db [_ metadata]]
-    (let [branches (:branches metadata)
+(rf/reg-event-fx
+  :get-content-from-contentful-success
+  (fn [{db :db} [_ route-args {activities :activities metadata :metadata platforms :platforms}]]
+    (let [route-dispatch (second route-args)
+          route-param (get route-args 2)
+          branches (:branches metadata)
           skills (:skills metadata)
-          all-activities (:activities db)
-          activity-titles (remove-nil (map #(get-in % [:fields :title]) all-activities))
+          activity-titles (remove-nil (map #(get-in % [:fields :title]) activities))
           branches-template (->> (mapv (fn [branch]
                                          (hash-map (keywordize-name branch)
                                            {:activities   []
@@ -58,7 +49,7 @@
                                                     matches (filterv (fn [activity]
                                                                        (some #(= display-name %)
                                                                          (get-in activity [:fields :branch])))
-                                                              all-activities)
+                                                              activities)
                                                     preview-urls (mapv #(get-in % [:fields :preview :sys :url]) matches)]
                                                 (if (seq matches)
                                                   (hash-map branch-key
@@ -69,14 +60,105 @@
                                                   branch))))
                                       branches-template)
                                  (into {}))]
-      (when-let [route-params (get-in db [:app :route-params])]
-        (let [{:keys [activity branch skill platform]} route-params]
-          (cond platform (rf/dispatch [:filter-activities-by-search-term platform])
-                skill    (rf/dispatch [:filter-activities-by-search-term skill])
-                activity (rf/dispatch [:set-activity-in-view activity all-activities])
-                branch   (let [activities-by-branch-in-view ((keyword branch) activities-by-branch)]
-                          (rf/dispatch [:set-activities-by-branch-in-view branch activities-by-branch-in-view])))))
-      (assoc db :activity-branches branches
-                :skills skills
-                :activities-by-branch activities-by-branch
-                :activity-titles activity-titles))))
+      {:db (assoc db
+            :activity-platforms (map #(:fields %) platforms)
+            :activities activities
+            :activity-branches branches
+            :skills skills
+            :activities-by-branch activities-by-branch
+            :activity-titles activity-titles)
+       :dispatch [route-dispatch route-param]})))
+
+
+; route dispatches
+
+(rf/reg-event-fx
+  :show-branches
+  (fn [_ _]
+    {:dispatch-n (list [:set-active-view :branches-view]
+                       [:set-active-document-title! "Branches"])}))
+
+(rf/reg-event-fx
+  :show-branch
+  (fn [_ [_ route-param]]
+    {:dispatch-n (list [:set-active-view :filtered-activities-view "branch"]
+                       [:filter-activities-by-search-term route-param]
+                       [:set-active-document-title! route-param])}))
+
+(rf/reg-event-fx
+  :show-platform
+  (fn [_ [_ route-param]]
+    {:dispatch-n (list [:set-active-view :filtered-activities-view "platform"]
+                       [:filter-activities-by-search-term route-param]
+                       [:set-active-document-title! route-param])}))
+
+(rf/reg-event-fx
+  :show-skill
+  (fn [_ [_ route-param]]
+    {:dispatch-n (list [:set-active-view :filtered-activities-view "branch"]
+                       [:filter-activities-by-search-term route-param]
+                       [:set-active-document-title! route-param])}))
+
+(rf/reg-event-fx
+  :show-activity
+  (fn [_ [_ route-param]]
+    {:dispatch-n (list [:set-active-view :activity-view]
+                       [:set-activity-in-view route-param])}))
+
+
+(rf/reg-event-db
+  :filter-activities-by-search-term
+  (fn [db [_ term]]
+    (let [search-term (keywordize-name term)
+          activities (:activities db)
+          set-path (fn [path]
+                    (set! (.-location js/window) (str "/#/" path)))]
+
+      ;; by branch
+      ;; ---------
+
+      (if-let [filtered-set (search-term (:activities-by-branch db))]
+        (do
+          (set-path (str "branch/" (->kebab-case term)))
+          (assoc db :activities-by-filter filtered-set))
+
+        ;; by skill
+        ;; --------
+
+        (let [filtered-set (filter #(when (contains? (:skill-set %) term) %) activities)]
+          (if (seq filtered-set)
+            (do
+              (set-path (str "skill/" (->kebab-case term)))
+              (assoc db :activities-by-filter (hash-map :activities filtered-set
+                                                        :display-name term)))
+
+            ;; by activity name (title)
+            ;; ------------------------
+
+            (let [filtered-set (filter #(when (= (get-in % [:fields :title]) term) %) activities)]
+              (if (seq filtered-set)
+                (let [activity (first filtered-set)
+                      activity-id (get-in activity [:sys :id])]
+                  (set-path (str "activity/#!" activity-id))
+                  (assoc db :activity-in-view activity))
+
+                ;; by activity id
+                ;; ------------------------
+
+                (if-let [activity (some #(when (= (get-in % [:sys :id]) term) %) activities)]
+                  (assoc db :activity-in-view activity)
+
+                  ;; by platform
+                  ;; -----------
+
+                  (let [filtered-set (filter #(let [platform (get-in % [:fields :platform :search-name])]
+                                                 (when (= platform term) %)) activities)
+                        platform-name (get-in (first filtered-set) [:fields :platform :name])]
+                    (if (seq filtered-set)
+                      (let [description (some #(when (= platform-name (:name %)) (:description %))
+                                          (:activity-platforms db))]
+                        (set-path (str "platform/" term))
+                        (assoc db :activities-by-filter (hash-map :activities filtered-set
+                                                                  :display-name platform-name
+                                                                  :description description)))
+                      (assoc db :activities-by-filter "error"))))))))))))
