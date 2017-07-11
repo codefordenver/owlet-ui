@@ -129,7 +129,6 @@
           (if (seq filtered-set)
             (do
               (set-path (str "skill/" (->kebab-case term)))
-              ; (rf/dispatch [:set-active-document-title! term])
               (assoc db :activities-by-filter (hash-map :activities filtered-set
                                                         :display-name term)))
 
