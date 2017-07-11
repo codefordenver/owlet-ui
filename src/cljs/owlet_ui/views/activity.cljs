@@ -39,11 +39,12 @@
               [:div.activity-content.col-xs-12.col-lg-8
                [activity-embed embed skills preview]
                (when (seq image-gallery-items)
-                [activity-image-gallery image-gallery-items])
-               [activity-comments]]
+                [activity-image-gallery image-gallery-items])]
               [:div.activity-content.col-xs-12.col-lg-4
                [activity-info platform  summary why preRequisites materials]
                (when challenge
                 [activity-challenge challenge])
                (when inspiration
-                [activity-inspiration inspiration])]]]))))))
+                [activity-inspiration inspiration])]
+              [:div.activity-content.col-xs-12.col-lg-8
+                [activity-comments]]]]))))))
