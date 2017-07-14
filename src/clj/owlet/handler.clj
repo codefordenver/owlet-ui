@@ -3,6 +3,7 @@
             [owlet.layout :refer [error-page]]
             [owlet.routes.home :refer [home-routes]]
             [owlet.routes.services :refer [service-routes]]
+            [owlet.api :refer [api-routes]]
             [compojure.route :as route]
             [owlet.env :refer [defaults]]
             [mount.core :as mount]
@@ -21,7 +22,8 @@
     (route/not-found
       (:body
         (error-page {:status 404
-                     :title "page not found"})))))
+                     :title "page not found"})))
+    #'api-routes))
 
 
 (defn app [] (middleware/wrap-base #'app-routes))
