@@ -22,7 +22,7 @@ to render the HTML content:
 
 ```
 (defn home-page []
-  (layout/render "home.html"))
+  (layout/render "index.html"))
 ```
 
 The page contains a link to the compiled ClojureScript found in the `target/cljsbuild/public` folder:
