@@ -1,7 +1,7 @@
 (defproject owlet "0.1.0-SNAPSHOT"
 
-  :description "FIXME: write description"
-  :url "http://example.com/FIXME"
+  :description "Code For Denver: Owlet Project"
+  :url "codefordenver.org"
 
   :dependencies [[ch.qos.logback/logback-classic "1.1.7"]
                  [clj-time "0.13.0"]
@@ -54,7 +54,15 @@
                  [cljsjs/photoswipe "4.1.1-0"]
                  [re-com "1.0.0"]
                  [re-frisk "0.4.4"]
-                 [day8.re-frame/http-fx "0.1.3"]]
+                 [day8.re-frame/http-fx "0.1.3"]
+                 [ring-middleware-format "0.7.0"]
+                 [ring-webjars "0.1.1"]
+                 [ring-cors "0.1.8"]
+                 [ring/ring-json "0.4.0"]
+                 [cheshire "5.6.3"]
+                 [environ "1.0.2"]
+                 [metosin/compojure-api "1.1.9"]
+                 [nilenso/mailgun "0.2.3"]]
 
   :min-lein-version "2.0.0"
 
