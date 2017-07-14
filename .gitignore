@@ -1,5 +1,16 @@
-/*.log
 /target
+/lib
+/classes
+/checkouts
+pom.xml
+*.jar
+*.class
+/.lein-*
+profiles.clj
+/.env
+.nrepl-port
+/log
+/*.log
 /*-init.clj
 /resources/public/js/compiled
 out
@@ -9,8 +20,5 @@ out
 .nightlight.edn
 .dirac-chrome-profile/
 .lein-repl-history
-.nrepl-port
 /bin/
 /contentful-exports
-
-.project
