@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "default": "owlet-users",
+    "dev": "owlet-ui-dev"
+  }
+}
