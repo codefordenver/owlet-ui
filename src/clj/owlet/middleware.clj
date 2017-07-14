@@ -4,6 +4,8 @@
             [owlet.layout :refer [*app-context* error-page]]
             [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
             [ring.middleware.webjars :refer [wrap-webjars]]
+            [ring.middleware.cors :refer [wrap-cors]]
+            [ring.middleware.json :refer [wrap-json-response]]
             [muuntaja.middleware :refer [wrap-format wrap-params]]
             [owlet.config :refer [env]]
             [ring-ttl-session.core :refer [ttl-memory-store]]
@@ -52,10 +54,13 @@
 
 (defn wrap-base [handler]
   (-> ((:middleware defaults) handler)
+      wrap-json-response
       wrap-webjars
       (wrap-defaults
         (-> site-defaults
             (assoc-in [:security :anti-forgery] false)
             (assoc-in  [:session :store] (ttl-memory-store (* 60 30)))))
+      (wrap-cors :access-control-allow-origin [#".+"]
+                 :access-control-allow-methods [:get :post :put :delete])
       wrap-context
       wrap-internal-error))

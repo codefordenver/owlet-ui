@@ -4,4 +4,5 @@
             [owlet.routes.contentful :refer [routes]]))
 
 (defroutes api-routes
-           (context "/contentful" [] routes))
+           (context "/api" []
+             (context "/contentful" [] routes)))

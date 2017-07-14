@@ -6,7 +6,7 @@
 
 (defonce email-endpoint
          (str config/server-url
-              "/owlet/webhook/content/subscribe"))
+              "/webhook/content/subscribe"))
 
 (def res (reagent/atom nil))
 

@@ -306,6 +306,5 @@
                (PUT "/unsubscribe" {params :params} handle-activity-unsubscribe)
                (PUT "/subscribe" {params :params} handle-activity-subscribe)
                (GET "/confirm" {params :params} handle-confirmation)))
-           (context "/api" []
-             (context "/content" []
-               (GET "/space" {params :params} handle-get-all-entries-for-given-space))))
+           (context "/content" []
+             (GET "/space" {params :params} handle-get-all-entries-for-given-space)))
