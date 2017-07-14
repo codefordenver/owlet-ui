@@ -9,7 +9,7 @@
 (def project-name "OWLET")
 
 
-(def server-url "https://mmmanyfold-api.herokuapp.com")
+(def server-url "/api/contentful")
 
 
 (def auth0-init
