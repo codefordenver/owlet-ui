@@ -62,9 +62,38 @@
 
 (rf/reg-event-fx
   :update-user-background!
-  (fn [{{{my-db-ref :private-ref} :my-identity} :db} [_ url]]
-    {:firebase-reset-into-ref [my-db-ref {:background-image-url url}]
-     :dispatch                [:show-bg-img-upload false]}))
+  (fn [{{{:keys [private private-ref]} :my-identity} :db}
+       [_ new-url]]
+    ; Called after the upload of a background image file was successful, we
+    ; update the user's data in the Firebase database, which will automatically
+    ; cause app-db to be similarly updated, thanks to the effect
+    ; :start-authorized-listening and the handler :private.
+    (let [old-url        (:background-image-url private)
+          fb-update-data {:background-image-url new-url}]
+
+      {:firebase-reset-into-ref
+       [private-ref fb-update-data               ; Where and what to save.
+        :user-background-saved new-url old-url]  ; What to do when complete.
+
+       :dispatch
+       [:show-bg-img-upload false]})))
+
+
+(rf/reg-event-fx
+  :user-background-saved
+  (fn [_ [_ {err :error-reason} new-url old-url]]
+    ; Called after an attempt to update the Firebase db with the URL of a new
+    ; background image for the user, we delete the old image file if the update
+    ; was successful, or we delete the new image file if there was an error.
+    (letfn [(url->image-name [url]
+              (get (re-find #"%2Fbackground-image%2F([^?]+)" url) 1))
+            (same-image-name-in [& urls]
+              (->> urls
+                (map url->image-name)
+                (apply =)))]
+      (when (not (same-image-name-in new-url old-url))
+        {:delete-file-at-url (if err new-url old-url)}))))
+      ; Do nothing if the URL didn't change: return nil.
 
 
 (rf/reg-event-db
