@@ -506,11 +506,19 @@
     (concat
       [:into-dir               dest-dir
        :complete-with-snapshot (fn [snapshot]
-                                 (->> snapshot          ; The firebase.storage.UploadTaskSnapshot
-                                      .-downloadURL     ; The new URL of the stored file.
-                                      (conj args)       ; Makes (url arg1 arg2 ...)
-                                      (into [event-id]) ; Makes [event-id url arg1 arg2 ...)
-                                      rf/dispatch))]
+                                 ; Takes a firebase.storage.UploadTaskSnapshot
+                                 ; and performs dispatch with map having keys
+                                 ; :url and :filename.
+                                 (let [url      (.-downloadURL snapshot)
+                                                ; New URL of uploaded file.
+                                       filename (-> snapshot .-metadata .-name)]
+                                                ; Local name (not path) of file.
+                                   (->> {:url url, :filename filename}
+                                        (conj args)
+                                                ; Makes ({...} arg1 arg2 ...)
+                                        (into [event-id])
+                                                ; [event-id {...} arg1 arg2 ...]
+                                        rf/dispatch)))]
       (and progress-pct-atom
            [:next (fn [task-snapshot]
                     ; What to do after each batch of bytes has been transfered.
