@@ -15,8 +15,7 @@
          [:h2 [back] [:mark.white.box [:b "Nothing here. Try a different search above."]]]
          (let [{:keys [display-name activities & description]} filtered-activities]
            [:div
-            [:h2 [back]
-             [:mark.white [:b display-name]]]
+            [:h2 [:mark.white [back] [:b display-name]]]
             (if description
               ; filtering by platform
               [:div

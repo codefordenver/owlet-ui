@@ -3,4 +3,4 @@
 
 (defn back []
   [:a {:href "#/branches"}
-    [:img.back {:src "/img/back-filled.png"}]])
+    [:i.fa.fa-caret-left {:aria-hidden "true"}]])
