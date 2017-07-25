@@ -95,7 +95,7 @@
 (rf/reg-event-fx
   :show-skill
   (fn [_ [_ route-param]]
-    {:dispatch-n (list [:set-active-view :filtered-activities-view "branch"]
+    {:dispatch-n (list [:set-active-view :filtered-activities-view "skill"]
                        [:filter-activities-by-search-term route-param]
                        [:set-active-document-title! route-param])}))
 
@@ -125,7 +125,7 @@
         ;; by skill
         ;; --------
 
-        (let [filtered-set (filter #(when (contains? (:skill-set %) term) %) activities)]
+        (let [filtered-set (filter #(when (contains? (get-in % [:fields :skill-set]) term) %) activities)]
           (if (seq filtered-set)
             (do
               (set-path (str "skill/" (->kebab-case term)))
