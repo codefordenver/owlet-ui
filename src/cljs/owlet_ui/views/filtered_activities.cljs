@@ -10,13 +10,12 @@
     [:div.branch-activities-wrap
      [email-notification]
      (if-not filtered-activities
-       [:h2 [:mark.white.box [:b "Loading..."]]]
+       [:h2.pushed-left [:mark.white [:b "Loading..."]]]
        (if (= filtered-activities "error")
-         [:h2 [back] [:mark.white.box [:b "Nothing here. Try a different search above."]]]
+         [:h2.pushed-left [:mark.white.box [back] [:b "Nothing here. Try a different search above."]]]
          (let [{:keys [display-name activities & description]} filtered-activities]
            [:div
-            [:h2 [back]
-             [:mark.white [:b display-name]]]
+            [:h2.pushed-left [:mark.white [back] [:b display-name]]]
             (if description
               ; filtering by platform
               [:div
@@ -24,7 +23,9 @@
                         "dangerouslySetInnerHTML"
                                #js{:__html (.makeHtml showdown description)}}]
                  [:div {:style {:margin-left "15px"}}
-                  [:h3 [:mark.white [:b "Activities"]]]]]
+                  [:h3 {:style {:margin-bottom "15px"
+                                :margin-top "40px"}}
+                    [:mark.white [:b "Activities"]]]]]
               ; filtering by branch or skill
               [:div {:style {:text-align "right"}}
                  [:mark.white {:style {:background-color "rgba(255,255,255,0.65)"
