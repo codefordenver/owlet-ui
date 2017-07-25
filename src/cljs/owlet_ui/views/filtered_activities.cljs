@@ -23,7 +23,9 @@
                         "dangerouslySetInnerHTML"
                                #js{:__html (.makeHtml showdown description)}}]
                  [:div {:style {:margin-left "15px"}}
-                  [:h3 [:mark.white [:b "Activities"]]]]]
+                  [:h3 {:style {:margin-bottom "15px"
+                                :margin-top "40px"}}
+                    [:mark.white [:b "Activities"]]]]]
               ; filtering by branch or skill
               [:div {:style {:text-align "right"}}
                  [:mark.white {:style {:background-color "rgba(255,255,255,0.65)"
