@@ -10,12 +10,12 @@
     [:div.branch-activities-wrap
      [email-notification]
      (if-not filtered-activities
-       [:h2 [:mark.white.box [:b "Loading..."]]]
+       [:h2.pushed-left [:mark.white [:b "Loading..."]]]
        (if (= filtered-activities "error")
-         [:h2 [back] [:mark.white.box [:b "Nothing here. Try a different search above."]]]
+         [:h2.pushed-left [:mark.white.box [back] [:b "Nothing here. Try a different search above."]]]
          (let [{:keys [display-name activities & description]} filtered-activities]
            [:div
-            [:h2 [:mark.white [back] [:b display-name]]]
+            [:h2.pushed-left [:mark.white [back] [:b display-name]]]
             (if description
               ; filtering by platform
               [:div

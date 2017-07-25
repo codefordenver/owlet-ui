@@ -16,7 +16,7 @@
         [:h2 [:mark.white.box.box-shadow [:b "Loading..."]]]]
       (if (= activity "error")
         [:div.branch-activities-wrap
-          [:h2 [back] [:mark.white.box.box-shadow [:b "This activity does not exist"]]]]
+          [:h2 [:mark.white.box.box-shadow [back] [:b "This activity does not exist"]]]]
         (let [{:keys [fields]} activity]
           (let [{:keys [why
                         title

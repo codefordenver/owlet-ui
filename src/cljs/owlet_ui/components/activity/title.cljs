@@ -4,6 +4,5 @@
 
 (defn activity-title [title author]
   [:div.activity-title-wrap
-   [:h1 [back]
-        [:mark.white.box-shadow title]]
+   [:h1 [:mark.white.box-shadow [back] title]]
    [:h5.author "Posted by: " author]])

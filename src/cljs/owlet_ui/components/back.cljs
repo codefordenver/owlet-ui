@@ -3,4 +3,4 @@
 
 (defn back []
   [:a {:href "#/branches"}
-    [:i.fa.fa-caret-left {:aria-hidden "true"}]])
+    [:i.fa.fa-caret-left.back {:aria-hidden "true"}]])
