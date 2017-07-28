@@ -36,8 +36,7 @@
         (.blur search))
       (-> db
           (assoc :active-view active-view)
-          (assoc-in [:app :route-opts] email)
-          (assoc-in [:app :open-sidebar] false)))))
+          (assoc-in [:app :route-opts] email)))))
 
 
 (rf/reg-event-db
