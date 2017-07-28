@@ -155,7 +155,7 @@
         description (-> activity :fields :summary :en-US)
         subject (format "New Owlet Activity Published: %s by %s" title author)
         url (format "http://owlet.codefordenver.org/#/activity/#!%s" id)
-        html (render-file "public/activity-email.html" {:activity-id id
+        html (render-file "activity-email.html" {:activity-id id
                                                         :activity-image-url image-url
                                                         :activity-title title
                                                         :platform-color platform-color
@@ -189,8 +189,8 @@
   "Sends confirmation email"
   (let [url (format "https://mmmanyfold-api.herokuapp.com/owlet/webhook/content/confirm?id=%1s" id)
         html (if (= subscribing true)
-               (render-file "public/confirm-email.html" {:url url :un ""})
-               (render-file "public/confirm-email.html" {:url url :un "un"}))
+               (render-file "confirm-email.html" {:url url :un ""})
+               (render-file "confirm-email.html" {:url url :un "un"}))
         mail-transact!
         (mail/send-mail creds
                         {:from    "owlet@mmmanyfold.com"
