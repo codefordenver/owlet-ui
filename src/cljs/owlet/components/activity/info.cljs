@@ -23,7 +23,7 @@
         :showing? showing?
         :position :below-left
         :anchor [:button.platform.btn
-                 {:on-click #(rf/dispatch [:filter-activities-by-search-term platform-search-name])
+                 {:on-click #(rf/dispatch [:show-platform platform-search-name])
                   :style {:background-color platform-color}
                   :on-mouse-over (handler-fn (reset! showing? true))
                   :on-mouse-out  (handler-fn (reset! showing? false))}

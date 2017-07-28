@@ -36,6 +36,34 @@
   (-> js/firebase .-database .-ServerValue .-TIMESTAMP))
 
 
+(defn then-dispatch
+  "Given a JS Promise or firebase.Promise object, returns it or, if the second
+  argument is not empty, returns a new Promise that will dispatch the re-frame
+  event when the given Promise has completed, i.e., it calls something like
+  (dispatch [:an-event-id rslt-map ...]).
+
+  Here, :an-event-id is the given value of completed-event-id, rslt-map will
+  have value {:ok-value v} or {:error-reason r}, and \"...\" are extra event
+  args to be dispatched, if any. The value v in rslt-map {:ok-value v} will
+  be the result from the given promise when it is fulfilled. If instead the
+  promise rejected, the dispatched event will have rslt-map {:error-reason r},
+  where r is an instance of firebase.FirebaseError, indicating the reason for
+  rejection provided by the promise.
+
+  See https://firebase.google.com/docs/reference/js/firebase.Promise
+  and https://firebase.google.com/docs/reference/js/firebase.FirebaseError
+  "
+  [promise [completed-event-id & event-args]]
+  (if completed-event-id
+    (letfn [(callback [flag]
+              (fn [value-or-reason]
+                (-> [completed-event-id {flag value-or-reason}]
+                  (into event-args)  ; Appends event vector with args.
+                  rf/dispatch)))]
+      (.then promise (callback :ok-value) (callback :error-reason)))
+    promise))
+
+
 ;  ;  ;  ;  ;  ;  ;  ;  ;   Defining Firebase refs   ;  ;  ;  ;  ;  ;  ;  ;  ;
 
 
@@ -112,7 +140,7 @@
 (rf/reg-fx
   :firebase-sign-in
   ; A list must be provided to this effect function, as for function sign-in,
-  ; above. E.g., your reg-event-fx registred function could return
+  ; above. E.g., your reg-event-fx registered function could return
   ; {:firebase-sign-in  [fb/firebase-auth-object a-token :some-event]}
   (partial apply sign-in))
 
@@ -171,40 +199,32 @@
 
 
 (defn- apply-setter-to-ref
-
-  ([setter db-ref v]
-   (apply-setter-to-ref setter db-ref v :callback-fn #(do)))
-
-  ([setter db-ref v event]
-   {:pre [(or (and (vector? event) (seq event))
-              (.log js/console (str "Illegal re-frame event:" (pr-str event))))]}
-
-   (apply-setter-to-ref setter db-ref v :callback-fn #(rf/dispatch event)))
-
-  ([setter db-ref v _ callback]
-   {:pre [(or (legal-db-value? v)
-              (.log js/console (str "Illegal Firebase value: " (pr-str v))))]}
-
-   (setter db-ref (clj->js v) callback)))
+  [fb-setter db-ref v & event-id-args]
+  {:pre [(or (legal-db-value? v)
+             (.log js/console (str) "Illegal Firebase value: " (pr-str v)))
+         db-ref]}
+  (-> db-ref
+    (fb-setter (clj->js v))
+    (then-dispatch event-id-args)))
 
 
 (def reset-ref
-  (partial apply-setter-to-ref (memfn set v callback)))
+  (partial apply-setter-to-ref (memfn set v)))
 
 
 (rf/reg-fx
   :firebase-reset-ref
 
-  ; ([db-ref v] [db-ref v event])
+  ; [db-ref v & event-id-args]
   ;
   ; Asynchronously assigns the given clojure value at the given Firebase
   ; database reference. If an event vector is given as the third argument,
   ; it will be dispatched upon completion.
   ;
-  ; Note that the Clojure value v must pass precondition legal-db-value?. If it is nil, the
-  ; location corresponding to the ref will be deleted. The same applies to empty
-  ; collections as values, like [], {}, or #{}. (The Firebase databse does not)
-  ; store null values or empty collections.
+  ; Note that the Clojure value v must pass precondition legal-db-value?. If
+  ; it is nil, the location corresponding to the ref will be deleted. The same
+  ; applies to empty collections as values, like [], {}, or #{}. (The Firebase
+  ; database does not store null values or empty collections.)
   ;
   ; Returns a js/Promise, which will perform (or has performed) the db-ref.set
   ; method call.
@@ -213,25 +233,26 @@
 
 
 (def reset-into-ref
-  (partial apply-setter-to-ref (memfn update v callback)))
+  (partial apply-setter-to-ref (memfn update v)))
 
 (rf/reg-fx
   :firebase-reset-into-ref
 
-  ; ([db-ref v] [db-ref v event])
+  ; [db-ref v & event-id-args]
   ;
-  ; Asynchronously merges the key/values of the given associative Clojure value v
-  ; (say a map or vector) into the given Firebase database reference. Any values
-  ; at keys not present in the Clojure value will not be changed. If an event
-  ; vector is given as the third argument, it will be dispatched upon completion.
+  ; Asynchronously merges the key/values of the given associative Clojure value
+  ; v (say a map or vector) into the given Firebase database reference. Any
+  ; values at keys not present in the Clojure value will not be changed. If an
+  ; event vector is given as the third argument, it will be dispatched upon
+  ; completion.
   ;
-  ; Note that the Clojure value v must pass precondition legal-db-value?. If it is nil, the
-  ; location corresponding to the ref will be deleted. The same applies to empty
-  ; collections as values, like [], {}, or #{}. (The Firebase databse does not)
-  ; store null values or empty collections.
+  ; Note that the Clojure value v must pass precondition legal-db-value?. If it
+  ; is nil, the location corresponding to the ref will be deleted. The same
+  ; applies to empty collections as values, like [], {}, or #{}. (The Firebase
+  ; database does not store null values or empty collections.)
   ;
-  ; Returns a js/Promise, which will perform (or has performed) the db-ref.update
-  ; method call.)
+  ; Returns a js/Promise, which will perform (or has performed) the
+  ; db-ref.update method call.)
 
   (partial apply reset-into-ref))
 
@@ -271,11 +292,11 @@
          (let [snap-as-clj (-> snapshot .val (js->clj :keywordize-keys true))]
            (rf/dispatch (apply vector event-id snap-as-clj args))))
 
-       (fn [auth-error]
+       (fn [error]
          (js/console.log
-           (str "owlet.firebase/on-change "
+           (str "owlet-ui.firebase/on-change "
                 "calling firebase.database.Reference's .on():\n"
-                auth-error)))))
+                error)))))
 
 
 (defn note-presence-changes
@@ -485,11 +506,19 @@
     (concat
       [:into-dir               dest-dir
        :complete-with-snapshot (fn [snapshot]
-                                 (->> snapshot          ; The firebase.storage.UploadTaskSnapshot
-                                      .-downloadURL     ; The new URL of the stored file.
-                                      (conj args)       ; Makes (url arg1 arg2 ...)
-                                      (into [event-id]) ; Makes [event-id url arg1 arg2 ...)
-                                      rf/dispatch))]
+                                 ; Takes a firebase.storage.UploadTaskSnapshot
+                                 ; and performs dispatch with map having keys
+                                 ; :url and :filename.
+                                 (let [url      (.-downloadURL snapshot)
+                                                ; New URL of uploaded file.
+                                       filename (-> snapshot .-metadata .-name)]
+                                                ; Local name (not path) of file.
+                                   (->> {:url url, :filename filename}
+                                        (conj args)
+                                                ; Makes ({...} arg1 arg2 ...)
+                                        (into [event-id])
+                                                ; [event-id {...} arg1 arg2 ...]
+                                        rf/dispatch)))]
       (and progress-pct-atom
            [:next (fn [task-snapshot]
                     ; What to do after each batch of bytes has been transfered.
@@ -505,9 +534,32 @@
 
 
 (defn delete-file-at-url
-  "Returns a Promise containing void, which deletes the file at the given URL.
-  The promise resolves if the deletion succeeded and rejects if it failed,
-  including if the file refered-to by the URL didn't exist.
+  "Returns a Promise containing void, which will attempt to delete the file
+  in Firebase Storage at the given URL.
   "
   [url]
   (-> url storage-ref-for-url .delete))
+
+
+(rf/reg-fx
+  :delete-file-at-url
+
+  ; Called with either a URL string or a vector containing the URL, an event
+  ; id, and any event arguments. Returns a Promise containing void, which will
+  ; attempt to delete the file at the given URL. The resulting promise resolves
+  ; if the deletion succeeded and rejects if it failed, including if the file
+  ; referred-to by the URL didn't exist.
+  ;
+  ; If you provide an event id as the second member of the vector argument,
+  ; then the handler for that event will be dispatched-to after the attempt to
+  ; delete succeeds or fails. The second member of the dispatched event vector
+  ; will be a \"rslt-map\", as in function then-dispatch. Remaining members in
+  ; the given vector argument will become the remaining members of the
+  ; dispatched event vector.
+
+  (fn [url-etc]
+    (let [[url & event-id-args] (if (string? url-etc) [url-etc] url-etc)]
+      (-> url
+        delete-file-at-url        ; Returns a promise.
+        (then-dispatch event-id-args)))))
+

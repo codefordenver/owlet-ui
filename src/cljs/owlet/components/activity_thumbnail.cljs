@@ -16,8 +16,7 @@
         showing? (reagent/atom false)]
     [:div.col-xs-12.col-md-6.col-lg-4
      [:div.activity-thumbnail-wrap.box-shadow
-      [:a {:href     (str "#/activity/#!" entry-id)
-           :on-click #(rf/dispatch [:set-activity-in-view entry-id])}
+      [:a {:href (str "#/activity/#!" entry-id)}
        [:div.activity-thumbnail {:style {:background-image (str "url('" image "')")}}
         [:mark.title title]]]
       [:div.platform-wrap
@@ -26,7 +25,7 @@
          :showing? showing?
          :position :below-left
          :anchor [:div.platform.btn
-                  {:on-click #(rf/dispatch [:filter-activities-by-search-term platform-search-name])
+                  {:on-click #(rf/dispatch [:show-platform platform-search-name])
                    :style {:background-color platform-color}
                    :on-mouse-over (when (not= route-param :platform)
                                     (handler-fn (reset! showing? true)))
@@ -40,5 +39,5 @@
       (when skills
         (for [skill skills]
           ^{:key (gensym "skill-")}
-          [:div.tag {:on-click #(rf/dispatch [:filter-activities-by-search-term skill])}
+          [:div.tag {:on-click #(rf/dispatch [:show-skill skill])}
             [:span skill]]))]]))

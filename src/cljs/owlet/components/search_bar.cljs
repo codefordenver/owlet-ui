@@ -3,6 +3,7 @@
             [re-com.core :refer [typeahead]]
             [re-frame.core :as rf]
             [reagent.core :as reagent]
+            [clojure.string :refer [replace]]
             [owlet.helpers :refer [class-names]]
             [camel-snake-kebab.core :refer [->kebab-case]]))
 
@@ -57,18 +58,11 @@
               skills (rf/subscribe [:skills])
               activity-titles (rf/subscribe [:activity-titles])
               activity-platforms (rf/subscribe [:activity-platforms])
-              platform-search-names (map #(->kebab-case (:name %)) @activity-platforms)
               platform-names (map #(:name %) @activity-platforms)
-              search-collections (concat @skills @branches @activity-titles platform-search-names)
+              search-collections (concat @skills @branches @activity-titles platform-names)
               result-formatter #(-> {:term %})
-              suggestion-renderer
-              (fn [t]
-                (let [platform-search-names (map #(->kebab-case (:name %)) @activity-platforms)
-                      platform-names (map #(:name %) @activity-platforms)
-                      platform-index (.indexOf platform-search-names (:term t))]
-                  (if (>= platform-index 0)
-                    (nth platform-names platform-index)
-                    (:term t))))
+              suggestion-renderer #(:term %)
+              special-char-pattern (re-pattern "[^A-Za-z0-9]")
               suggestions-for-search
               (fn [s]
                 (if (< 1 (count s))
@@ -77,9 +71,15 @@
                 (into []
                       (take @suggestion-count
                             (for [n (distinct search-collections)
-                                  :when (re-find (re-pattern (str "(?i)" s)) n)]
+                                  :when (re-find (re-pattern (str "(?i)" (replace s special-char-pattern #(str "\u005C" %)))) n)]
                               (result-formatter n)))))
-              change-handler #(rf/dispatch [:filter-activities-by-search-term (:term %)])]
+              change-handler (fn [t]
+                               (let [platform-search-names (map #(->kebab-case (:name %)) @activity-platforms)
+                                     platform-names (map #(:name %) @activity-platforms)
+                                     platform-index (.indexOf platform-names (:term t))]
+                                 (if (>= platform-index 0)
+                                   (rf/dispatch [:filter-activities-by-search-term (nth platform-search-names platform-index)])
+                                   (rf/dispatch [:filter-activities-by-search-term (:term t)]))))]
           [:div.search-bar-wrap {:on-blur #(toggle-suggestions)
                                  :on-focus #(toggle-suggestions)
                                  :on-click #(swap! search-classes disj "hidden-search")}

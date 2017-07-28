@@ -33,15 +33,14 @@
   (let [email (reagent/atom nil)]
     (fn []
       [:div.not-found
-       [:h2 [back]
-            [:mark.white.box-shadow "Sorry to see you go"]]
+       [:h2 [:mark.white.box-shadow [back] "Sorry to see you go"]]
        [:h3 [:mark.white "Enter your email address to unsubscribe"]]
        [:div.email-unsubscribe
          [:input#email-input {:type        "text"
                               :placeholder "Email address"
                               :on-change   #(reset! email (-> % .-target .-value))
                               :value       @email}]
-         [:button#email-button {:on-click #(unsubscribe @email)}
+         [:button#unsubscribe-button {:on-click #(unsubscribe @email)}
           "Unsubscribe"]
          (when @msg
            (cond
