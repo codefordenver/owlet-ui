@@ -78,16 +78,15 @@
             [lein-sassc "0.10.4"]
             [lein-auto "0.1.2"]
             [lein-kibit "0.1.2"]]
-   :sassc
-   [{:src "resources/scss/screen.scss"
-     :output-to "resources/public/css/screen.css"
-     :style "nested"
-     :import-path "resources/scss"}] 
-  
-   :auto
-   {"sassc" {:file-pattern #"\.(scss|sass)$" :paths ["resources/scss"]}} 
-  
-  :hooks [leiningen.sassc]
+
+  :sassc [{:src "resources/scss/screen.scss"
+           :output-to "resources/public/css/screen.css"
+           :style "nested"
+           :import-path "resources/scss"}]
+
+  :auto {"sassc"  {:file-pattern  #"\.(scss)$"
+                   :paths ["resources/scss"]}}
+
   :clean-targets ^{:protect false}
   [:target-path [:cljsbuild :builds :app :compiler :output-dir] [:cljsbuild :builds :app :compiler :output-to]]
   :figwheel
@@ -95,7 +94,7 @@
    :nrepl-port 7002
    :css-dirs ["resources/public/css"]
    :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
-  
+
 
   :profiles
   {:uberjar {:omit-source true
@@ -111,8 +110,8 @@
                  :closure-warnings
                  {:externs-validation :off :non-standard-jsdoc :off}
                  :externs ["react/externs/react.js"]}}}}
-             
-             
+
+
              :aot :all
              :uberjar-name "owlet.jar"
              :source-paths ["env/prod/clj"]
@@ -137,7 +136,7 @@
                   {:builds
                    {:app
                     {:source-paths ["src/cljs" "src/cljc" "env/dev/cljs"]
-                     :figwheel {:on-jsload "owlet.core/mount-components"}
+                     :figwheel {:on-jsload "owlet.core/mount-root"}
                      :compiler
                      {:main "owlet.app"
                       :asset-path "/js/out"
@@ -146,9 +145,9 @@
                       :source-map true
                       :optimizations :none
                       :pretty-print true}}}}
-                  
-                  
-                  
+
+
+
                   :doo {:build "test"}
                   :source-paths ["env/dev/clj"]
                   :resource-paths ["env/dev/resources"]
@@ -164,8 +163,8 @@
                      {:output-to "target/test.js"
                       :main "owlet.doo-runner"
                       :optimizations :whitespace
-                      :pretty-print true}}}}
-                  
-                  }
+                      :pretty-print true}}}}}
+
+
    :profiles/dev {}
    :profiles/test {}})
