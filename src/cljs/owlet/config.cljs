@@ -21,7 +21,7 @@
 
 (def auth0-del-opts-for-firebase
   "The options needed by function Auth0.getDelegationToken. Omit key :id_token,
-  since it will be provided by owlet.auth0/on-authenticated. See
+  since it will be provided by owlet-ui.auth0/on-authenticated. See
   https://auth0.com/docs/libraries/auth0js#delegation-token-request
   "
   {:api      "firebase"
@@ -30,7 +30,7 @@
 
 
 (defonce firebase-app-init
-  ; Used only by owlet.firebase/firebase-app, which may not be redefined
+  ; Used only by owlet-ui.firebase/firebase-app, which may not be redefined
   ; while the app is running. So for clarity, we make this var defonce as well.
   ;
   {:apiKey        "AIzaSyAbs6wXxPGX-8XEWR6nyj7iCETOL6dZjzY"

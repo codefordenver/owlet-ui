@@ -294,7 +294,7 @@
 
        (fn [error]
          (js/console.log
-           (str "owlet.firebase/on-change "
+           (str "owlet-ui.firebase/on-change "
                 "calling firebase.database.Reference's .on():\n"
                 error)))))
 

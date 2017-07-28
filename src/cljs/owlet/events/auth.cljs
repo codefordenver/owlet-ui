@@ -55,7 +55,7 @@
     ; subtree :my-identity. Thus, we know I am logged-in simply if and only if
     ; (get-in db [:my-identity :firebase-id]) is not nil. If this value changed
     ; then we also need to turn on/off listening for events about me or of
-    ; interest to me, which are dispatched by owlet.firebase/on-change.
+    ; interest to me, which are dispatched by owlet-ui.firebase/on-change.
 
     (let [new-fb-id    (some-> fb-user .-uid keyword)
           old-identity (get-in cofx [:db :my-identity])]
