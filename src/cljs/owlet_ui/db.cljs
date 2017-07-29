@@ -6,7 +6,6 @@
   "initial app state"
   {:active-view                  nil
    :app                          {:loading?     nil
-                                  :open-sidebar false
                                   :route-params {}
                                   :route-opts nil
                                   :title        (str config/project-name " " "^OvO^")}

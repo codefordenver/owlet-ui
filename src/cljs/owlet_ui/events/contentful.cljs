@@ -6,6 +6,7 @@
             [owlet-ui.config :as config]
             [owlet-ui.rf-util :refer [reg-setter]]
             [camel-snake-kebab.core :refer [->kebab-case]]
+            [clojure.string :refer [capitalize]]
             [owlet-ui.helpers :refer
              [keywordize-name remove-nil]]))
 
@@ -34,6 +35,8 @@
           route-param (get route-args 2)
           branches (:branches metadata)
           skills (:skills metadata)
+          activities (map #(update-in % [:skill-set] (partial (comp set map) keyword))
+                        activities)
           activity-titles (remove-nil (map #(get-in % [:fields :title]) activities))
           branches-template (->> (mapv (fn [branch]
                                          (hash-map (keywordize-name branch)
@@ -95,7 +98,7 @@
 (rf/reg-event-fx
   :show-skill
   (fn [_ [_ route-param]]
-    {:dispatch-n (list [:set-active-view :filtered-activities-view "branch"]
+    {:dispatch-n (list [:set-active-view :filtered-activities-view "skill"]
                        [:filter-activities-by-search-term route-param]
                        [:set-active-document-title! route-param])}))
 
@@ -125,12 +128,12 @@
         ;; by skill
         ;; --------
 
-        (let [filtered-set (filter #(when (contains? (:skill-set %) term) %) activities)]
+        (let [filtered-set (filter #(when (contains? (:skill-set %) search-term) %) activities)]
           (if (seq filtered-set)
             (do
               (set-path (str "skill/" (->kebab-case term)))
               (assoc db :activities-by-filter (hash-map :activities filtered-set
-                                                        :display-name term)))
+                                                        :display-name (capitalize term))))
 
             ;; by activity name (title)
             ;; ------------------------
