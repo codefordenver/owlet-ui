@@ -2,11 +2,6 @@
 language: clojure
 lein: 2.5.3
 sudo: true
-branches:
-  only:
-    - master
-    - prod
-    - feat-monorepo
 
 #Build
 script: "lein uberjar && lein sassc once"
