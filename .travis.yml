@@ -9,7 +9,7 @@ branches:
     - feat-monorepo
 
 #Build
-script: "lein uberjar && lein cljsbuild once min && lein sassc once"
+script: "lein uberjar && lein sassc once"
 
 #Test
 after_deploy: 'curl -X GET "https://api.ghostinspector.com/v1/suites/${CFD_GHOST_INSPECTOR_SUITE_ID}/execute/?apiKey=${CFD_GHOST_INSPECTOR_API_KEY}"'
