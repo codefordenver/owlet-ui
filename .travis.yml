@@ -3,6 +3,10 @@ language: clojure
 lein: 2.5.3
 sudo: true
 
+#Install Sass
+before_install:
+- brew install sassc
+
 #Build
 script: "lein uberjar && lein sassc once"
 
