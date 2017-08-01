@@ -5,8 +5,10 @@ sudo: true
 
 #Install Sass
 before_install:
-- wget http://launchpadlibrarian.net/283594070/libsass0_3.3.6-2_amd64.deb
-- sudo dpkg -i libsass0_3.3.6-2_amd64.deb
+- wget http://launchpadlibrarian.net/253643699/libstdc++6_5.3.1-14ubuntu2_amd64.deb
+- sudo dpkg -i libstdc++6_5.3.1-14ubuntu2_amd64.deb
+- wget http://launchpadlibrarian.net/303603670/libsass0_3.4.3-1_amd64.deb
+- sudo dpkg -i libsass0_3.4.3-1_amd64.deb
 - wget http://launchpadlibrarian.net/303447651/sassc_3.4.2-1_amd64.deb
 - sudo dpkg -i sassc_3.4.2-1_amd64.deb
 
