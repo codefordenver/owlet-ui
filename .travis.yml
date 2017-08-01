@@ -5,7 +5,8 @@ sudo: true
 
 #Install Sass
 before_install:
-- brew install sassc
+- wget http://launchpadlibrarian.net/303447651/sassc_3.4.2-1_amd64.deb
+- sudo dpkg -i sassc_3.4.2-1_amd64.deb
 
 #Build
 script: "lein uberjar && lein sassc once"
