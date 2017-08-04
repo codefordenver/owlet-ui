@@ -2,4 +2,4 @@
  * Extern for disqus.js
  **********************************************************************/
 
-var disqusReset = {};
+function disqusReset() {}
