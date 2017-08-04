@@ -11,7 +11,7 @@ generated using Luminus version "2.9.11.68"
 
 - The SASSC compiler
 
-        brew install sassc
+      brew install sassc
 
 ## Running the web server
 
