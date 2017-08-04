@@ -187,7 +187,7 @@
 
 (defn- send-confirmation-email [email id subscribing]
   "Sends confirmation email"
-  (let [url (format "https://owlet-app.herokuapp.com/owlet/webhook/content/confirm?id=%1s" id)
+  (let [url (format "https://owlet.codefordenver.org.herokudns.com/owlet/webhook/content/confirm?id=%1s" id)
         html (if (= subscribing true)
                (render-file "confirm-email.html" {:url url :un ""})
                (render-file "confirm-email.html" {:url url :un "un"}))
