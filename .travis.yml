@@ -1,0 +1,10 @@
+#Misc Variables
+language: clojure
+lein: 2.5.3
+sudo: true
+
+#Build
+script: "lein uberjar"
+
+#Test
+after_deploy: 'curl -X GET "https://api.ghostinspector.com/v1/suites/${CFD_GHOST_INSPECTOR_SUITE_ID}/execute/?apiKey=${CFD_GHOST_INSPECTOR_API_KEY}"'
