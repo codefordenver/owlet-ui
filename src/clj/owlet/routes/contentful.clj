@@ -103,15 +103,15 @@
                 (->> (get-in activity [:fields :imageGallery])
                      (map (comp :id :sys))        ; Gallery image ids.
                      (mapv (image-by-id assets))))
-      ; Add :skill-set
-      (assoc-in [:fields :skill-set] (or (some->> activity
-                                                  :fields
-                                                  :skills
-                                                  remove-nil
-                                                  seq          ; some->> gives nil if empty
-                                                  (map keywordize-name)
-                                                  set)
-                                         activity))))
+      ; Add :skill-
+      (assoc-in [:skill-set] (or (some->> activity
+                                :fields
+                                :skills
+                                remove-nil
+                                seq          ; some->> gives nil if empty
+                                (map keywordize-name)
+                                set)
+                           activity))))
 
 (defn- process-activities
   [activities platforms assets]
