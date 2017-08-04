@@ -79,8 +79,8 @@
             [lein-auto "0.1.2"]
             [lein-kibit "0.1.2"]]
 
-  :sassc [{:src "resources/scss/screen.scss"
-           :output-to "resources/public/css/screen.css"
+  :sassc [{:src "resources/scss/site.scss"
+           :output-to "resources/public/css/site.css"
            :style "nested"
            :import-path "resources/scss"}]
 
