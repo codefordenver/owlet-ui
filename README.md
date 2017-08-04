@@ -12,20 +12,20 @@ FIXME
 
 - The SASSC compiler
 
-    `brew install sassc`
+    brew install sassc
 
 ## Running the web server
 
 To start a web server for the application, run:
 
-    `lein run`
+    lein run
 ## Running the front-end development server
 
-    `lein figwheel`
+    lein figwheel
 
 ## Running the sass watcher
 
-    `lein auto sassc once`
+    lein auto sassc once
 
 ## License
 
