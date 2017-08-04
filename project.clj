@@ -106,6 +106,7 @@
                 :compiler
                 {:output-to "target/cljsbuild/public/js/app.js"
                  :optimizations :advanced
+                 :closure-defines {goog.DEBUG false}
                  :pretty-print false
                  :closure-warnings
                  {:externs-validation :off :non-standard-jsdoc :off}
