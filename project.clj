@@ -167,4 +167,26 @@
 
 
    :profiles/dev {}
-   :profiles/test {}})
+   :profiles/test {}
+   :dirac       ; Abitrary key, used in `lein with-profile +dirac repl`.
+   {:repl-options {:nrepl-middleware
+                   [dirac.nrepl/middleware]
+
+                   :timeout
+                   180000
+
+                   :init
+                   (do (require 'figwheel-sidecar.repl-api)
+                       (figwheel-sidecar.repl-api/start-figwheel!)
+                       (require 'dirac.agent)
+                       (dirac.agent/boot!))
+
+                   :welcome
+                   (do (println "\n\n                --- Using the Dirac DevTools REPL --\n")
+                       (println "This is a Clojure REPL, not ClojureScript. For a ClojureScript REPL, open")
+                       (println "http://localhost:4000/ in Chrome Canary with extension Dirac DevTools installed.")
+                       (println "Now click the Dirac DevTools icon to the right of the address bar.")
+                       (println "Do NOT use the regular Chrome DevTools (\"Developer Tools\", Cmd-Opt-I).")
+                       (println "You can then also join that browser REPL session here at this command line")
+                       (println "by evaluating (dirac! :join) at the prompt below.")
+                       (println "\n                ---             Enjoy!            --\n\n"))}}})
