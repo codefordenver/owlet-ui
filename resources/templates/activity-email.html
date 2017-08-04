@@ -1,0 +1,39 @@
+<html style="font-size: 14px">
+  <head>
+    <link href='https://fonts.googleapis.com/css?family=Rubik:300,400,700' rel='stylesheet' type='text/css'>
+  </head>
+  <body style="font: 100% 'Rubik', sans-serif;font-size: 2rem">
+    <div style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.5), 0 6px 20px 0 rgba(0, 0, 0, 0.3);border-radius: 7px;font-size: 0.8em;background-color: white;padding: 10px 10px 9px 10px;margin-bottom: 1.5em;overflow-y: auto;">
+      <a href="http://owlet.codefordenver.org/#/activity/#!{{activity-id}}" style="text-decoration: none;">
+        <div onmouseover="this.style.backgroundSize='130%'" onmouseout="this.style.backgroundSize='100%'" style="background: url('https:{{activity-image-url}}');position: relative;overflow: hidden;background-position: center;background-repeat: no-repeat;background-size: 100%;transition: background-size 0.5s ease;-moz-transition: background-size 0.5s ease;-ms-transition: background-size 0.5s ease;-webkit-transition: background-size 0.5s ease;-o-transition: background-size 0.5s ease;height: 250px;">
+          <mark style="padding: 0.2em;color: white;background-color: black;position: absolute;bottom: 0;left: 0;text-transform: uppercase;font-size: 1.1em;">{{activity-title}}</mark>
+        </div>
+      </a>
+      <div style="margin-top: 5px;font-size: 0.6em;text-align: right;">
+        <b style="color: black;display: inline-block;">Platform: </b>
+      <a href="http://owlet.codefordenver.org/#/platform/{{platform-name|kebab}}">
+        <div style="flex: inherit;margin-bottom: 15px;display: inline-block;">
+          <div style="flex: 1 1 auto;flex-flow: column;align-items: center;">
+            <div onmouseover="this.style.opacity='.75'" onmouseout="this.style.opacity='1'" style="background-color: {{platform-color}};font-size: 1.1em;padding: 5px 6px 4px 6px;color: white;margin: 3px 0 0 0;border: 1px solid transparent;border-radius: .25rem;">
+              {{platform-name}}
+            </div>
+          </div>
+        </div>
+      </a>
+      </div>
+      <div style="color: black;margin-top: 10px;font-size: 0.9em;">
+        {{activity-description}}
+      </div>
+      {% for skill-name in skill-names %}
+      <a href="http://owlet.codefordenver.org/#/skill/{{skill-name|lower}}" style="display: inline-block;">
+        <div onmouseover="this.style.backgroundColor='#483C6C'" onmouseout="this.style.backgroundColor='#564B82'" style="vertical-align: baseline;color: white;cursor: pointer;text-transform: uppercase;border-radius: 25px;margin: 10px 10px 0px 0px;padding: 7px 7px 6px 7px;font-weight: normal;font-size: 0.55em;background-color: #564B82;display: inline-block;line-height: 1;">
+          <span>{{skill-name}}</span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    <p style="text-align:center,font-size:0.5rem">
+      <a href="http://owlet.codefordenver.org/#/unsubscribe">Unsubscribe</a>
+    </p>
+  </body>
+</html>
