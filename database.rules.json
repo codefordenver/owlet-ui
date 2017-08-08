@@ -1,31 +1,132 @@
 //  To make changes to these database rules, edit them here and commit your
 //  changes. To upload your changes, install firebase-tools and run
-//  `firebase deploy`. See https://firebase.google.com/docs/cli/#command_reference
+//  `firebase deploy --only database`. See https://firebase.google.com/docs/cli/#deployment
 
 {
   "rules": {
+
+    "classes": {
+      "$class_id": {
+        // All members of a class (including teachers) -- and only those
+        // members -- can read the data in their classes.
+        ".read": "data.child(auth.uid).exists()",
+        "$user_id": {
+          "role": {
+            // A logged-in user may self-assign their role, but a non-teacher
+            // can do it only once. A teacher can change the role of or delete
+            // any member of his/her class.
+            ".write": "($user_id == auth.uid && ! data.exists()) || 'teacher' == data.parent().parent().child(auth.uid).child('role').val()",
+            // Roles may be "student", "teacher", or "dropped".
+            ".validate": "newData.val() == 'student' || newData.val() == 'teacher' || newData.val() == 'dropped'"
+          }
+        }
+      }
+    },
+
+    "presence": {
+      "$user_id": {
+        // Only classmates or teachers in the signed-in user's current class
+        // can read the user's presence info. See explanation below.
+        ".read": "root.child('classes').child( root.child('users').child(auth.uid).child('current-class').val() ).hasChild(data.val())",
+        // Only the logged-in user can modify their presence info.
+        ".write": "$user_id == auth.uid"
+      }
+    },
+
+    "subscribers": {
+      ".read": true,
+      ".write": true
+    },
+
+    "tests": {
+      ".read": true,
+      ".write": true
+    },
+
     "users": {
       "$user_id": {
-        
-        //  Only the signed-in user can write to their user data.
-        ".write": "auth !== null  &&  $user_id === auth.uid",
-
-        //  Any signed-in user can read everyone's presence data.
-        "online": {
-          ".read": "auth !== null",
-          ".validate": "newData.isBoolean()"
-        },
-        "online-change-time": {
-          ".read": "auth !== null",
-          ".validate": "newData.isNumber() && newData.val() <= now"
-        },
-
-        //  Only the signed-in user can see other user data.
-        "$other": {
-          ".read": "auth !== null  &&  $user_id === auth.uid"
-        }
+        // This is the user's "private" data, so only the signed-in user or a
+        // teacher of the user can read it. The teacher's current-class must
+        // contain the user for the teacher to read the item. See explanation
+        // below.
+        ".read":  "$user_id == auth.uid || ( 'teacher' == root.child('classes').child( root.child('users').child(auth.uid).child('current-class').val() ).child(auth.uid).child('role').val() && 'student' == root.child('classes').child( root.child('users').child(auth.uid).child('current-class').val() ).child($user_id).child('role').val() )",
+        ".write": "$user_id == auth.uid"
       }
     }
   }
 }
 
+
+/*
+To understand some of the above rules, here they are printed on multiple lines,
+a format not permitted in JSON.
+
+
+- The classes/$class_id/$user_id/role .write rule:
+
+  A signed-in user can assign him- or herself a role, but for a non-teacher,
+  only once. A signed-in teacher can modify the role of anyone in his or her
+  classes (including a teacher, including him- or herself). Note that only a
+  teacher can delete a role (set the role of someone in his or her class to
+  null). (This will also result in deleting the containing $user_id node, since
+  currently, the node's only child is role.)
+
+  ($user_id == auth.uid && ! data.exists()) ||
+  'teacher' == data.parent().parent().child(auth.uid).child('role').val()
+
+
+- The presence/$user_id .read rule:
+
+  A signed-in user may read another user's presence info if they are both in
+  the signed-in user's current class. So note that if the signed-in user is
+  in multiple classes, he/she can only examine the presence info of his/her
+  classmates and teachers in one of his/her classes at a time, current-class.
+
+  root.child('classes')
+      .child( root.child('users')          // This looks up the
+                  .child(auth.uid)         // signed-in user's
+                  .child('current-class')  // current-class
+                  .val()                   // value, if any.
+            )
+      .hasChild(data.val())  // data.val() is id of user we're examining.
+
+
+- The $user_item .read rule:
+
+  A user may read their OWN data if they are signed in. Otherwise, the
+  conditions below must be met.
+
+  $user_id == auth.uid || (
+
+    // First, the role of the currently signed-in user must be 'teacher' for
+    // their current class. So note that if the user teaches multiple classes,
+    // he/she can only examine the students of one of his/her classes at a time,
+    // current-class.
+    //
+    'teacher' == root.child('classes')
+                     .child( root.child('users')          // This looks up the
+                                 .child(auth.uid)         // signed-in user's
+                                 .child('current-class')  // current-class
+                                 .val()                   // value, if any.
+                           )
+                     .child(auth.uid)
+                     .child('role')
+                     .val()
+
+    &&
+
+    // Also, the signed-in teacher can only examine another user's item if the
+    // user is a student in the teacher's current class.
+    //
+    'student' == root.child('classes')
+        .child( root.child('users')          // This looks up the
+                    .child(auth.uid)         // signed-in user's
+                    .child('current-class')  // current-class
+                    .val()                   // value, if any.
+              )
+        .child($user_id)
+        .child('role')
+        .val()
+  )
+
+*/

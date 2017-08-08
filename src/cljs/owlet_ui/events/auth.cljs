@@ -4,25 +4,21 @@
             [owlet-ui.firebase :as fb]
             [owlet-ui.events.app :as app]))
 
+
 (reg-setter :my-identity [:my-identity])
 
 (reg-setter :firebase-users-change [:users])
 
-
-(rf/reg-event-fx
-  :log-out
-  (fn [cofx _]
-    {:db                (app/note-pending cofx :log-out)
-     :firebase-sign-out fb/firebase-auth-object}))
+(reg-setter :private [:my-identity :private])
 
 
 (rf/reg-event-fx
   :auth0-authenticated
-  (fn [cofx [_ {:keys [auth0-token delegation-token]}]]
-    {:firebase-sign-in [fb/firebase-auth-object
+  (fn [{db :db} [_ {:keys [auth0-token delegation-token]}]]
+    {:db               (app/note-pending db :log-in)
+     :firebase-sign-in [fb/firebase-auth-object
                         delegation-token
-                        :firebase-sign-in-failed]
-     :db               (app/note-pending cofx :log-in)}))
+                        :firebase-sign-in-failed]}))
 
 
 (rf/reg-event-fx
@@ -74,7 +70,7 @@
              ; listener registration in :start-authorized-listening, below.
              ; This is ensured here because both the change to app-db and the
              ; registration are effects scheduled for the next tick. So any
-             ; event dispatched as the result of the latter cannot preceed the
+             ; event dispatched as the result of the latter cannot precede the
              ; former.
              :start-authorized-listening new-identity})
 
@@ -94,22 +90,29 @@
   :stop-authorized-listening
   (fn [{:keys [private-ref presence-ref]}]
     (.off private-ref)
-    (.off presence-ref)
+    (.off presence-ref)))
     ; TODO: Does .off really work? Try logging out, :online is false -- OK.
-    ;       Disconnect from network, then reconnect. :online becomes true. How?
-    ;       We're still logged out, so shouldn't know which user's :online to set.
-    (fb/reset-into-ref
-      presence-ref
-      {:online             false
-       :online-change-time fb/timestamp-placeholder})))
+    ;       Then disconnect from network, then reconnect. :online becomes true.
+    ;       How? We're still logged out, so shouldn't know which user's :online
+    ;       to set.
 
 
 (rf/reg-event-fx
   :log-out
-  (fn [cofx _]
-    {:db                (app/note-pending cofx :log-out)
-     :firebase-sign-out fb/firebase-auth-object}))
+  (fn [{{{:keys [presence-ref]} :my-identity :as db} :db} _]
+    {:db                      (app/note-pending db :log-out)
+     :firebase-reset-into-ref [presence-ref
+                               {:online             false
+                                :online-change-time fb/timestamp-placeholder}
+                               ;
+                               ; When finished with above update of location
+                               ; presence/<firebase-id>/, then dispatch an
+                               ; event to sign me out from Firebase:
+                               :then-sign-out]}))
 
 
-(reg-setter :private [:my-identity :private])
+(rf/reg-event-fx
+  :then-sign-out
+  (fn [_ _]
+    {:firebase-sign-out fb/firebase-auth-object}))
 

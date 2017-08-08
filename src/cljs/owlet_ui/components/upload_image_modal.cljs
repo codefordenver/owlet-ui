@@ -23,14 +23,14 @@
          [:button
           {:class    "btn btn-primary"
            :type     "button"
-           :on-click #(fb/ez-upload-file "upload-input-id" ; Input DOM id.
-                                         (str "users/"     ; Firebase Strg dir.
-                                              (name @me)
-                                              "/background-image")
-                                         progress-pct      ; Tracking pct done.
-                                         upload-error      ; Tracking any error.
-                                         :update-user-background!)}
-                                                           ; Evt id to send URL.
+           :on-click #(fb/ez-upload-file
+                        "upload-input-id" ; Input DOM element ID.
+                        (str "users/" (name @me) "/background-image")
+                                          ; Firebase Storage directory path.
+                        progress-pct      ; Tracking percent uploaded so far.
+                        upload-error      ; Tracking any error.
+                        :update-user-background!)}
+                                          ; Event ID to dispatch URL & name.
           "UPLOAD "
           [:span.fa.fa-upload]]
          [:br]

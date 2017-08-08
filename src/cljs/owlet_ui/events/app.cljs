@@ -9,12 +9,12 @@
 
 
 (defn note-pending
-  "Records a \"pending\" message (e.g. a keyword) in the :my-identity map,
-  indicating to the GUI that the indicated process has started but not yet
-  completed.
+  "Records a \"pending\" message (e.g. a keyword) in the :my-identity map in
+  the given db map, indicating to the GUI that the indicated process has
+  started but not yet completed.
   "
-  [cofx msg]
-  (assoc-in (:db cofx) [:my-identity :pending] msg))
+  [db msg]
+  (assoc-in db [:my-identity :pending] msg))
 
 
 (reg-setter :show-bg-img-upload [:showing-bg-img-upload])
