@@ -7,6 +7,7 @@
             [owlet.rf-util :refer [reg-setter]]
             [camel-snake-kebab.core :refer [->kebab-case]]
             [cuerdas.core :as str]
+            [clojure.string :as string]
             [owlet.helpers :refer
              [keywordize-name remove-nil]]))
 
@@ -131,7 +132,7 @@
         (let [filtered-set (filter #(when (contains? (:skill-set %) search-term) %) activities)
               skills (:skills db)
               lowercase-skills (map str/locale-lower skills)
-              skill-index (.indexOf lowercase-skills term)
+              skill-index (.indexOf lowercase-skills (string/lower-case term))
               display-name (nth skills skill-index)]
           (if (seq filtered-set)
             (do
