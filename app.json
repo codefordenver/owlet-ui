@@ -1,0 +1,26 @@
+{
+  "name": "owlet-ui",
+  "scripts": {
+  },
+  "env": {
+    "MMM_MAILGUN_API_KEY": {
+      "required": true
+    },
+    "OWLET_ACTIVITIES_3_DELIVERY_AUTH_TOKEN": {
+      "required": true
+    },
+    "OWLET_ACTIVITIES_3_MANAGEMENT_AUTH_TOKEN": {
+      "required": true
+    }
+  },
+  "formation": {
+  },
+  "addons": [
+
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/clojure"
+    }
+  ]
+}
